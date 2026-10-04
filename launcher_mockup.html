@@ -44,6 +44,12 @@
         </a>
 
         <div class="rail-nav">
+          <!-- Tìm kiếm (Array) ngay dưới logo — cùng chỗ với nút đóng/mở bên Gate -->
+          <button class="rail-icon-btn" data-tooltip="Tìm kiếm Liên Bang (/ hoặc Ctrl+K)" onclick="openSearch()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-4.35-4.35"/></svg>
+          </button>
+          <div class="rail-divider" style="margin:2px 0;"></div>
+
           <!-- 1. EURAMERIKA: AI Infrastructure & Model Industry -->
           <button class="rail-icon-btn" data-continent="euramerika" data-tooltip="EURAMERIKA // 2 Countries (Grid, Incubator)" onclick="switchContinent('euramerika')">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>
@@ -62,14 +68,6 @@
           <!-- 4. EUROPA: Tenant-Facing (SaaS & Ngoại giao Đối tác) -->
           <button class="rail-icon-btn" data-continent="europa" data-tooltip="EUROPA // 3 Countries (Interface, Delivery, Tenant)" onclick="switchContinent('europa')">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.5 9h17M3.5 15h17"/></svg>
-          </button>
-
-          <!-- Vạch ngắn phân tách — dịch chuyển xuống 1 khoảng thoáng đãng -->
-          <div class="rail-divider"></div>
-
-          <!-- Công cụ Tìm kiếm Toàn năng (thay thế Chợ Mơ theo lệnh của PO) -->
-          <button class="rail-icon-btn" data-tooltip="Tìm kiếm Liên Bang (/ hoặc Ctrl+K)" onclick="openSearch()">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-4.35-4.35"/></svg>
           </button>
         </div>
       </div>
