@@ -35,8 +35,7 @@ Regenerate (PC Array must be up; key is read from `XRU_Data/federal_keys/ai/xru_
 python3 tools/array_snapshot.py
 ```
 
-## Rules
+## UI rules
 
-- Palette is fixed: black `#0a0a09`, cyan `#00d2b4`; red = pending, amber = detained.
-- Avoid `color-mix()`; use the rgba tokens.
-- Placeholders are CSS dot patterns (`.ph-1..6`), no image assets.
+Single source of truth: `Eurasia_Goverment/Federal_UI/` (the one UI doc — taste, spacing, list standard, layouts, ports).
+Do not restate UI rules here.
