@@ -1,6 +1,6 @@
 # Xru_UI
 
-Carbon-side UI mockups for XRU Federal (Launcher, Gate, Array blind test).
+Carbon-side UI mockups for XRU Federal (Launcher, Gate, Array blind test, Crawler).
 Static HTML/CSS/JS only — view logic, no Silicon logic, no backend calls.
 
 ## Run
@@ -16,12 +16,14 @@ Entry: `launcher_mockup.html`.
 
 | Page | What |
 |---|---|
-| `launcher_mockup.html` | Federal launcher, 4 continents, `Ctrl+K` quick box → Array |
+| `launcher_mockup.html` | Federal launcher, 4 continents, `/` or `Ctrl+K` → Array |
 | `gate_image.html` | Gate image review: list · gallery · inspector, notched inspector resize |
 | `gate_video.html` | Gate video review, grid variant |
 | `gate_video_watch.html` | Gate video review, big-player variant (trial, keep one of the two) |
 | `gate_dash.html` | Gate stats (old simple layout) |
-| `array_search.html` | Array blind test: clauses, co-occurring tags, results, knowledge panel |
+| `array_search.html` | Array, Google-style: home box → results with tabs, knowledge panel |
+| `crawler_dash.html` | Crawler dashboard (read-only): totals, daily intake, runs, errors, quarantine review dates |
+| `crawler_sources.html` | Crawler sources, image + video in one table, read-only inspector with real thumbnails |
 | `gate_mockup.html` | Redirect stub to the gate pages |
 
 Shared: `css/tokens.css` (palette, zoom, page-swap), `css/rail.css`, `css/account.css` + `js/account.js` (font/accent/zoom settings).
@@ -33,6 +35,17 @@ Regenerate (PC Array must be up; key is read from `XRU_Data/federal_keys/ai/xru_
 
 ```bash
 python3 tools/array_snapshot.py
+```
+
+## Crawler snapshot
+
+`data/crawler_snapshot.js` is a real, read-only snapshot of `XRU_Data/crawler_{image,video}_state` + depots
+(registries, SQLite ledgers, receipts, file sizes). Thumbnails go to `data/crawler_thumbs/` (gitignored, ffmpeg).
+Never runs the crawler or writes into XRU_Data.
+
+```bash
+python3 tools/crawler_snapshot.py            # ~25 s first time (thumbnails), ~1 s after
+python3 tools/crawler_snapshot.py --no-thumbs
 ```
 
 ## Rules
