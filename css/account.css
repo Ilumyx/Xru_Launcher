@@ -1,0 +1,159 @@
+/* ==========================================================================
+   XRU ACCOUNT — menu avatar + bảng cài đặt giao diện
+   ========================================================================== */
+.user-avatar { user-select: none; }
+
+/* ---------- Menu bật lên cạnh avatar ---------- */
+.acc-menu {
+  position: fixed;
+  left: 72px;
+  bottom: 16px;
+  z-index: 300;
+  width: 240px;
+  padding: 6px;
+  background: var(--m-3);
+  border: 1px solid var(--hairline-hi);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.14s ease, transform 0.14s ease;
+}
+.acc-menu.is-open { opacity: 1; transform: none; pointer-events: auto; }
+
+.acc-head { display: flex; align-items: center; gap: 10px; padding: 8px 8px 10px; }
+.acc-ava {
+  width: 30px; height: 30px; flex-shrink: 0;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--m-5);
+  border: 1px solid var(--hairline-hi);
+  font: 600 11px var(--font-mono);
+  color: var(--fg-strong);
+}
+.acc-name { font-size: 13px; font-weight: 600; color: var(--fg-strong); }
+.acc-role { font-size: 11px; color: var(--fg-dim); }
+.acc-sep { height: 1px; margin: 4px 2px; background: var(--hairline); }
+
+.acc-item {
+  width: 100%;
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--fg);
+  font: 13px var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+.acc-item:hover { background: var(--m-5); color: var(--fg-strong); }
+.acc-item svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--fg-dim); }
+
+/* ---------- Bảng cài đặt ---------- */
+.acc-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.acc-modal.is-open { opacity: 1; pointer-events: auto; }
+
+.acc-panel {
+  width: min(460px, calc(100vw - 32px));
+  background: var(--m-2);
+  border: 1px solid var(--hairline-hi);
+  border-radius: 12px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55);
+}
+.acc-panel-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 14px; font-weight: 600; color: var(--fg-strong);
+}
+.acc-x { background: none; border: 0; color: var(--fg-dim); font-size: 14px; cursor: pointer; }
+.acc-x:hover { color: var(--fg-strong); }
+
+.acc-sec { padding: 16px 20px 4px; }
+.acc-label {
+  margin-bottom: 10px;
+  font: 10px var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+/* Font: mỗi nút hiển thị bằng chính font đó */
+.acc-fonts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.acc-font {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: var(--m-3);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  color: var(--fg);
+  cursor: pointer;
+  text-align: left;
+}
+.acc-font b { font-size: 18px; font-weight: 600; color: var(--fg-strong); }
+.acc-font span { font-size: 12px; }
+
+/* Màu nhấn */
+.acc-colors { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.acc-color {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 10px 4px 8px;
+  background: var(--m-3);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  color: var(--fg-dim);
+  font: 10px var(--font-sans);
+  cursor: pointer;
+}
+.acc-color i { width: 18px; height: 18px; border-radius: 50%; box-shadow: 0 0 0 3px var(--m-2), 0 0 0 4px var(--hairline-hi); }
+
+/* Cỡ giao diện */
+.acc-seg {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+  padding: 3px;
+  background: var(--m-3);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+}
+.acc-seg button {
+  padding: 7px 0;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--fg-dim);
+  font: 12px var(--font-mono);
+  cursor: pointer;
+}
+
+/* Trạng thái đang chọn: dùng chính màu nhấn hiện tại */
+.acc-font:hover, .acc-color:hover { border-color: var(--hairline-hi); }
+.acc-font.is-on, .acc-color.is-on { border-color: var(--active-cyan); box-shadow: 0 0 0 1px var(--active-cyan); color: var(--fg-strong); }
+.acc-seg button.is-on { background: var(--m-6); color: var(--fg-strong); font-weight: 600; }
+
+.acc-foot {
+  display: flex; justify-content: space-between;
+  margin-top: 16px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--hairline);
+}
+.acc-ghost, .acc-primary {
+  padding: 7px 14px;
+  border-radius: 6px;
+  font: 500 12px var(--font-sans);
+  cursor: pointer;
+}
+.acc-ghost { background: transparent; border: 1px solid var(--hairline-hi); color: var(--fg-dim); }
+.acc-ghost:hover { color: var(--fg-strong); }
+.acc-primary { background: var(--active-cyan); border: 1px solid var(--active-cyan); color: var(--m-0); font-weight: 600; }

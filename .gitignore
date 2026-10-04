@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+# build artifact copied from Eurasia_Goverment/Tools for LAN download
+*.zip
+.env*

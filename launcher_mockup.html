@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XRU Federal Launcher — Eurasia</title>
+  
+  <!-- Font Stacks -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Modular CSS -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/rail.css">
+  <link rel="stylesheet" href="css/search.css">
+  <link rel="stylesheet" href="css/launcher.css">
+  <link rel="stylesheet" href="css/account.css">
+  <script src="js/account.js"></script>
+</head>
+<body>
+
+  <div class="shell">
+    
+    <!-- Rail dọc mỏng kiểu Codex (64px) — Bản đồ Lục Địa XRU FEDERAL -->
+    <nav class="rail" aria-label="Lục địa Liên Bang">
+      <div class="rail-top">
+        <!-- Logo Biểu tượng XRU (Không chữ, thuần vector cơ khí từ bản mẫu của PO) -->
+        <a href="launcher_mockup.html?continent=xru" class="rail-logo" data-continent="xru" data-tooltip="XRU FEDERAL // Bản đồ Toàn Cảnh Liên Bang" onclick="switchContinent('xru'); return false;" style="text-decoration:none;">
+          <svg viewBox="140 60 520 520" fill="currentColor">
+            <mask id="xru-emblem-mask">
+              <rect x="100" y="0" width="600" height="600" fill="#fff"/>
+              <rect x="140" y="305" width="80" height="30" fill="#000"/>
+              <rect x="580" y="305" width="80" height="30" fill="#000"/>
+            </mask>
+            <circle cx="400" cy="320" r="220" fill="none" stroke="currentColor" stroke-width="40" mask="url(#xru-emblem-mask)"/>
+            <rect x="290" y="240" width="40" height="150" fill="currentColor"/>
+            <rect x="470" y="240" width="40" height="150" fill="currentColor"/>
+            <rect x="290" y="420" width="220" height="30" fill="currentColor"/>
+            <rect x="382" y="145" width="36" height="80" fill="currentColor"/>
+            <circle cx="400" cy="320" r="35" fill="currentColor"/>
+          </svg>
+          <span class="rail-indicator" title="Federal Live"></span>
+        </a>
+
+        <div class="rail-nav">
+          <!-- 1. EURAMERIKA: AI Infrastructure & Model Industry -->
+          <button class="rail-icon-btn" data-continent="euramerika" data-tooltip="EURAMERIKA // 2 Countries (Grid, Incubator)" onclick="switchContinent('euramerika')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>
+          </button>
+
+          <!-- 2. EURASIA: Data & Labeling Industry (Mặc định) -->
+          <button class="rail-icon-btn is-active" data-continent="eurasia" data-tooltip="EURASIA // 4 Countries (Gate, Crawler, Foundry, Division)" onclick="switchContinent('eurasia')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </button>
+
+          <!-- 3. EURUSKA: Content Factory (Montage & Render Shorts 9:16) -->
+          <button class="rail-icon-btn" data-continent="euruska" data-tooltip="EURUSKA // 2 Countries (Processing, Manufacturing)" onclick="switchContinent('euruska')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M7 4v16M17 4v16M3 9h4M17 9h4M3 15h4M17 15h4"/><polygon points="11 10 14 12 11 14" fill="currentColor"/></svg>
+          </button>
+
+          <!-- 4. EUROPA: Tenant-Facing (SaaS & Ngoại giao Đối tác) -->
+          <button class="rail-icon-btn" data-continent="europa" data-tooltip="EUROPA // 3 Countries (Interface, Delivery, Tenant)" onclick="switchContinent('europa')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.5 9h17M3.5 15h17"/></svg>
+          </button>
+
+          <!-- Vạch ngắn phân tách — dịch chuyển xuống 1 khoảng thoáng đãng -->
+          <div class="rail-divider"></div>
+
+          <!-- Công cụ Tìm kiếm Toàn năng (thay thế Chợ Mơ theo lệnh của PO) -->
+          <button class="rail-icon-btn" data-tooltip="Tìm kiếm Liên Bang (/ hoặc Ctrl+K)" onclick="openSearch()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-4.35-4.35"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Đáy rail: Mỏ neo Avatar IL của PO -->
+      <div class="rail-bottom">
+        <div class="user-avatar" title="Tài khoản: Ilumyx (PO)">IL</div>
+      </div>
+    </nav>
+
+    <!-- Vùng sân khấu chính -->
+    <main class="stage">
+      
+      <!-- Top HUD Header -->
+      <header class="hud-header">
+        <div class="hud-title-group">
+          <h1>EURASIA</h1>
+          <p class="hud-sub">Lục địa Công xưởng Dữ liệu & Kiểm định Thông quan Liên Bang XRU</p>
+        </div>
+        
+        <div class="hud-stats">
+          <div class="stat-block">
+            <span class="stat-label">PO Pending</span>
+            <span class="stat-value alert">548</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">Active Lands</span>
+            <span class="stat-value ok">3 / 4</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">System State</span>
+            <span class="stat-value ok">ONLINE</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ==========================================
+           PHƯƠNG ÁN 1: TRẠM CHỈ HUY (SECTOR HUD GRID — Phím 1)
+           ========================================== -->
+      <section class="grid-view" id="view-grid">
+        
+        <!-- CARD 1: GATE (Cần PO nhất) -->
+        <article class="sector-card" style="border-top: 2px solid var(--accent);">
+          <div class="sector-top">
+            <div>
+              <div class="sector-badge">
+                <span class="status-dot"></span>
+                <h2 class="sector-name">Gate</h2>
+              </div>
+              <p class="sector-tagline">Kiểm định đầu vào & Duyệt thông quan</p>
+            </div>
+            <div class="sector-activity">
+              <span class="act-lbl">Last Active</span>
+              <div class="act-val">VỪA XONG</div>
+            </div>
+          </div>
+
+          <div class="sector-metrics">
+            <div class="metric-item">
+              <span class="m-lbl">Ảnh chờ duyệt</span>
+              <span class="m-val has-pending">548</span>
+            </div>
+            <div class="metric-item">
+              <span class="m-lbl">Video chờ</span>
+              <span class="m-val">12</span>
+            </div>
+            <div class="metric-item">
+              <span class="m-lbl">Cổng phục vụ</span>
+              <span class="m-val">:5058 / :5059</span>
+            </div>
+          </div>
+
+          <div class="sector-actions">
+            <a href="gate_image.html" class="action-btn primary" target="_blank">
+              Duyệt ảnh <span class="action-badge">548 chờ</span>
+            </a>
+            <a href="gate_video.html" class="action-btn" target="_blank">Duyệt video</a>
+            <a href="/p/loadout?land=Gate" class="action-btn">Loadout</a>
+          </div>
+        </article>
+
+        <!-- CARD 2: CRAWLER -->
+        <article class="sector-card">
+          <div class="sector-top">
+            <div>
+              <div class="sector-badge">
+                <span class="status-dot"></span>
+                <h2 class="sector-name">Crawler</h2>
+              </div>
+              <p class="sector-tagline">Vòi bạch tuộc thu thập nguyên liệu thô</p>
+            </div>
+            <div class="sector-activity">
+              <span class="act-lbl">Last Active</span>
+              <div class="act-val">1 NGÀY</div>
+            </div>
+          </div>
+
+          <div class="sector-metrics">
+            <div class="metric-item">
+              <span class="m-lbl">Nguồn đang bật</span>
+              <span class="m-val">18 / 24</span>
+            </div>
+            <div class="metric-item">
+              <span class="m-lbl">Nguồn báo động</span>
+              <span class="m-val has-pending">1</span>
+            </div>
+            <div class="metric-item">
+              <span class="m-lbl">Tổng tài sản</span>
+              <span class="m-val">142.5K</span>
+            </div>
+          </div>
+
+          <div class="sector-actions">
+            <a href="/p/crawler" class="action-btn">Bảng nguồn cào</a>
+            <a href="/p/loadout?land=Crawler" class="action-btn">Loadout</a>
+          </div>
+        </article>
+
+        <!-- CARD 3: FOUNDRY -->
+        <article class="sector-card">
+          <div class="sector-top">
+            <div>
+              <div class="sector-badge">
+                <span class="status-dot stale"></span>
+                <h2 class="sector-name">Foundry</h2>
+              </div>
+              <p class="sector-tagline">Tiền xử lý & Đóng gói Work Item</p>
+            </div>
+            <div class="sector-activity">
+              <span class="act-lbl">Last Active</span>
+              <div class="act-val stale">12 NGÀY</div>
+            </div>
+          </div>
+
+          <div class="sector-metrics">
+            <div class="metric-item">
+              <span class="m-lbl">Tình trạng kho</span>
+              <span class="m-val">CHỜ ĐỢT MỚI</span>
+            </div>
+            <div class="metric-item">
+              <span class="m-lbl">Sổ xuất hàng</span>
+              <span class="m-val" style="color:var(--fg-dim)">TẠM HOÃN</span>
+            </div>
+          </div>
+
+          <div class="sector-actions">
+            <a href="/p/loadout?land=Foundry" class="action-btn">Loadout</a>
+          </div>
+        </article>
+
+        <!-- CARD 4: DIVISION (Bầy AI gán nhãn) -->
+        <article class="sector-card">
+          <div class="sector-top">
+            <div>
+              <div class="sector-badge">
+                <span class="status-dot"></span>
+                <h2 class="sector-name">Division</h2>
+              </div>
+              <p class="sector-tagline">Bầy AI gán nhãn & Định danh thực thể</p>
+            </div>
+            <div class="sector-activity">
+              <span class="act-lbl">Last Active</span>
+              <div class="act-val">3 NGÀY</div>
+            </div>
+          </div>
+
+          <div class="sector-metrics">
+            <div class="metric-item">
+              <span class="m-lbl">Màn Video</span>
+              <span class="m-val">SẴN SÀNG</span>
+            </div>
+            <div class="metric-item">
+              <span class="m-lbl">Cổng phục vụ</span>
+              <span class="m-val">:5057</span>
+            </div>
+          </div>
+
+          <div class="sector-actions">
+            <a href="http://127.0.0.1:5057" class="action-btn" target="_blank">Trực chiến Gán nhãn (:5057)</a>
+            <a href="/p/loadout?land=Division" class="action-btn">Loadout</a>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- ==========================================
+           PHƯƠNG ÁN 2: BẢNG HÀNH TRÌNH (MINIMAL ITINERARY — Mặc định)
+           ========================================== -->
+      <section class="list-view" id="view-list">
+        <div class="itin-header">
+          <span>Mã</span>
+          <span>Phân Khu (Land)</span>
+          <span>Module Khả Dụng</span>
+          <span>Hoạt Động Cuối</span>
+          <span>Trạng Thái</span>
+        </div>
+
+        <!-- ROW 1: Gate -->
+        <div class="itin-row" onclick="if(!event.target.closest('a')) window.location.href='gate_image.html'" style="cursor:pointer;">
+          <span class="itin-code">SEC-01</span>
+          <div class="itin-name">
+            <span class="status-dot"></span>
+            <a href="gate_image.html" style="color:inherit; text-decoration:none;" title="Vào bàn làm việc Gate"><b>Gate</b> ↗</a>
+          </div>
+          <div class="itin-mods">
+            <a href="gate_image.html" class="itin-mod-pill alert" target="_blank">Duyệt ảnh (548 chờ)</a>
+            <a href="gate_video.html" class="itin-mod-pill" target="_blank">Duyệt video</a>
+            <a href="/p/loadout?land=Gate" class="itin-mod-pill">Loadout</a>
+          </div>
+          <div class="itin-ago">Vừa xong</div>
+          <div class="itin-status live">● SẴN SÀNG</div>
+        </div>
+
+        <!-- ROW 2: Crawler -->
+        <div class="itin-row">
+          <span class="itin-code">SEC-02</span>
+          <div class="itin-name">
+            <span class="status-dot"></span>
+            <b>Crawler</b>
+          </div>
+          <div class="itin-mods">
+            <a href="/p/crawler" class="itin-mod-pill">Bảng nguồn (18 bật / 1 báo động)</a>
+            <a href="/p/loadout?land=Crawler" class="itin-mod-pill">Loadout</a>
+          </div>
+          <div class="itin-ago">1 ngày trước</div>
+          <div class="itin-status live">● HOẠT ĐỘNG</div>
+        </div>
+
+        <!-- ROW 3: Foundry -->
+        <div class="itin-row">
+          <span class="itin-code">SEC-03</span>
+          <div class="itin-name">
+            <span class="status-dot stale"></span>
+            <b>Foundry</b>
+          </div>
+          <div class="itin-mods">
+            <span class="itin-mod-pill">Tiền xử lý & Đóng gói Work Item</span>
+            <a href="/p/loadout?land=Foundry" class="itin-mod-pill">Loadout</a>
+          </div>
+          <div class="itin-ago stale">12 ngày trước</div>
+          <div class="itin-status stale">▲ CHỜ ĐỢT MỚI</div>
+        </div>
+
+        <!-- ROW 4: Division -->
+        <div class="itin-row">
+          <span class="itin-code">SEC-04</span>
+          <div class="itin-name">
+            <span class="status-dot"></span>
+            <b>Division</b>
+          </div>
+          <div class="itin-mods">
+            <a href="http://127.0.0.1:5057" class="itin-mod-pill" target="_blank">Trực chiến Gán nhãn (:5057)</a>
+            <a href="/p/loadout?land=Division" class="itin-mod-pill">Loadout</a>
+          </div>
+          <div class="itin-ago">3 ngày trước</div>
+          <div class="itin-status live">● SẴN SÀNG</div>
+        </div>
+      </section>
+
+      <!-- Footer HUD -->
+      <footer class="hud-footer">
+        <div class="key-hints">
+          <span><span class="key">1</span> Cards</span>
+          <span><span class="key">2</span> List</span>
+          <span><span class="key">/</span> Tìm kiếm</span>
+          <span><span class="key">G</span> Gate</span>
+          <span><span class="key">C</span> Crawler</span>
+        </div>
+        <div>XRU FEDERAL SYSTEM // 2026</div>
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- ==========================================
+       GOOGLE-STYLE SEARCH OVERLAY MODAL
+       ========================================== -->
+  <div class="search-overlay" id="search-overlay" onclick="if(event.target === this) closeSearch()">
+    <div class="search-modal">
+      <!-- Thanh nhập Google-style -->
+      <div class="search-input-wrap">
+        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="7" stroke-width="2"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input 
+          type="text" 
+          id="search-input" 
+          class="search-input" 
+          placeholder="Blind test Array: tank + 3bm42 · Russia tank 125mm · tank !Russia"
+          spellcheck="false"
+          onkeydown="if(event.key === 'Enter') goArray(this.value)"
+        />
+        <kbd class="search-kbd" onclick="closeSearch()" style="cursor:pointer">ESC</kbd>
+      </div>
+
+      <!-- Câu mẫu đã chụp thật từ Array — Enter để mở trang kết quả -->
+      <div class="search-body">
+        <span class="search-label">Câu đã chụp từ Array · Enter để tra</span>
+        <div class="search-chips">
+          <button class="search-chip" onclick="goArray('Russia tank 125mm')">Russia tank 125mm</button>
+          <button class="search-chip" onclick="goArray('tank + 3bm42')">tank + 3bm42</button>
+          <button class="search-chip" onclick="goArray('Leopard 2')">Leopard 2</button>
+          <button class="search-chip" onclick="goArray('tank !Russia')">tank !Russia</button>
+          <button class="search-chip" onclick="goArray('World War II battle')">World War II battle</button>
+          <button class="search-chip" onclick="goArray('Eastern Front battle')">Eastern Front battle</button>
+          <button class="search-chip" onclick="goArray('BTR wheel 30mm')">BTR wheel 30mm</button>
+          <button class="search-chip" onclick="goArray('tank Japan 125mm')">tank Japan 125mm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modular Scripts -->
+  <script src="js/search.js?v=3"></script>
+  <script src="js/launcher.js?v=3"></script>
+</body>
+</html>

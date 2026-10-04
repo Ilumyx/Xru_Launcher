@@ -1,0 +1,119 @@
+/* ==========================================================================
+   XRU SWISS DESIGN TOKENS
+   Đơn sắc 16 bậc, phẳng, vạch hairline siêu mỏng, luminescence
+   ========================================================================== */
+:root {
+  /* Cỡ toàn bộ giao diện: 1 = 100%, 1.15 = 115%. Đổi số này là to/nhỏ cả trang */
+  --ui-zoom: 1.15;
+
+  /* Bảng đơn sắc 16 bậc (Monochrome scale) */
+  --m-0:  #060605;
+  --m-1:  #0a0a09;
+  --m-2:  #10100f;
+  --m-3:  #161615;
+  --m-4:  #1d1d1c;
+  --m-5:  #242423;
+  --m-6:  #2d2d2b;
+  --m-7:  #383836;
+  --m-8:  #484845;
+  --m-9:  #5e5e5b;
+  --m-10: #767673;
+  --m-11: #92928f;
+  --m-12: #aeaea9;
+  --m-13: #cbcbc5;
+  --m-14: #e7e7e2;
+  --m-15: #fbfbf7;
+
+  /* Surfaces & Canvas */
+  --bg:          var(--m-1);
+  --panel:       var(--m-3);
+  --panel-hover: var(--m-4);
+  --surface:     var(--m-2);
+  
+  /* Hairline Borders (Không viền hộp dày) */
+  --hairline:    rgba(255, 255, 255, 0.07);
+  --hairline-hi: rgba(255, 255, 255, 0.16);
+
+  /* Typography Colors */
+  --fg-strong:   var(--m-15);
+  --fg:          var(--m-13);
+  --fg-dim:      var(--m-10);
+  --fg-faint:    var(--m-8);
+  
+  /* Semantic Colors (Chỉ dùng mang nghĩa trạng thái) */
+  --accent:      #f0502e; /* Cảnh báo / Tồn đọng (Pending) */
+  --active-cyan: #00d2b4; /* Sẵn sàng / Đang chạy (Live/Active) */
+  --active-cyan-soft: rgba(0, 210, 180, 0.2);  /* nền nhạt của màu nhấn */
+  --active-cyan-line: rgba(0, 210, 180, 0.35); /* viền nhạt của màu nhấn */
+  --stale-amber: #e5a83b; /* Cũ / Quá hạn / Chờ lệnh */
+  --idle-gray:   var(--m-7);
+  --accept:      var(--active-cyan);
+  --line:        var(--hairline);
+
+  /* Khoảng cách & cỡ chữ (launcher.css dùng) */
+  --space-1: 4px;
+  --space-3: 12px;
+  --space-4: 20px;
+  --space-8: 40px;
+  --fs-title: 22px;
+  --fs-small: 13px;
+  --fs-label: 11px;
+  --fs-num:   24px;
+
+  /* Font Stacks */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+
+html { zoom: var(--ui-zoom); }
+
+/* Global Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: calc(100vh / var(--ui-zoom));
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Shell Layout: Rail 64px + Stage linh hoạt */
+.shell {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Chấm trạng thái chung (Status Dots) */
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--active-cyan);
+  display: inline-block;
+  flex-shrink: 0;
+}
+.status-dot.stale {
+  background: var(--stale-amber);
+}
+.status-dot.idle {
+  background: var(--idle-gray);
+}
+
+/* Chuyển trang (Launcher ↔ Gate, Image ↔ Video): giữ trang cũ trên màn tới khi trang mới vẽ xong
+   rồi đổi một phát — không chớp trắng, không hiệu ứng mờ dần. Chỉ Chrome/Edge mới hỗ trợ; trình duyệt khác bỏ qua. */
+@view-transition { navigation: auto; }
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; }

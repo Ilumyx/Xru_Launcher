@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XRU Gate — Video</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/rail.css">
+  <link rel="stylesheet" href="css/gate.css">
+  <link rel="stylesheet" href="css/account.css">
+  <script src="js/account.js"></script>
+</head>
+<body data-total="2446">
+  <div class="shell">
+    <nav class="rail" aria-label="Điều hướng Gate">
+      <div class="rail-top">
+        <a href="launcher_mockup.html" class="rail-logo" data-tooltip="Về Launcher (ESC)" style="text-decoration:none;">
+          <svg viewBox="140 60 520 520" fill="currentColor">
+            <mask id="xru-emblem-mask">
+              <rect x="100" y="0" width="600" height="600" fill="#fff"/>
+              <rect x="140" y="305" width="80" height="30" fill="#000"/>
+              <rect x="580" y="305" width="80" height="30" fill="#000"/>
+            </mask>
+            <circle cx="400" cy="320" r="220" fill="none" stroke="currentColor" stroke-width="40" mask="url(#xru-emblem-mask)"/>
+            <rect x="290" y="240" width="40" height="150" fill="currentColor"/>
+            <rect x="470" y="240" width="40" height="150" fill="currentColor"/>
+            <rect x="290" y="420" width="220" height="30" fill="currentColor"/>
+            <rect x="382" y="145" width="36" height="80" fill="currentColor"/>
+            <circle cx="400" cy="320" r="35" fill="currentColor"/>
+          </svg>
+        </a>
+        <div class="rail-nav">
+          <button class="rail-icon-btn" data-tooltip="Đóng / mở danh sách" onclick="toggleGatePanel()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" stroke-width="1.8"/><line x1="9" y1="4" x2="9" y2="20" stroke-width="1.8"/></svg>
+          </button>
+          <div class="rail-divider" style="margin:2px 0;"></div>
+          <a href="gate_image.html" class="rail-icon-btn" data-tooltip="Gate Image">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><polyline points="21 15 16 10 5 21" stroke-width="1.8"/></svg>
+          </a>
+          <a href="gate_video.html" class="rail-icon-btn is-active" data-tooltip="Gate Video">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7" stroke-width="1.8"/><rect x="1" y="5" width="15" height="14" rx="2" stroke-width="1.8"/></svg>
+          </a>
+          <a href="gate_video_watch.html" class="rail-icon-btn" data-tooltip="Gate Video — Xem to (thử)">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" stroke-width="1.8"/><polygon points="10 7 15 10 10 13" fill="currentColor" stroke="none"/><line x1="8" y1="21" x2="16" y2="21" stroke-width="1.8"/><line x1="12" y1="17" x2="12" y2="21" stroke-width="1.8"/></svg>
+          </a>
+          <a href="gate_dash.html" class="rail-icon-btn" data-tooltip="Gate Dash">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10" stroke-width="1.8"/><line x1="12" y1="20" x2="12" y2="4" stroke-width="1.8"/><line x1="6" y1="20" x2="6" y2="14" stroke-width="1.8"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="rail-bottom"><div class="user-avatar" title="Ilumyx (PO)">IL</div></div>
+    </nav>
+
+    <div class="ws">
+
+      <!-- CỘT TRÁI: Hàng đợi duyệt (nút đóng/mở trên rail) -->
+      <aside class="ws-list">
+        <div class="ws-list-head">
+          <div class="ws-count"><b>2446</b><span>WAITING_PO</span></div>
+          <div class="ws-chips"><button class="is-active">ALL</button><button>DVIDS</button><button>FB</button><button>REDDIT</button></div>
+          <div class="ws-field">
+            <label>Nguồn</label>
+            <select><option>Mọi nguồn (2446)</option><option>U.S. Central Command</option><option>Jamie Wearmouth</option><option>MIKN</option></select>
+          </div>
+          <div class="ws-field" style="margin-bottom:0;">
+            <label>Sắp xếp</label>
+            <select><option>Cũ nhất trước</option><option>Mới nhất trước</option><option>Dài nhất trước</option></select>
+          </div>
+        </div>
+        <div class="ws-items">
+          <div class="ws-item is-active" data-pick="001" onclick="pickItem(this)">
+            <span class="n">01</span>
+            <div><div class="t">facebook / U.S. Central Command</div><div class="r"><span>1280×720</span><span>0:56</span></div><div class="x">01a0e65c-350d-1c84-93ff-a4862a700900</div></div>
+          </div>
+          <div class="ws-item" data-pick="002" onclick="pickItem(this)">
+            <span class="n">02</span>
+            <div><div class="t">facebook / Jamie Wearmouth</div><div class="r"><span>1080×1920</span><span>0:22</span></div><div class="x">01a0e65c-350d-1c8b-93ff-a4862a700901</div></div>
+          </div>
+          <div class="ws-item" data-pick="003" onclick="pickItem(this)">
+            <span class="n">03</span>
+            <div><div class="t">dvids / 1st Cavalry Division</div><div class="r"><span>1920×1080</span><span>0:48</span></div><div class="x">01a0e65c-350d-1c92-93ff-a4862a700902</div></div>
+          </div>
+          <div class="ws-item" data-pick="004" onclick="pickItem(this)">
+            <span class="n">04</span>
+            <div><div class="t">reddit / r/CombatFootage</div><div class="r"><span>720×1280</span><span>0:15</span></div><div class="x">01a0e65c-350d-1c99-93ff-a4862a700903</div></div>
+          </div>
+          <div class="ws-item" data-pick="005" onclick="pickItem(this)">
+            <span class="n">05</span>
+            <div><div class="t">facebook / MIKN</div><div class="r"><span>1920×1080</span><span>0:34</span></div><div class="x">01a0e65c-350d-1ca0-93ff-a4862a700904</div></div>
+          </div>
+          <div class="ws-item" data-pick="006" onclick="pickItem(this)">
+            <span class="n">06</span>
+            <div><div class="t">facebook / U.S. Central Command</div><div class="r"><span>1280×720</span><span>0:26</span></div><div class="x">01a0e65c-350d-1ca7-93ff-a4862a700905</div></div>
+          </div>
+          <div class="ws-item" data-pick="007" onclick="pickItem(this)">
+            <span class="n">07</span>
+            <div><div class="t">facebook / Jamie Wearmouth</div><div class="r"><span>1080×1920</span><span>1:12</span></div><div class="x">01a0e65c-350d-1cae-93ff-a4862a700906</div></div>
+          </div>
+          <div class="ws-item" data-pick="008" onclick="pickItem(this)">
+            <span class="n">08</span>
+            <div><div class="t">dvids / 1st Cavalry Division</div><div class="r"><span>1920×1080</span><span>0:11</span></div><div class="x">01a0e65c-350d-1cb5-93ff-a4862a700907</div></div>
+          </div>
+          <div class="ws-item" data-pick="009" onclick="pickItem(this)">
+            <span class="n">09</span>
+            <div><div class="t">reddit / r/CombatFootage</div><div class="r"><span>720×1280</span><span>0:41</span></div><div class="x">01a0e65c-350d-1cbc-93ff-a4862a700908</div></div>
+          </div>
+          <div class="ws-item" data-pick="010" onclick="pickItem(this)">
+            <span class="n">10</span>
+            <div><div class="t">facebook / MIKN</div><div class="r"><span>1920×1080</span><span>0:19</span></div><div class="x">01a0e65c-350d-1cc3-93ff-a4862a700909</div></div>
+          </div>
+          <div class="ws-item" data-pick="011" onclick="pickItem(this)">
+            <span class="n">11</span>
+            <div><div class="t">facebook / U.S. Central Command</div><div class="r"><span>1280×720</span><span>0:30</span></div><div class="x">01a0e65c-350d-1cca-93ff-a4862a700910</div></div>
+          </div>
+          <div class="ws-item" data-pick="012" onclick="pickItem(this)">
+            <span class="n">12</span>
+            <div><div class="t">facebook / Jamie Wearmouth</div><div class="r"><span>1080×1920</span><span>0:52</span></div><div class="x">01a0e65c-350d-1cd1-93ff-a4862a700911</div></div>
+          </div>
+          <div class="ws-item" data-pick="013" onclick="pickItem(this)">
+            <span class="n">13</span>
+            <div><div class="t">dvids / 1st Cavalry Division</div><div class="r"><span>1920×1080</span><span>0:09</span></div><div class="x">01a0e65c-350d-1cd8-93ff-a4862a700912</div></div>
+          </div>
+          <div class="ws-item" data-pick="014" onclick="pickItem(this)">
+            <span class="n">14</span>
+            <div><div class="t">reddit / r/CombatFootage</div><div class="r"><span>720×1280</span><span>0:37</span></div><div class="x">01a0e65c-350d-1cdf-93ff-a4862a700913</div></div>
+          </div>
+          <div class="ws-item" data-pick="015" onclick="pickItem(this)">
+            <span class="n">15</span>
+            <div><div class="t">facebook / MIKN</div><div class="r"><span>1920×1080</span><span>0:25</span></div><div class="x">01a0e65c-350d-1ce6-93ff-a4862a700914</div></div>
+          </div>
+        </div>
+        <div class="ws-pager"><span>← Trước</span><b>1–100 / 2446</b><span>Sau →</span></div>
+      </aside>
+
+      <!-- CỘT GIỮA: Tiêu đề + lane + gallery clip -->
+      <main class="ws-main">
+        <header class="ws-head">
+          <div class="ws-title"><a href="launcher_mockup.html">EURASIA</a><span>/</span><a href="launcher_mockup.html">GATE</a><span>/</span><h1>VIDEO</h1></div>
+          <div class="gate-tabs">
+            <button class="gate-tab-btn is-active"><span>WAIT</span><span class="count alert">2446</span></button>
+            <button class="gate-tab-btn"><span>MACHINE FLAG</span><span class="count warn">0</span></button>
+            <button class="gate-tab-btn"><span>DETAIN</span><span class="count">2226</span></button>
+            <button class="gate-tab-btn"><span>ACCEPT</span><span class="count">954</span></button>
+            <button class="gate-tab-btn"><span>PURGE</span><span class="count">0</span></button>
+          </div>
+        </header>
+
+        <div class="gallery is-video">
+          <div class="g-tile is-active" data-pick="001" data-ph="1" data-label="UTV" data-title="Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil" data-cap="Đoàn xe địa hình UTV hành quân trên đường rừng trong buổi huấn luyện." data-src="facebook / U.S. Central Command" data-res="1280×720 (16:9)" data-dur="0:56" data-xid="01a0e65c-350d-1c84-93ff-a4862a700900" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-1" data-label="UTV"></div><span class="g-num">001</span><span class="g-ratio">16:9</span><span class="g-play"></span><span class="g-dur">0:56</span></div>
+            <div class="g-cap">Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil</div>
+            <div class="g-meta">facebook / U.S. Central Command</div>
+          </div>
+          <div class="g-tile" data-pick="002" data-ph="2" data-label="ATGM" data-title="Kornet ATGM mounted on armored personnel carrier" data-cap="Tên lửa chống tăng Kornet lắp trên xe bọc thép chở quân, quay dọc 9:16." data-src="facebook / Jamie Wearmouth" data-res="1080×1920 (9:16)" data-dur="0:22" data-xid="01a0e65c-350d-1c8b-93ff-a4862a700901" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-2" data-label="ATGM"></div><span class="g-num">002</span><span class="g-ratio">9:16</span><span class="g-play"></span><span class="g-dur">0:22</span></div>
+            <div class="g-cap">Kornet ATGM mounted on armored personnel carrier</div>
+            <div class="g-meta">facebook / Jamie Wearmouth</div><span class="g-cluster">CỤM 091</span>
+          </div>
+          <div class="g-tile" data-pick="003" data-ph="3" data-label="HCTP" data-title="M1A2 Abrams live-fire gunnery qualification" data-cap="Xe tăng M1A2 bắn đạn thật trong bài kiểm tra xạ kích cấp tổ lái." data-src="dvids / 1st Cavalry Division" data-res="1920×1080 (16:9)" data-dur="0:48" data-xid="01a0e65c-350d-1c92-93ff-a4862a700902" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-3" data-label="HCTP"></div><span class="g-num">003</span><span class="g-ratio">16:9</span><span class="g-play"></span><span class="g-dur">0:48</span></div>
+            <div class="g-cap">M1A2 Abrams live-fire gunnery qualification</div>
+            <div class="g-meta">dvids / 1st Cavalry Division</div>
+          </div>
+          <div class="g-tile" data-pick="004" data-ph="4" data-label="UAV" data-title="FPV drone strike on BMP column" data-cap="Drone FPV tấn công đoàn BMP. Có 3 góc quay khác của cùng pha này." data-src="reddit / r/CombatFootage" data-res="720×1280 (9:16)" data-dur="0:15" data-xid="01a0e65c-350d-1c99-93ff-a4862a700903" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-4" data-label="UAV"></div><span class="g-num">004</span><span class="g-ratio">9:16</span><span class="g-play"></span><span class="g-dur">0:15</span></div>
+            <div class="g-cap">FPV drone strike on BMP column</div>
+            <div class="g-meta">reddit / r/CombatFootage</div><span class="g-cluster">CỤM 084</span>
+          </div>
+          <div class="g-tile" data-pick="005" data-ph="5" data-label="HCTP" data-title="T-90M Proryv firing from closed position" data-cap="T-90M khai hỏa từ vị trí che khuất, quay ngang 16:9." data-src="facebook / MIKN" data-res="1920×1080 (16:9)" data-dur="0:34" data-xid="01a0e65c-350d-1ca0-93ff-a4862a700904" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-5" data-label="HCTP"></div><span class="g-num">005</span><span class="g-ratio">16:9</span><span class="g-play"></span><span class="g-dur">0:34</span></div>
+            <div class="g-cap">T-90M Proryv firing from closed position</div>
+            <div class="g-meta">facebook / MIKN</div>
+          </div>
+          <div class="g-tile" data-pick="006" data-ph="6" data-label="UTV" data-title="Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil" data-cap="Đoàn xe địa hình UTV hành quân trên đường rừng trong buổi huấn luyện." data-src="facebook / U.S. Central Command" data-res="1280×720 (16:9)" data-dur="0:26" data-xid="01a0e65c-350d-1ca7-93ff-a4862a700905" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-6" data-label="UTV"></div><span class="g-num">006</span><span class="g-ratio">16:9</span><span class="g-play"></span><span class="g-dur">0:26</span></div>
+            <div class="g-cap">Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil</div>
+            <div class="g-meta">facebook / U.S. Central Command</div>
+          </div>
+          <div class="g-tile" data-pick="007" data-ph="1" data-label="ATGM" data-title="Kornet ATGM mounted on armored personnel carrier" data-cap="Tên lửa chống tăng Kornet lắp trên xe bọc thép chở quân, quay dọc 9:16." data-src="facebook / Jamie Wearmouth" data-res="1080×1920 (9:16)" data-dur="1:12" data-xid="01a0e65c-350d-1cae-93ff-a4862a700906" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-1" data-label="ATGM"></div><span class="g-num">007</span><span class="g-ratio">9:16</span><span class="g-play"></span><span class="g-dur">1:12</span></div>
+            <div class="g-cap">Kornet ATGM mounted on armored personnel carrier</div>
+            <div class="g-meta">facebook / Jamie Wearmouth</div><span class="g-cluster">CỤM 091</span>
+          </div>
+          <div class="g-tile" data-pick="008" data-ph="2" data-label="HCTP" data-title="M1A2 Abrams live-fire gunnery qualification" data-cap="Xe tăng M1A2 bắn đạn thật trong bài kiểm tra xạ kích cấp tổ lái." data-src="dvids / 1st Cavalry Division" data-res="1920×1080 (16:9)" data-dur="0:11" data-xid="01a0e65c-350d-1cb5-93ff-a4862a700907" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-2" data-label="HCTP"></div><span class="g-num">008</span><span class="g-ratio">16:9</span><span class="g-play"></span><span class="g-dur">0:11</span></div>
+            <div class="g-cap">M1A2 Abrams live-fire gunnery qualification</div>
+            <div class="g-meta">dvids / 1st Cavalry Division</div>
+          </div>
+          <div class="g-tile" data-pick="009" data-ph="3" data-label="UAV" data-title="FPV drone strike on BMP column" data-cap="Drone FPV tấn công đoàn BMP. Có 3 góc quay khác của cùng pha này." data-src="reddit / r/CombatFootage" data-res="720×1280 (9:16)" data-dur="0:41" data-xid="01a0e65c-350d-1cbc-93ff-a4862a700908" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-3" data-label="UAV"></div><span class="g-num">009</span><span class="g-ratio">9:16</span><span class="g-play"></span><span class="g-dur">0:41</span></div>
+            <div class="g-cap">FPV drone strike on BMP column</div>
+            <div class="g-meta">reddit / r/CombatFootage</div><span class="g-cluster">CỤM 084</span>
+          </div>
+          <div class="g-tile" data-pick="010" data-ph="4" data-label="HCTP" data-title="T-90M Proryv firing from closed position" data-cap="T-90M khai hỏa từ vị trí che khuất, quay ngang 16:9." data-src="facebook / MIKN" data-res="1920×1080 (16:9)" data-dur="0:19" data-xid="01a0e65c-350d-1cc3-93ff-a4862a700909" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-4" data-label="HCTP"></div><span class="g-num">010</span><span class="g-ratio">16:9</span><span class="g-play"></span><span class="g-dur">0:19</span></div>
+            <div class="g-cap">T-90M Proryv firing from closed position</div>
+            <div class="g-meta">facebook / MIKN</div>
+          </div>
+          <div class="g-tile" data-pick="011" data-ph="5" data-label="UTV" data-title="Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil" data-cap="Đoàn xe địa hình UTV hành quân trên đường rừng trong buổi huấn luyện." data-src="facebook / U.S. Central Command" data-res="1280×720 (16:9)" data-dur="0:30" data-xid="01a0e65c-350d-1cca-93ff-a4862a700910" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-5" data-label="UTV"></div><span class="g-num">011</span><span class="g-ratio">16:9</span><span class="g-play"></span><span class="g-dur">0:30</span></div>
+            <div class="g-cap">Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil</div>
+            <div class="g-meta">facebook / U.S. Central Command</div>
+          </div>
+          <div class="g-tile" data-pick="012" data-ph="6" data-label="ATGM" data-title="Kornet ATGM mounted on armored personnel carrier" data-cap="Tên lửa chống tăng Kornet lắp trên xe bọc thép chở quân, quay dọc 9:16." data-src="facebook / Jamie Wearmouth" data-res="1080×1920 (9:16)" data-dur="0:52" data-xid="01a0e65c-350d-1cd1-93ff-a4862a700911" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-6" data-label="ATGM"></div><span class="g-num">012</span><span class="g-ratio">9:16</span><span class="g-play"></span><span class="g-dur">0:52</span></div>
+            <div class="g-cap">Kornet ATGM mounted on armored personnel carrier</div>
+            <div class="g-meta">facebook / Jamie Wearmouth</div>
+          </div>
+          <div class="g-tile" data-pick="013" data-ph="1" data-label="HCTP" data-title="M1A2 Abrams live-fire gunnery qualification" data-cap="Xe tăng M1A2 bắn đạn thật trong bài kiểm tra xạ kích cấp tổ lái." data-src="dvids / 1st Cavalry Division" data-res="1920×1080 (16:9)" data-dur="0:09" data-xid="01a0e65c-350d-1cd8-93ff-a4862a700912" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-1" data-label="HCTP"></div><span class="g-num">013</span><span class="g-ratio">16:9</span><span class="g-play"></span><span class="g-dur">0:09</span></div>
+            <div class="g-cap">M1A2 Abrams live-fire gunnery qualification</div>
+            <div class="g-meta">dvids / 1st Cavalry Division</div>
+          </div>
+          <div class="g-tile" data-pick="014" data-ph="2" data-label="UAV" data-title="FPV drone strike on BMP column" data-cap="Drone FPV tấn công đoàn BMP. Có 3 góc quay khác của cùng pha này." data-src="reddit / r/CombatFootage" data-res="720×1280 (9:16)" data-dur="0:37" data-xid="01a0e65c-350d-1cdf-93ff-a4862a700913" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-2" data-label="UAV"></div><span class="g-num">014</span><span class="g-ratio">9:16</span><span class="g-play"></span><span class="g-dur">0:37</span></div>
+            <div class="g-cap">FPV drone strike on BMP column</div>
+            <div class="g-meta">reddit / r/CombatFootage</div><span class="g-cluster">CỤM 084</span>
+          </div>
+          <div class="g-tile" data-pick="015" data-ph="3" data-label="HCTP" data-title="T-90M Proryv firing from closed position" data-cap="T-90M khai hỏa từ vị trí che khuất, quay ngang 16:9." data-src="facebook / MIKN" data-res="1920×1080 (16:9)" data-dur="0:25" data-xid="01a0e65c-350d-1ce6-93ff-a4862a700914" onclick="pickItem(this)">
+            <div class="g-thumb"><div class="ph ph-3" data-label="HCTP"></div><span class="g-num">015</span><span class="g-ratio">16:9</span><span class="g-play"></span><span class="g-dur">0:25</span></div>
+            <div class="g-cap">T-90M Proryv firing from closed position</div>
+            <div class="g-meta">facebook / MIKN</div>
+          </div>
+        </div>
+
+        <footer class="hud-footer">
+          <div class="key-hints">
+            <span><span class="key">1</span> Image</span>
+            <span><span class="key">2</span> Video</span>
+            <span><span class="key">3</span> Dash</span>
+            <span><span class="key">ESC</span> Về Launcher</span>
+          </div>
+          <div>XRU GATE // 2026</div>
+        </footer>
+      </main>
+
+      <!-- CỘT PHẢI: Xem clip đang chọn + thông tin kỹ thuật -->
+      <aside class="ws-insp">
+        <div class="insp-top"><span class="insp-tag">WAITING_PO</span><span class="insp-num" id="insp-num">001 / 2446</span></div>
+        <div class="insp-img is-video"><div id="insp-img" class="ph ph-1" data-label="UTV"></div><span class="g-play"></span></div>
+        <div class="insp-bar"><span>0:00</span><span class="track"></span><span id="insp-dur">0:56</span></div>
+        <div class="insp-title" id="insp-title">Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil</div>
+        <div>
+          <div class="insp-label">Mô tả</div>
+          <p class="insp-cap" id="insp-cap">Đoàn xe địa hình UTV hành quân trên đường rừng trong buổi huấn luyện.</p>
+        </div>
+        <div>
+          <div class="insp-label">Technical manifest</div>
+          <dl class="insp-meta">
+            <dt>XRU ID</dt><dd id="insp-xid" style="color:var(--active-cyan);">01a0e65c-350d-1c84-93ff-a4862a700900</dd>
+            <dt>Nguồn</dt><dd id="insp-src">facebook / U.S. Central Command</dd>
+            <dt>Khổ</dt><dd id="insp-res">1280×720 (16:9)</dd>
+            <dt>Lane</dt><dd>WAITING_PO</dd>
+          </dl>
+        </div>
+        <div class="insp-bottom">
+          <div class="insp-chips">
+            <button onclick="toggleChip(this)">NOISE<kbd>1</kbd></button>
+            <button onclick="toggleChip(this)">WMARK<kbd>2</kbd></button>
+            <button onclick="toggleChip(this)">EVENT<kbd>3</kbd></button>
+            <button onclick="toggleChip(this)">CAUTION<kbd>4</kbd></button>
+          </div>
+          <textarea class="insp-note" placeholder="Ghi chú (tùy chọn)..."></textarea>
+          <div class="insp-acts">
+            <button class="card-act-btn approve">Accept<kbd>A</kbd></button>
+            <button class="card-act-btn detain">Detain<kbd>D</kbd></button>
+            <button class="card-act-btn skip">Skip<kbd>S</kbd></button>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+  <script src="js/gate.js"></script>
+</body>
+</html>
