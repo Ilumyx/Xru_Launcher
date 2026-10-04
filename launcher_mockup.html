@@ -13,7 +13,6 @@
   <!-- Modular CSS -->
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/rail.css">
-  <link rel="stylesheet" href="css/search.css">
   <link rel="stylesheet" href="css/launcher.css">
   <link rel="stylesheet" href="css/account.css">
   <script src="js/account.js"></script>
@@ -45,9 +44,9 @@
 
         <div class="rail-nav">
           <!-- Tìm kiếm (Array) ngay dưới logo — cùng chỗ với nút đóng/mở bên Gate -->
-          <button class="rail-icon-btn" data-tooltip="Tìm kiếm Liên Bang (/ hoặc Ctrl+K)" onclick="openSearch()">
+          <a href="array_search.html" class="rail-icon-btn" data-tooltip="Array (/ hoặc Ctrl+K)" style="text-decoration:none;">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-4.35-4.35"/></svg>
-          </button>
+          </a>
           <div class="rail-divider" style="margin:2px 0;"></div>
 
           <!-- 1. EURAMERIKA: AI Infrastructure & Model Industry -->
@@ -342,47 +341,8 @@
     </main>
   </div>
 
-  <!-- ==========================================
-       GOOGLE-STYLE SEARCH OVERLAY MODAL
-       ========================================== -->
-  <div class="search-overlay" id="search-overlay" onclick="if(event.target === this) closeSearch()">
-    <div class="search-modal">
-      <!-- Thanh nhập Google-style -->
-      <div class="search-input-wrap">
-        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="7" stroke-width="2"/>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35"/>
-        </svg>
-        <input 
-          type="text" 
-          id="search-input" 
-          class="search-input" 
-          placeholder="Blind test Array: tank + 3bm42 · Russia tank 125mm · tank !Russia"
-          spellcheck="false"
-          onkeydown="if(event.key === 'Enter') goArray(this.value)"
-        />
-        <kbd class="search-kbd" onclick="closeSearch()" style="cursor:pointer">ESC</kbd>
-      </div>
-
-      <!-- Câu mẫu đã chụp thật từ Array — Enter để mở trang kết quả -->
-      <div class="search-body">
-        <span class="search-label">Câu đã chụp từ Array · Enter để tra</span>
-        <div class="search-chips">
-          <button class="search-chip" onclick="goArray('Russia tank 125mm')">Russia tank 125mm</button>
-          <button class="search-chip" onclick="goArray('tank + 3bm42')">tank + 3bm42</button>
-          <button class="search-chip" onclick="goArray('Leopard 2')">Leopard 2</button>
-          <button class="search-chip" onclick="goArray('tank !Russia')">tank !Russia</button>
-          <button class="search-chip" onclick="goArray('World War II battle')">World War II battle</button>
-          <button class="search-chip" onclick="goArray('Eastern Front battle')">Eastern Front battle</button>
-          <button class="search-chip" onclick="goArray('BTR wheel 30mm')">BTR wheel 30mm</button>
-          <button class="search-chip" onclick="goArray('tank Japan 125mm')">tank Japan 125mm</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Modular Scripts -->
-  <script src="js/search.js?v=3"></script>
+  <script src="js/search.js?v=4"></script>
   <script src="js/launcher.js?v=3"></script>
 </body>
 </html>

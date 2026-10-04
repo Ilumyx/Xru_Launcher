@@ -387,4 +387,5 @@ document.querySelectorAll('#ax-tabs .is-soon').forEach((b) => (b.title = 'Chưa 
 {
   const p = new URLSearchParams(location.search);
   apply(p.get('q') || '', TABS.includes(p.get('tab')) ? p.get('tab') : 'all', false);
+  if (!p.get('q')) input.focus();
 }
