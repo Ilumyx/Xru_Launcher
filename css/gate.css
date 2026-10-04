@@ -81,28 +81,28 @@ a.rail-icon-btn { text-decoration: none; }
   gap: 8px;
   padding: 6px 14px;
   background: transparent;
-  border: 1px solid var(--hairline);
-  border-radius: 4px;
+  border: none;
+  border-radius: 0;
   color: var(--fg-dim);
   font-family: var(--font-mono);
   font-size: 12px;
+  letter-spacing: 0.04em;
   cursor: pointer;
 }
 .gate-tab-btn:hover { background: var(--m-3); color: var(--fg); }
 .gate-tab-btn.is-active {
-  background: var(--m-4);
+  background: var(--m-5);
   color: var(--fg-strong);
-  border-color: var(--hairline-hi);
-  font-weight: 600;
 }
 .gate-tab-btn .count {
-  font-size: 11px;
-  padding: 1px 6px;
-  border-radius: 10px;
-  background: var(--m-2);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--fg-dim);
 }
-.gate-tab-btn.is-active .count.alert { background: var(--accent); color: #fff; }
-.count.warn { color: var(--stale-amber); }
+.gate-tab-btn .count.alert { color: var(--accent); }
+.gate-tab-btn .count.warn { color: var(--stale-amber); }
+.gate-tab-btn .count.accept { color: var(--accept); }
 
 .mode-toggle {
   display: flex;
@@ -659,13 +659,13 @@ body.is-gripping { cursor: col-resize; user-select: none; }
 body.is-gripping .insp-grip-tip { opacity: 1; }
 /* Cột phải rộng ra thì khung xem không cao quá màn */
 .ws-insp .insp-img { max-height: calc(55vh / var(--ui-zoom)); }
-/* Cột giữa hẹp lại (đã kéo giãn cột phải) → thanh lane thành 5 ô đều, chữ trên số dưới */
+/* Cột giữa hẹp lại (đã kéo giãn cột phải) → thanh lane thành 5 ô đều, số trên chữ dưới */
 .ws-main { container-type: inline-size; }
 @container (max-width: 640px) {
   .ws-head .ws-title { flex-basis: 100%; }
   .ws-head .gate-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; width: 100%; }
   .ws-head .gate-tab-btn { flex-direction: column; align-items: center; gap: 4px; padding: 6px 4px; font-size: 10px; min-width: 0; }
-  .ws-head .gate-tab-btn > span:first-child { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .ws-head .gate-tab-btn > span:last-child { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 }
 
 /* Tiêu đề gộp 1 dòng: EURASIA / GATE / IMAGE — chữ nhỏ là đường dẫn, chữ to là trang hiện tại */

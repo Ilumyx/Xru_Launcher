@@ -126,7 +126,8 @@ const CONTINENTAL_DATA = {
         name: 'Crawler',
         tagline: 'Vòi bạch tuộc thu thập nguyên liệu thô (Video / Image / News)',
         mods: [
-          { label: 'Bảng nguồn (18 bật / 1 báo động)', url: '/p/crawler' },
+          { label: 'Dashboard', url: 'crawler_dash.html' },
+          { label: 'Nguồn đã thêm', url: 'crawler_sources.html' },
           { label: 'Loadout', url: '/p/loadout?land=Crawler' }
         ],
         ago: '1 ngày trước',
@@ -433,7 +434,7 @@ window.addEventListener('keydown', (e) => {
     window.open('gate_image.html', '_blank');
   }
   if (e.key.toLowerCase() === 'c' && currentContinent === 'eurasia') {
-    window.location.href = '/p/crawler';
+    window.location.href = 'crawler_dash.html';
   }
 });
 

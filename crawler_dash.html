@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XRU Crawler — 01 · Tổng quan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css"><link rel="stylesheet" href="css/rail.css"><link rel="stylesheet" href="css/crawler.css"><link rel="stylesheet" href="css/account.css">
+  <script src="js/account.js"></script>
+</head>
+<body><div class="shell">
+  <nav class="rail" aria-label="Điều hướng Crawler"><div class="rail-top">
+    <a href="launcher_mockup.html?continent=eurasia" class="rail-logo" data-tooltip="Về Launcher" aria-label="Về Launcher"><svg viewBox="140 60 520 520" fill="currentColor">
+            <mask id="xru-emblem-mask">
+              <rect x="100" y="0" width="600" height="600" fill="#fff"/>
+              <rect x="140" y="305" width="80" height="30" fill="#000"/>
+              <rect x="580" y="305" width="80" height="30" fill="#000"/>
+            </mask>
+            <circle cx="400" cy="320" r="220" fill="none" stroke="currentColor" stroke-width="40" mask="url(#xru-emblem-mask)"/>
+            <rect x="290" y="240" width="40" height="150" fill="currentColor"/>
+            <rect x="470" y="240" width="40" height="150" fill="currentColor"/>
+            <rect x="290" y="420" width="220" height="30" fill="currentColor"/>
+            <rect x="382" y="145" width="36" height="80" fill="currentColor"/>
+            <circle cx="400" cy="320" r="35" fill="currentColor"/>
+          </svg></a>
+    <div class="rail-nav"><a href="crawler_dash.html" class="rail-icon-btn is-active" data-tooltip="Dashboard" aria-label="Dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19V13M10 19V5M16 19V9M22 19V3"/></svg></a><a href="crawler_sources.html" class="rail-icon-btn" data-tooltip="Nguồn đã thêm" aria-label="Nguồn đã thêm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg></a></div>
+  </div><div class="rail-bottom"><div class="user-avatar" title="Ilumyx (PO)">IL</div></div></nav>
+  <main class="cr-stage">
+    <header class="cr-head"><div class="cr-title"><a href="launcher_mockup.html?continent=eurasia">EURASIA</a><span>/</span><h1>CRAWLER</h1></div><nav class="cr-ideas" aria-label="Các ý tưởng dashboard"><span>PHÁC THẢO DASHBOARD</span><a href="crawler_dash.html" aria-current="page">01 · Tổng quan</a><a href="crawler_dash_sources.html">02 · Theo nguồn</a><a href="crawler_dash_activity.html">03 · Dòng hoạt động</a></nav></header>
+    
+    <section class="cr-metrics" aria-label="Thống kê Crawler"><div class="cr-metric"><span class="cr-label">THU MỚI HÔM NAY</span><b>1,248</b><p>1,024 ảnh · 224 video</p></div><div class="cr-metric"><span class="cr-label">NGUỒN ĐANG BẬT</span><b>6 <span class="cr-dim">/ 8</span></b><p>2 nguồn đang tắt</p></div><div class="cr-metric"><span class="cr-label">ĐÃ THU THẬP</span><b>7,842</b><p>2,215 ảnh · 5,627 video</p></div><div class="cr-metric"><span class="cr-label">NHẬN MỚI GẦN NHẤT</span><b>19:42</b><p>U.S. Central Command · Video</p></div></section><div class="cr-columns"><section class="cr-section"><div class="cr-section-head"><h3>Nhịp thu thập</h3><span class="cr-label">7 NGÀY GẦN NHẤT</span></div><svg class="cr-chart" viewBox="0 0 680 220" role="img" aria-labelledby="chart-title"><title id="chart-title">Minh hoạ lượng ảnh và video thu được trong bảy ngày, tăng từ 620 lên 1.248</title>
+<path class="grid" d="M38 20H660M38 72H660M38 124H660M38 176H660"/><text x="0" y="24">1.5k</text><text x="0" y="76">1k</text><text x="0" y="128">500</text><text x="18" y="180">0</text>
+<path class="area" d="M40 112L143 91L246 119L349 67L452 82L555 44L658 46V176H40Z"/><path class="line" d="M40 112L143 91L246 119L349 67L452 82L555 44L658 46"/>
+<circle cx="658" cy="46" r="4" fill="var(--active-cyan)"/><text x="606" y="30">1,248</text>
+<text x="38" y="206">28/09</text><text x="135" y="206">29/09</text><text x="238" y="206">30/09</text><text x="341" y="206">01/10</text><text x="444" y="206">02/10</text><text x="547" y="206">03/10</text><text x="626" y="206">04/10</text></svg><div class="cr-legend"><span><i></i>Ảnh + Video thu mới</span><span>Tổng lượng thu mới mỗi ngày</span></div><div class="cr-bottom"><div><h3>IMAGE</h3><p>1,024 ảnh mới</p><small>Facebook Photos</small></div><div><h3>VIDEO</h3><p>224 video mới</p><small>Facebook Reels · DVIDS</small></div><div><h3>NGUỒN ĐANG TẮT</h3><p>2 nguồn</p><small>War Album · 1st Slaughterhouse Video</small></div></div></section><aside class="cr-section"><div class="cr-section-head"><h3>Nguồn thu được nhiều nhất</h3><a href="crawler_sources.html">Tất cả ↗</a></div><div class="cr-rank"><span>DVIDS · Video</span><b>3,420</b><div class="cr-meter"><i style="--fill:100%"></i></div></div><div class="cr-rank"><span>U.S. Central Command · Video</span><b>1,135</b><div class="cr-meter"><i style="--fill:33%"></i></div></div><div class="cr-rank"><span>MIKN · Image</span><b>980</b><div class="cr-meter"><i style="--fill:29%"></i></div></div><div class="cr-rank"><span>U.S. Central Command · Image</span><b>865</b><div class="cr-meter"><i style="--fill:25%"></i></div></div></aside></div>
+    <footer class="cr-footer"><span>MOCKUP · DỮ LIỆU MINH HOẠ · ẢNH + VIDEO</span><span>1 Dashboard &nbsp; 2 Nguồn &nbsp; ESC Launcher</span></footer>
+  </main>
+</div><script src="js/crawler.js"></script></body></html>
