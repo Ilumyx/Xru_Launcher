@@ -55,52 +55,60 @@
       <div class="rail-bottom"><div class="user-avatar" title="Ilumyx (PO)">IL</div></div>
     </nav>
 
-    <div class="ax">
-      <!-- CỘT GIỮA: ô tra + Array hiểu thành + kết quả -->
-      <main class="ax-main">
-        <header class="ax-head">
-          <div class="ax-title"><a href="launcher_mockup.html">XRU</a><span>/</span><h1>ARRAY</h1><em>blind test</em></div>
-          <div class="ax-gen" id="ax-gen" title="Thế hệ kho Array lúc chụp"></div>
+    <!-- Hai màn kiểu Google trên cùng một DOM:
+         data-view="home"    → chữ ARRAY + ô tra nằm giữa màn
+         data-view="results" → chính chữ + ô đó dạt lên thanh trên, bên dưới là tab + kết quả -->
+    <div class="ax" id="ax" data-view="home">
+      <main class="ax-main" id="ax-main">
+        <header class="ax-top">
+          <a class="ax-mark" id="ax-mark" href="array_search.html" title="Về trang đầu Array">
+            <span class="ax-mark-word">ARRAY</span><small>XRU · Atlas</small>
+          </a>
+          <div class="ax-boxwrap" id="ax-boxwrap">
+            <form class="ax-box" id="ax-form" autocomplete="off" role="search">
+              <svg class="ax-box-ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-linecap="round" stroke-width="1.8" d="M21 21l-4.35-4.35"/></svg>
+              <input id="ax-q" placeholder="tank + ussr  ·  Leopard 2  ·  tank !Russia" spellcheck="false" aria-label="Câu tra Array">
+              <button type="button" class="ax-box-clear" id="ax-clear" title="Xoá câu" hidden>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="1.8" d="M6 6l12 12M18 6L6 18"/></svg>
+              </button>
+              <kbd class="ax-box-kbd">/</kbd>
+            </form>
+            <ul class="ax-sug" id="ax-sug" role="listbox" hidden></ul>
+          </div>
+          <div class="ax-home-btns">
+            <button type="submit" form="ax-form">Tra Array</button>
+            <button type="button" id="ax-lucky">Thử một câu mẫu</button>
+          </div>
+          <p class="ax-home-hint">Câu đã chụp: <span id="ax-hint-qs"></span></p>
         </header>
 
-        <form class="ax-search" id="ax-form" autocomplete="off">
-          <svg class="ax-search-ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-linecap="round" stroke-width="1.8" d="M21 21l-4.35-4.35"/></svg>
-          <input id="ax-q" placeholder="tank + 3bm42   ·   Russia tank 125mm   ·   tank !Russia" spellcheck="false">
-          <kbd>Enter</kbd>
-        </form>
-        <div class="ax-pills" id="ax-pills"></div>
-
-        <!-- Nguồn index: hiện chỉ có Atlas -->
-        <nav class="ax-sources" aria-label="Nguồn index">
-          <button class="is-active">Atlas <b id="ax-src-count">—</b></button>
-          <button disabled title="Chưa index">Wiki XRU <i>chưa index</i></button>
-          <button disabled title="Chưa index">Kho Liên Bang <i>chưa index</i></button>
+        <!-- Một ô gõ, mỗi tab một kho. Hôm nay chỉ Kiến thức (Atlas) có ruột -->
+        <nav class="ax-tabs" id="ax-tabs" aria-label="Kho tìm">
+          <button data-tab="all" class="is-active">Tất cả</button>
+          <button data-tab="know">Kiến thức</button>
+          <button data-tab="img" class="is-soon">Ảnh</button>
+          <button data-tab="vid" class="is-soon">Video</button>
+          <button data-tab="evt" class="is-soon">Sự kiện</button>
+          <button data-tab="ai" class="is-soon">Chế độ AI</button>
+          <span class="ax-tabs-gen" id="ax-gen" title="Thế hệ kho Array lúc chụp"></span>
         </nav>
 
-        <section class="ax-sec">
-          <h2>Array hiểu thành</h2>
-          <div class="ax-clauses" id="ax-clauses"></div>
-          <div class="ax-reasons" id="ax-reasons" hidden></div>
-        </section>
-
-        <section class="ax-sec" id="ax-cooc-sec" hidden>
-          <h2>Tag hay đi cùng <span>trong tập kết quả</span></h2>
-          <div class="ax-cooc" id="ax-cooc"></div>
-        </section>
-
-        <section class="ax-sec">
-          <h2>Kết quả <span id="ax-total"></span></h2>
-          <div class="ax-results" id="ax-results"></div>
-        </section>
+        <div class="ax-body">
+          <div class="ax-col" id="ax-col">
+            <div class="ax-under" id="ax-under"></div>
+            <div class="ax-results" id="ax-results"></div>
+            <section class="ax-related" id="ax-related" hidden></section>
+          </div>
+          <!-- Thẻ kiến thức của entry đang chọn (khung bên phải của Google) -->
+          <aside class="ax-panel" id="ax-panel"></aside>
+        </div>
 
         <footer class="ax-foot">
-          <span><kbd>/</kbd> gõ câu</span><span><kbd>↑</kbd><kbd>↓</kbd> chọn dòng</span><span><kbd>ESC</kbd> về Launcher</span>
-          <span class="ax-foot-r">Mockup · dữ liệu chụp thật từ Array, chỉ đọc</span>
+          <span class="ax-foot-l" id="ax-foot-l"></span>
+          <span class="ax-foot-keys"><span><kbd>/</kbd> gõ câu</span><span><kbd>↑</kbd><kbd>↓</kbd> chọn</span><span><kbd>ESC</kbd> lùi một màn</span></span>
+          <span class="ax-foot-r">Mockup · chụp thật từ Array · chỉ đọc</span>
         </footer>
       </main>
-
-      <!-- CỘT PHẢI: thẻ kiến thức của entry đang chọn (kiểu khung bên phải của Google) -->
-      <aside class="ax-panel" id="ax-panel"></aside>
     </div>
   </div>
   <div class="ax-toast" id="ax-toast"></div>

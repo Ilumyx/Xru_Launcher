@@ -7,7 +7,7 @@ BASE = cfg['base_url']
 HDR = {'Authorization': f"Bearer {cfg['api_key']}", 'Content-Type': 'application/json'}
 OUT = Path(__file__).resolve().parent.parent / 'data' / 'array_snapshot.js'
 
-QUERIES = ["Russia tank 125mm", "BTR wheel 30mm", "World War II battle", "tank !Russia",
+QUERIES = ["tank + ussr", "ifv + russia", "Russia tank 125mm", "BTR wheel 30mm", "World War II battle", "tank !Russia",
            "Eastern Front battle", "Leopard 2", "tank + 3bm42", "tank Japan 125mm"]
 LIMIT, MAX_LINKS = 30, 10
 
