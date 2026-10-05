@@ -72,11 +72,11 @@ const CONTINENTAL_DATA = {
         code: '1.1',
         name: 'Grid',
         tagline: 'Cung cấp API LLM local, YOLO và SAM cho Eurasia (Xru_Grid)',
+        image: 'data/crawler_thumbs/01a0e65c-350e-7bd8-8a56-2b759bc978d6.webp',
         mods: [
           { label: 'API Local', url: '#' },
-          { label: 'YOLO v11 Service', url: '#' },
-          { label: 'SAM Segment', url: '#' },
-          { label: 'Loadout', url: '/p/loadout?land=Grid' }
+          { label: 'YOLO v11', url: '#' },
+          { label: 'SAM Segment', url: '#' }
         ],
         ago: 'Vừa xong',
         status: '● SẴN SÀNG',
@@ -86,10 +86,10 @@ const CONTINENTAL_DATA = {
         code: '1.2',
         name: 'Incubator',
         tagline: 'Huấn luyện và ươm tạo model chuyên dụng (Xru_Incubator)',
+        image: 'data/crawler_thumbs/01a0e65c-350e-7e06-b816-b0d9bcca38ea.webp',
         mods: [
           { label: 'Training Pipeline', url: '#' },
-          { label: 'Weights & Checkpoints', url: '#' },
-          { label: 'Loadout', url: '/p/loadout?land=Incubator' }
+          { label: 'Weights & Ckpt', url: '#' }
         ],
         ago: '2 ngày trước',
         status: '● HOẠT ĐỘNG',
@@ -112,10 +112,10 @@ const CONTINENTAL_DATA = {
         code: 'SEC-01',
         name: 'Gate',
         tagline: 'Kiểm định đầu vào & Cửa khẩu thông quan',
+        image: 'data/crawler_thumbs/01a0e65c-350d-7138-a0e8-3968873eb450.webp',
         mods: [
           { label: 'Duyệt ảnh (548 chờ)', url: 'gate_image.html', isAlert: true },
-          { label: 'Duyệt video', url: 'gate_video.html' },
-          { label: 'Loadout', url: '/p/loadout?land=Gate' }
+          { label: 'Duyệt video', url: 'gate_video.html' }
         ],
         ago: 'Vừa xong',
         status: '● SẴN SÀNG',
@@ -125,10 +125,10 @@ const CONTINENTAL_DATA = {
         code: 'SEC-02',
         name: 'Crawler',
         tagline: 'Vòi bạch tuộc thu thập nguyên liệu thô (Video / Image / News)',
+        image: 'data/crawler_thumbs/01a0e65c-350d-72bf-9bf8-4bd81d579c2c.webp',
         mods: [
           { label: 'Dashboard', url: 'crawler_dash.html' },
-          { label: 'Nguồn đã thêm', url: 'crawler_sources.html' },
-          { label: 'Loadout', url: '/p/loadout?land=Crawler' }
+          { label: 'Nguồn đã thêm', url: 'crawler_sources.html' }
         ],
         ago: '1 ngày trước',
         status: '● HOẠT ĐỘNG',
@@ -138,9 +138,10 @@ const CONTINENTAL_DATA = {
         code: 'SEC-03',
         name: 'Foundry',
         tagline: 'Tiền xử lý + Đóng gói Work Item cho dây chuyền gán nhãn',
+        image: 'data/crawler_thumbs/01a0e65c-350d-782e-b5fa-3783d85bec0b.webp',
         mods: [
-          { label: 'Tiền xử lý & Work Item', url: '#' },
-          { label: 'Loadout', url: '/p/loadout?land=Foundry' }
+          { label: 'Tiền xử lý', url: '#' },
+          { label: 'Work Item', url: '#' }
         ],
         ago: '12 ngày trước',
         status: '▲ CHỜ ĐỢT MỚI',
@@ -150,9 +151,9 @@ const CONTINENTAL_DATA = {
         code: 'SEC-04',
         name: 'Division',
         tagline: 'Bầy AI gán nhãn & Định danh thực thể (Labeling platoon)',
+        image: 'data/crawler_thumbs/01a0e65c-350d-7b31-ba9e-cf7db848360d.webp',
         mods: [
-          { label: 'Trực chiến Gán nhãn (:5057)', url: 'http://127.0.0.1:5057' },
-          { label: 'Loadout', url: '/p/loadout?land=Division' }
+          { label: 'Trực chiến (:5057)', url: 'http://127.0.0.1:5057' }
         ],
         ago: '3 ngày trước',
         status: '● SẴN SÀNG',
@@ -175,11 +176,10 @@ const CONTINENTAL_DATA = {
         code: '3.1',
         name: 'Processing',
         tagline: 'Cắt dựng montage, hiệu ứng âm thanh, render engine',
+        image: 'data/crawler_thumbs/01a0e65c-350d-7c5a-a367-bf1bdfaf6e21.webp',
         mods: [
           { label: 'Montage Editor', url: '#' },
-          { label: 'Audio Synth', url: '#' },
-          { label: 'Render Queue', url: '#' },
-          { label: 'Loadout', url: '/p/loadout?land=Processing' }
+          { label: 'Render Queue', url: '#' }
         ],
         ago: '4 giờ trước',
         status: '● SẴN SÀNG',
@@ -189,10 +189,10 @@ const CONTINENTAL_DATA = {
         code: '3.2',
         name: 'Manufacturing',
         tagline: 'Đóng gói xuất xưởng Content thành phẩm (Shorts 9:16)',
+        image: 'data/crawler_thumbs/01a0e65c-350e-704b-b262-4f62b73d7eb4.webp',
         mods: [
-          { label: 'Kho thành phẩm Shorts', url: '#' },
-          { label: 'Kênh xuất bản tự động', url: '#' },
-          { label: 'Loadout', url: '/p/loadout?land=Manufacturing' }
+          { label: 'Kho thành phẩm', url: '#' },
+          { label: 'Xuất bản tự động', url: '#' }
         ],
         ago: '1 ngày trước',
         status: '● HOẠT ĐỘNG',
@@ -215,10 +215,10 @@ const CONTINENTAL_DATA = {
         code: '4.1',
         name: 'Interface',
         tagline: 'Giao diện SaaS bóng bẩy, tactical dashboard',
+        image: 'data/crawler_thumbs/01a0e65c-350f-7a2c-bb29-be0f481a670c.webp',
         mods: [
           { label: 'Tactical Dashboard', url: '#' },
-          { label: 'Client Portal', url: '#' },
-          { label: 'Loadout', url: '/p/loadout?land=Interface' }
+          { label: 'Client Portal', url: '#' }
         ],
         ago: '5 ngày trước',
         status: '● HOẠT ĐỘNG',
@@ -228,10 +228,10 @@ const CONTINENTAL_DATA = {
         code: '4.2',
         name: 'Delivery',
         tagline: 'Kênh phân phối nội dung đa nền tảng tự động',
+        image: 'data/crawler_thumbs/01a0e65c-350f-7aaf-b364-73fd3253bfb1.webp',
         mods: [
-          { label: 'Multi-Platform Dispatch', url: '#' },
-          { label: 'Schedules', url: '#' },
-          { label: 'Loadout', url: '/p/loadout?land=Delivery' }
+          { label: 'Multi-Platform', url: '#' },
+          { label: 'Schedules', url: '#' }
         ],
         ago: '3 ngày trước',
         status: '● SẴN SÀNG',
@@ -241,10 +241,10 @@ const CONTINENTAL_DATA = {
         code: '4.3',
         name: 'Tenant Interaction',
         tagline: 'Tiếp đón và quản lý quyền truy cập đối tác / khách hàng bên ngoài',
+        image: 'data/crawler_thumbs/01a0e65c-350f-7b98-9d9d-e11aca3402dd.webp',
         mods: [
-          { label: 'Access Keys & Tokens', url: '#' },
-          { label: 'Tenant Contracts', url: '#' },
-          { label: 'Loadout', url: '/p/loadout?land=Tenant' }
+          { label: 'Access Keys', url: '#' },
+          { label: 'Contracts', url: '#' }
         ],
         ago: 'Chưa kích hoạt',
         status: '■ DỰ KIẾN',
@@ -254,12 +254,13 @@ const CONTINENTAL_DATA = {
   }
 };
 
+window.CONTINENTAL_DATA = CONTINENTAL_DATA;
+
 let currentContinent = 'xru';
 let disposeGlobe = null;
-let currentView = 'list';
 
 function switchContinent(continentId) {
-  if (!CONTINENTAL_DATA[continentId]) return;
+  if (continentId !== 'xru' && !CONTINENTAL_DATA[continentId]) return;
   currentContinent = continentId;
 
   // Cập nhật trạng thái active trên thanh Rail
@@ -268,131 +269,78 @@ function switchContinent(continentId) {
     el.classList.toggle('is-active', isTarget);
   });
 
+  // Nếu đang ở màn 3 cột, chuyển continent mượt mà không reload DOM
+  const federalMap = document.querySelector('.federal-map');
+  if (federalMap && continentId !== 'xru') {
+    LauncherGlobe.setActive(continentId);
+    return;
+  }
+
   renderStage();
 }
 
 function renderStage() {
-  const data = CONTINENTAL_DATA[currentContinent];
   const stage = document.querySelector('.stage');
   if (!stage) return;
 
   disposeGlobe?.();
   disposeGlobe = null;
 
-  // Render Header
+  // Render Header với Telemetry tối giản
   const headerHtml = `
-    <header class="hud-header${data.isFederalOverview ? ' federal-header' : ''}">
+    <header class="hud-header federal-header">
       <div class="hud-title-group">
-        <h1>${data.name}</h1>
-        ${data.isFederalOverview ? '' : `<p class="hud-sub">${data.sub}</p>`}
+        <h1>XRU FEDERAL</h1>
+        <p class="hud-sub">Trung Tâm Chỉ Huy Liên Bang // 4 Lục Địa</p>
       </div>
-      ${data.isFederalOverview ? '' : `<div class="hud-stats">
-        ${data.stats.map(s => `
-          <div class="stat-block">
-            <span class="stat-label">${s.label}</span>
-            <span class="stat-value ${s.type}">${s.value}</span>
-          </div>
-        `).join('')}
-      </div>`}
+      <div class="hud-stats">
+        <div class="stat-block">
+          <span class="stat-label">PO Pending</span>
+          <span class="stat-value alert">548</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-label">Lục Địa</span>
+          <span class="stat-value ok">4 Khối</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-label">Hệ Thống</span>
+          <span class="stat-value ok">ONLINE</span>
+        </div>
+      </div>
     </header>
   `;
 
-  let contentHtml = '';
-
-  // NẾU LÀ TỔNG QUAN LIÊN BANG XRU (BẤM VÀO LOGO XRU TRÊN ĐỈNH)
-  if (data.isFederalOverview) {
-    contentHtml = LauncherGlobe.markup(data.continents);
-  } else {
-    // NẾU LÀ MỘT LỤC ĐỊA CỤ THỂ (EURAMERIKA, EURASIA, EURUSKA, EUROPA)
-    contentHtml = `
-      <!-- VIEW: BẢNG HÀNH TRÌNH -->
-      <section class="list-view" id="view-list" style="display:${currentView === 'list' ? 'flex' : 'none'};">
-        <div class="itin-header">
-          <span>Mã</span>
-          <span>Quốc Gia (Country / Land)</span>
-          <span>Module Khả Dụng</span>
-          <span>Hoạt Động Cuối</span>
-          <span>Trạng Thái</span>
-        </div>
-        ${data.lands.map(l => `
-          <div class="itin-row" ${l.name === 'Gate' ? 'onclick="if(!event.target.closest(\'a\')) window.location.href=\'gate_image.html\'" style="cursor:pointer;"' : ''}>
-            <span class="itin-code">${l.code}</span>
-            <div class="itin-name">
-              <span class="status-dot ${l.statusType === 'stale' ? 'stale' : (l.statusType === 'idle' ? 'idle' : '')}"></span>
-              ${l.name === 'Gate' ? '<a href="gate_image.html" style="color:inherit; text-decoration:none;" title="Vào bàn làm việc Gate"><b>Gate</b> ↗</a>' : `<b>${l.name}</b>`}
-            </div>
-            <div class="itin-mods">
-              ${l.mods.map(m => `
-                <a href="${m.url}" class="itin-mod-pill ${m.isAlert ? 'alert' : ''}" ${m.url.startsWith('http') ? 'target="_blank"' : ''}>
-                  ${m.label}
-                </a>
-              `).join('')}
-            </div>
-            <div class="itin-ago ${l.statusType === 'stale' ? 'stale' : ''}">${l.ago}</div>
-            <div class="itin-status ${l.statusType}">${l.status}</div>
-          </div>
-        `).join('')}
-      </section>
-
-      <!-- VIEW: HUD GRID CARDS -->
-      <section class="grid-view" id="view-grid" style="display:${currentView === 'grid' ? 'grid' : 'none'};">
-        ${data.lands.map(l => `
-          <article class="sector-card" style="${l.statusType === 'alert' ? 'border-top: 2px solid var(--accent);' : ''}">
-            <div class="sector-top">
-              <div>
-                <div class="sector-badge">
-                  <span class="status-dot ${l.statusType === 'stale' ? 'stale' : (l.statusType === 'idle' ? 'idle' : '')}"></span>
-                  <h2 class="sector-name">${l.name}</h2>
-                </div>
-                <p class="sector-tagline">${l.tagline}</p>
-              </div>
-              <div class="sector-activity">
-                <span class="act-lbl">Last Active</span>
-                <div class="act-val ${l.statusType === 'stale' ? 'stale' : ''}">${l.ago.toUpperCase()}</div>
-              </div>
-            </div>
-            <div class="sector-actions" style="margin-top:20px;">
-              ${l.mods.map(m => `
-                <a href="${m.url}" class="action-btn ${m.isAlert ? 'primary' : ''}" ${m.url.startsWith('http') ? 'target="_blank"' : ''}>
-                  ${m.label}
-                </a>
-              `).join('')}
-            </div>
-          </article>
-        `).join('')}
-      </section>
-    `;
-  }
+  // Màn 3 Cột thống nhất
+  const contentHtml = LauncherGlobe.markup(CONTINENTAL_DATA.xru.continents);
 
   // Footer HUD
   const footerHtml = `
     <footer class="hud-footer">
       <div class="key-hints">
-        ${data.isFederalOverview ? '' : '<span><span class="key">1</span> Cards</span><span><span class="key">2</span> List</span>'}
-        <span><span class="key">/</span> Tìm kiếm</span>
-        ${currentContinent === 'eurasia' ? '<span><span class="key">G</span> Gate</span><span><span class="key">C</span> Crawler</span>' : ''}
+        <span><span class="key">1</span> Euramerika</span>
+        <span><span class="key">2</span> Eurasia</span>
+        <span><span class="key">3</span> Euruska</span>
+        <span><span class="key">4</span> Europa</span>
+        <span><span class="key">/</span> Array</span>
+        <span><span class="key">G</span> Gate</span>
+        <span><span class="key">C</span> Crawler</span>
       </div>
       <div>XRU FEDERAL SYSTEM // 2026</div>
     </footer>
   `;
 
   stage.innerHTML = headerHtml + contentHtml + footerHtml;
-  if (data.isFederalOverview) disposeGlobe = LauncherGlobe.mount(stage.querySelector('.federal-map'), switchContinent);
-}
 
-function switchView(type) {
-  currentView = type;
-  const grid = document.getElementById('view-grid');
-  const list = document.getElementById('view-list');
-  if (!grid || !list) return;
+  disposeGlobe = LauncherGlobe.mount(stage.querySelector('.federal-map'), (selectedId) => {
+    currentContinent = selectedId;
+    document.querySelectorAll('.rail-icon-btn, .rail-logo').forEach(el => {
+      const isTarget = el.getAttribute('data-continent') === selectedId;
+      el.classList.toggle('is-active', isTarget);
+    });
+  });
 
-  if (type === 'grid') {
-    grid.style.display = 'grid';
-    list.style.display = 'none';
-  } else {
-    grid.style.display = 'none';
-    list.style.display = 'flex';
-  }
+  const initialTarget = (currentContinent && currentContinent !== 'xru') ? currentContinent : 'eurasia';
+  LauncherGlobe.setActive(initialTarget);
 }
 
 // Bắt phím tắt
@@ -400,19 +348,21 @@ window.addEventListener('keydown', (e) => {
   const isInputActive = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
   if (isInputActive) return;
 
-  if (e.key === '1') switchView('grid');
-  if (e.key === '2') switchView('list');
-  if (e.key.toLowerCase() === 'g' && currentContinent === 'eurasia') {
-    window.open('gate_image.html', '_blank');
+  if (e.key === '1') switchContinent('euramerika');
+  if (e.key === '2') switchContinent('eurasia');
+  if (e.key === '3') switchContinent('euruska');
+  if (e.key === '4') switchContinent('europa');
+  if (e.key.toLowerCase() === 'g') {
+    window.location.href = 'gate_image.html';
   }
-  if (e.key.toLowerCase() === 'c' && currentContinent === 'eurasia') {
+  if (e.key.toLowerCase() === 'c') {
     window.location.href = 'crawler_dash.html';
   }
 });
 
 // Khởi chạy mặc định lúc nạp trang
 document.addEventListener('DOMContentLoaded', () => {
-  switchContinent(currentContinent);
+  switchContinent('eurasia');
 });
 
 // Mở thẳng một lục địa từ link ở trang khác, vd. launcher_mockup.html?continent=euruska
