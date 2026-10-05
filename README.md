@@ -16,7 +16,7 @@ Entry: `launcher_mockup.html`.
 
 | Page | What |
 |---|---|
-| `launcher_mockup.html` | Federal launcher, 4 continents, `/` or `Ctrl+K` → Array |
+| `launcher_mockup.html` | Federal launcher, globe chọn 4 lục địa, `/` or `Ctrl+K` → Array |
 | `gate_image.html` | Gate image review: list · gallery · inspector, notched inspector resize |
 | `gate_video.html` | Gate video review, grid variant |
 | `gate_video_watch.html` | Gate video review, big-player variant (trial, keep one of the two) |

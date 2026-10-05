@@ -254,7 +254,8 @@ const CONTINENTAL_DATA = {
   }
 };
 
-let currentContinent = 'eurasia';
+let currentContinent = 'xru';
+let disposeGlobe = null;
 let currentView = 'list';
 
 function switchContinent(continentId) {
@@ -274,6 +275,9 @@ function renderStage() {
   const data = CONTINENTAL_DATA[currentContinent];
   const stage = document.querySelector('.stage');
   if (!stage) return;
+
+  disposeGlobe?.();
+  disposeGlobe = null;
 
   // Render Header
   const headerHtml = `
@@ -297,39 +301,7 @@ function renderStage() {
 
   // NẾU LÀ TỔNG QUAN LIÊN BANG XRU (BẤM VÀO LOGO XRU TRÊN ĐỈNH)
   if (data.isFederalOverview) {
-    contentHtml = `
-      <section class="list-view" style="display:flex;">
-        <div class="itin-header" style="grid-template-columns: 80px 220px 1fr 220px 180px;">
-          <span>Mã</span>
-          <span>Lục Địa (Continent)</span>
-          <span>Sứ Mệnh & Trách Nhiệm</span>
-          <span>Quốc Gia Con Trực Thuộc</span>
-          <span>Trạng Thái</span>
-        </div>
-        ${data.continents.map(c => `
-          <div class="itin-row" style="grid-template-columns: 80px 220px 1fr 220px 180px; cursor:pointer;" onclick="switchContinent('${c.id}')">
-            <span class="itin-code">${c.code}</span>
-            <div class="itin-name">
-              <span class="status-dot ${c.statusType === 'stale' ? 'stale' : (c.statusType === 'idle' ? 'idle' : '')}"></span>
-              <b>${c.name}</b>
-            </div>
-            <div style="color:var(--fg); font-size:13px;">
-              <div style="font-weight:500; color:var(--fg-strong); margin-bottom:2px;">${c.role}</div>
-              <div style="color:var(--fg-dim); font-size:12px;">${c.desc}</div>
-            </div>
-            <div class="itin-ago" style="color:var(--fg-strong);">${c.landsCount}</div>
-            <div class="itin-status ${c.statusType}">${c.status}</div>
-          </div>
-        `).join('')}
-      </section>
-
-      <div style="margin-top:28px; padding:16px 20px; background:var(--m-2); border:1px solid var(--hairline); border-radius:6px; font-family:var(--font-mono); font-size:12px; color:var(--fg-dim); line-height:1.7;">
-        <span style="color:var(--active-cyan); font-weight:600;">NGUYÊN TẮC NHẬP TỊCH LIÊN BANG:</span><br>
-        1. <b>Chủ quyền tuyệt đối:</b> Quốc gia nào ở yên quốc gia đó. Cấm cross-import, không gọi hàm chéo.<br>
-        2. <b>Đổ hàng rồi cút:</b> Giao tiếp giữa các lục địa và các nước thuần túy bằng file artifact trong <code>XRU_Data</code>.<br>
-        3. <b>Tìm kiếm toàn năng:</b> Dùng thanh tìm kiếm (phím <code>/</code>) để tra cứu khí tài và dữ liệu xuyên biên giới.
-      </div>
-    `;
+    contentHtml = LauncherGlobe.markup(data.continents);
   } else {
     // NẾU LÀ MỘT LỤC ĐỊA CỤ THỂ (EURAMERIKA, EURASIA, EURUSKA, EUROPA)
     contentHtml = `
@@ -396,8 +368,7 @@ function renderStage() {
   const footerHtml = `
     <footer class="hud-footer">
       <div class="key-hints">
-        <span><span class="key">1</span> Cards</span>
-        <span><span class="key">2</span> List</span>
+        ${data.isFederalOverview ? '' : '<span><span class="key">1</span> Cards</span><span><span class="key">2</span> List</span>'}
         <span><span class="key">/</span> Tìm kiếm</span>
         ${currentContinent === 'eurasia' ? '<span><span class="key">G</span> Gate</span><span><span class="key">C</span> Crawler</span>' : ''}
       </div>
@@ -406,6 +377,7 @@ function renderStage() {
   `;
 
   stage.innerHTML = headerHtml + contentHtml + footerHtml;
+  if (data.isFederalOverview) disposeGlobe = LauncherGlobe.mount(stage.querySelector('.federal-map'), switchContinent);
 }
 
 function switchView(type) {
@@ -440,7 +412,7 @@ window.addEventListener('keydown', (e) => {
 
 // Khởi chạy mặc định lúc nạp trang
 document.addEventListener('DOMContentLoaded', () => {
-  renderStage();
+  switchContinent(currentContinent);
 });
 
 // Mở thẳng một lục địa từ link ở trang khác, vd. launcher_mockup.html?continent=euruska
