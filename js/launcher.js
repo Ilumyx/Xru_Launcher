@@ -281,19 +281,19 @@ function renderStage() {
 
   // Render Header
   const headerHtml = `
-    <header class="hud-header">
+    <header class="hud-header${data.isFederalOverview ? ' federal-header' : ''}">
       <div class="hud-title-group">
         <h1>${data.name}</h1>
-        <p class="hud-sub">${data.sub}</p>
+        ${data.isFederalOverview ? '' : `<p class="hud-sub">${data.sub}</p>`}
       </div>
-      <div class="hud-stats">
+      ${data.isFederalOverview ? '' : `<div class="hud-stats">
         ${data.stats.map(s => `
           <div class="stat-block">
             <span class="stat-label">${s.label}</span>
             <span class="stat-value ${s.type}">${s.value}</span>
           </div>
         `).join('')}
-      </div>
+      </div>`}
     </header>
   `;
 

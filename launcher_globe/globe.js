@@ -29,13 +29,10 @@ window.LauncherGlobe = (() => {
   function markup(continents) {
     return `<section class="federal-map" aria-label="Bản đồ chọn lục địa">
       <div class="globe-side">
-        <div class="globe-eyebrow">01 — FEDERAL MAP</div>
-        <h2>Một Liên Bang.<br>Bốn lục địa.</h2>
-        <p class="globe-intro">Chọn lục địa để bắt đầu.<br>Mỗi lục địa, một nhiệm vụ riêng.</p>
         <div class="globe-destinations">${REGIONS.map(region => {
           const continent = continents.find(c => c.id === region.id);
           return `<button class="globe-destination" data-destination="${region.id}" style="--region-color:#${region.color.toString(16).padStart(6, '0')}">
-            <span class="globe-region-dot"></span><span><b>${continent.name}</b><small>${region.area} · ${continent.role}</small></span><span class="globe-arrow">↗</span>
+            <span class="globe-region-dot"></span><span><b>${continent.name}</b></span><span class="globe-arrow">↗</span>
           </button>`;
         }).join('')}</div>
         <div class="globe-side-note">Kéo để khám phá · Bấm vùng để đi vào</div>
@@ -44,7 +41,6 @@ window.LauncherGlobe = (() => {
         <canvas class="globe-chart" role="img" aria-label="Địa cầu tương tác. Dùng các nút bên cạnh để chọn lục địa bằng bàn phím."></canvas>
         <div class="globe-loading" role="status">Đang mở bản đồ…</div>
         <div class="globe-tools"><button data-spin aria-label="Tạm dừng xoay">Ⅱ</button><button data-home aria-label="Đưa bản đồ về góc ban đầu">↺</button></div>
-        <div class="globe-caption"><span class="globe-caption-dot"></span><span data-globe-caption>LIÊN BANG XRU</span></div>
       </div>
     </section>`;
   }
@@ -53,7 +49,6 @@ window.LauncherGlobe = (() => {
     const context = canvas.getContext('2d');
     const spinButton = container.querySelector('[data-spin]');
     const homeButton = container.querySelector('[data-home]');
-    const caption = container.querySelector('[data-globe-caption]');
     const loading = container.querySelector('.globe-loading');
     const regionByCountry = new Map(REGIONS.flatMap(region => region.countries.split(' ').map(id => [id, region])));
     let disposed = false, frame = 0, lastFrame = 0;
@@ -69,7 +64,6 @@ window.LauncherGlobe = (() => {
     function setRegion(region) {
       if (region === activeRegion) return;
       activeRegion = region;
-      caption.textContent = region ? region.id.toUpperCase() + ' ↗' : 'LIÊN BANG XRU';
       canvas.style.cursor = drag?.moved ? 'grabbing' : region ? 'pointer' : 'grab';
       container.querySelectorAll('[data-destination]').forEach(button => button.classList.toggle('is-hovered', button.dataset.destination === region?.id));
       requestDraw();
