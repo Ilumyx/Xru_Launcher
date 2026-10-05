@@ -9,9 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/rail.css">
-  <link rel="stylesheet" href="css/gate.css">
-  <link rel="stylesheet" href="css/account.css">
-  <script src="js/account.js"></script>
+  <link rel="stylesheet" href="css/gate_dash.css?v=3">
+  <link rel="stylesheet" href="css/account.css?v=2">
+  <script src="js/account.js?v=2"></script>
 </head>
 <body>
   <div class="shell">
@@ -33,10 +33,6 @@
           </svg>
         </a>
         <div class="rail-nav">
-          <button class="rail-icon-btn" data-tooltip="Đóng / mở danh sách" onclick="toggleGatePanel()">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" stroke-width="1.8"/><line x1="9" y1="4" x2="9" y2="20" stroke-width="1.8"/></svg>
-          </button>
-          <div class="rail-divider" style="margin:2px 0;"></div>
           <a href="gate_image.html" class="rail-icon-btn" data-tooltip="Gate Image">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><polyline points="21 15 16 10 5 21" stroke-width="1.8"/></svg>
           </a>
@@ -54,62 +50,14 @@
       <div class="rail-bottom"><div class="user-avatar" title="Ilumyx (PO)">IL</div></div>
     </nav>
 
-    <main class="stage">
-
-      <header class="hud-header">
-        <div class="ws-title"><a href="launcher_mockup.html">EURASIA</a><span>/</span><a href="launcher_mockup.html">GATE</a><span>/</span><h1>DASH</h1></div>
-        <div class="hud-stats">
-          <div class="stat-block"><span class="stat-label">Chờ PO Duyệt</span><span class="stat-value alert">548</span></div>
-          <div class="stat-block"><span class="stat-label">Tạm Giữ</span><span class="stat-value warn">24</span></div>
-          <div class="stat-block"><span class="stat-label">Đã Thông Quan</span><span class="stat-value ok">1,420</span></div>
-          <div class="stat-block"><span class="stat-label">Đã Tiêu Hủy</span><span class="stat-value dim">86</span></div>
-        </div>
-      </header>
-
-      <div class="dash-grid">
-        <div class="dash-card">
-          <div class="dash-label">Tỷ lệ duyệt 24H</div>
-          <div class="dash-big ok">94.2%</div>
-          <div class="dash-note">1,420 thông quan / 86 tiêu hủy</div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-label">Tốc độ PO</div>
-          <div class="dash-big ">1.8s / ảnh</div>
-          <div class="dash-note">Thao tác phím A / D / P</div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-label">Nguồn lớn nhất</div>
-          <div class="dash-big ">DVIDS 62%</div>
-          <div class="dash-note">Chất lượng đạt chuẩn, không watermark</div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-label">Tồn đọng</div>
-          <div class="dash-big ">548</div>
-          <div class="dash-note">Ảnh đang chờ PO cấp thị thực</div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-label">Tạm giữ</div>
-          <div class="dash-big ">24</div>
-          <div class="dash-note">Chờ đối chiếu thêm</div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-label">Video chờ</div>
-          <div class="dash-big ">12</div>
-          <div class="dash-note">4 clip bị máy gắn cờ</div>
-        </div>
-      </div>
-
-      <footer class="hud-footer">
-        <div class="key-hints">
-          <span><span class="key">1</span> Image</span>
-          <span><span class="key">2</span> Video</span>
-          <span><span class="key">3</span> Dash</span>
-          <span><span class="key">ESC</span> Về Launcher</span>
-        </div>
-        <div>XRU GATE // 2026</div>
-      </footer>
-    </main>
-  </div>
-  <script src="js/gate.js"></script>
-</body>
-</html>
+    <main class="gd-stage">
+<header class="gd-head"><div class="gd-title"><a href="launcher_mockup.html">EURASIA</a><span>/</span><h1>GATE</h1></div><span class="gd-label">DASHBOARD</span></header>
+<section class="gd-board" aria-label="Hàng duyệt"><div class="gd-board-head"><span>HÀNG DUYỆT</span><span>WAIT</span><span>MACHINE FLAG</span><span>DETAIN</span><span>ACCEPT</span><span>PURGE</span></div>
+<div class="gd-board-row"><a href="gate_image.html"><b>Ảnh ↗</b><small>904 hồ sơ</small></a><strong class="red">548</strong><strong class="muted">—</strong><strong class="amber">24</strong><strong class="cyan">320</strong><strong class="muted">12</strong></div>
+<div class="gd-board-row"><a href="gate_video.html"><b>Video ↗</b><small>5,626 hồ sơ</small></a><strong class="red">2,410</strong><strong class="red">36</strong><strong class="amber">2,226</strong><strong class="cyan">880</strong><strong class="muted">74</strong></div></section>
+<div class="gd-inspection"><section><div class="gd-section-head"><h2>Máy tìm thấy gì?</h2><span class="gd-label">VIDEO · CÓ THỂ CÓ NHIỀU LÝ DO</span></div><div class="gd-findings" aria-label="Chọn lý do"><button data-finding="music" aria-pressed="false">Nhạc <b>849</b></button><button data-finding="duplicate" aria-pressed="true">Trùng <b>213</b></button><button data-finding="watermark" aria-pressed="false">Watermark <b>186</b></button><button data-finding="text" aria-pressed="false">Chữ chèn <b>36</b></button></div><div id="gd-case"></div></section>
+<aside class="gd-quality"><div class="gd-section-head"><h2>Hồ sơ đầu vào</h2><div class="gd-tabs"><button data-quality="image" aria-pressed="false">Ảnh</button><button data-quality="video" aria-pressed="true">Video</button></div></div><div id="gd-quality"></div></aside></div>
+<section class="gd-sources"><div class="gd-section-head"><h2>Gate theo nguồn</h2><div class="gd-tabs"><button data-source-filter="all" aria-pressed="true">Tất cả</button><button data-source-filter="image" aria-pressed="false">Ảnh</button><button data-source-filter="video" aria-pressed="false">Video</button></div></div><div class="gd-table-wrap"><table><thead><tr><th>NGUỒN</th><th>LOẠI</th><th>WAIT</th><th>FLAG</th><th>DETAIN</th><th>ACCEPT</th><th>PURGE</th><th>CHỜ LÂU NHẤT</th></tr></thead><tbody id="gd-source-rows"></tbody></table></div></section>
+<div class="gd-bottom"><section><div class="gd-section-head"><h2>Quyết định của PO</h2><span class="gd-label">7 NGÀY GẦN NHẤT</span></div><div id="gd-history" class="gd-history"></div><div class="gd-legend"><span><i class="cyan-bg"></i>Accept</span><span><i class="amber-bg"></i>Giữ</span><span><i class="gray-bg"></i>Cứu lại</span></div></section><section><div class="gd-section-head"><h2>Gần đây</h2><span class="gd-label">LỊCH SỬ QUYẾT ĐỊNH</span></div><div class="gd-event"><time>19:42</time><div><b>U.S. Central Command · Video</b><p>WAIT → ACCEPT</p></div><span class="cyan">PO</span></div><div class="gd-event"><time>19:38</time><div><b>Tankers · Video</b><p>ACCEPT → DETAIN</p><blockquote>“Giữ lại để đối chiếu bản không có nhạc.”</blockquote></div><span class="amber">PO</span></div><div class="gd-event"><time>19:35</time><div><b>MIKN · Ảnh</b><p>DETAIN → WAIT · Cứu lại</p></div><span class="muted">PO</span></div></section></div>
+<footer class="gd-footer"><span>MOCKUP · TOÀN BỘ SỐ LIỆU VÀ HỒ SƠ MINH HOẠ</span><span>1 Ảnh &nbsp; 2 Video &nbsp; 3 Dashboard &nbsp; ESC Launcher</span></footer>
+</main></div><script src="js/gate.js"></script><script src="js/gate_dash.js?v=3"></script></body></html>

@@ -1,11 +1,13 @@
 // ==========================================================================
 // XRU ACCOUNT — Menu tài khoản (bấm avatar IL) + Cài đặt giao diện
-// Đổi: font chữ, màu nhấn, cỡ giao diện. Lưu vào trình duyệt, mọi trang dùng chung.
+// Đổi: chế độ sáng/tối, font chữ, màu nhấn, cỡ giao diện. Lưu vào trình duyệt, mọi trang dùng chung.
 // File này nạp trong <head> để áp cài đặt ngay, không bị nháy màu cũ.
 // ==========================================================================
 (() => {
   const KEY = 'xru-ui-settings';
-  const DEFAULTS = { font: 'Inter', accent: '#00d2b4', zoom: '1.15' };
+  const DEFAULTS = { mode: 'dark', font: 'Inter', accent: '#00d2b4', zoom: '1.15' };
+  const MODES = [['system', 'Hệ thống'], ['light', 'Sáng'], ['dark', 'Tối']];
+  const systemMode = window.matchMedia('(prefers-color-scheme: dark)');
 
   const FONTS = {
     'Inter':          'Inter:wght@300;400;500;600;700',
@@ -13,13 +15,16 @@
     'IBM Plex Sans':  'IBM+Plex+Sans:wght@300;400;500;600;700',
     'Roboto':         'Roboto:wght@300;400;500;700',
   };
-  // Màu nhấn. Cố tình KHÔNG có đỏ / vàng vì 2 màu đó đang mang nghĩa "tồn đọng" / "tạm giữ".
+  // Chọn màu nhấn theo tên; không có ô nhập mã màu.
   const ACCENTS = [
     ['#00d2b4', 'Cyan XRU'],
     ['#4da3ff', 'Xanh dương'],
     ['#9b8cff', 'Tím'],
     ['#7fd17f', 'Xanh lá'],
     ['#e7e7e2', 'Trắng'],
+    ['#f3ce5c', 'Vàng'],
+    ['#f574bd', 'Hồng'],
+    ['#ff8a70', 'Cam'],
   ];
   const ZOOMS = [['1', '100%'], ['1.1', '110%'], ['1.15', '115%'], ['1.2', '120%']];
 
@@ -41,6 +46,7 @@
   }
 
   function apply(s) {
+    document.documentElement.dataset.uiMode = s.mode === 'system' ? (systemMode.matches ? 'dark' : 'light') : s.mode;
     const r = document.documentElement.style;
     r.setProperty('--font-sans', `'${s.font}', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`);
     r.setProperty('--active-cyan', s.accent);
@@ -53,6 +59,7 @@
 
   let settings = load();
   apply(settings);
+  systemMode.addEventListener('change', () => { if (settings.mode === 'system') apply(settings); });
 
   function update(patch) {
     settings = { ...settings, ...patch };
@@ -113,27 +120,39 @@
           <button class="acc-x" data-done aria-label="Đóng">✕</button>
         </div>
 
-        <div class="acc-sec">
-          <div class="acc-label">Font chữ</div>
-          <div class="acc-fonts">
-            ${Object.keys(FONTS).map(f => {
-              ensureFont(f);
-              return `<button class="acc-font${on('font', f)}" data-k="font" data-v="${f}" style="font-family:'${f}'"><b>Aa</b><span>${f}</span></button>`;
-            }).join('')}
+        <div class="acc-options">
+          <div class="acc-row">
+            <span class="acc-row-label">Chế độ</span>
+            <div class="acc-seg acc-modes" aria-label="Chế độ giao diện">
+              ${MODES.map(([v, n]) => `<button class="${on('mode', v).trim()}" data-k="mode" data-v="${v}" aria-pressed="${settings.mode === v}">${n}</button>`).join('')}
+            </div>
           </div>
-        </div>
-
-        <div class="acc-sec">
-          <div class="acc-label">Màu nhấn</div>
-          <div class="acc-colors">
-            ${ACCENTS.map(([c, n]) => `<button class="acc-color${on('accent', c)}" data-k="accent" data-v="${c}" title="${n}"><i style="background:${c}"></i><span>${n}</span></button>`).join('')}
+          <div class="acc-row">
+            <span class="acc-row-label">Font chữ</span>
+            <details class="acc-dropdown" name="acc-setting-picker">
+              <summary><b class="acc-font-sample">Aa</b><span>${settings.font}</span><span class="acc-chevron">⌄</span></summary>
+              <div class="acc-dropdown-menu" aria-label="Chọn font chữ">
+                ${Object.keys(FONTS).map(f => {
+                  ensureFont(f);
+                  return `<button class="acc-option${on('font', f)}" data-k="font" data-v="${f}" aria-label="${f}" style="font-family:'${f}'" aria-pressed="${settings.font === f}"><b class="acc-font-sample">Aa</b><span>${f}</span><span class="acc-check">${settings.font === f ? '✓' : ''}</span></button>`;
+                }).join('')}
+              </div>
+            </details>
           </div>
-        </div>
-
-        <div class="acc-sec">
-          <div class="acc-label">Cỡ giao diện</div>
-          <div class="acc-seg">
-            ${ZOOMS.map(([v, n]) => `<button class="${on('zoom', v).trim()}" data-k="zoom" data-v="${v}">${n}</button>`).join('')}
+          <div class="acc-row">
+            <span class="acc-row-label">Màu nhấn</span>
+            <details class="acc-dropdown" name="acc-setting-picker">
+              <summary><i class="acc-swatch" style="background:${settings.accent}"></i><span>${ACCENTS.find(([c]) => c === settings.accent)?.[1] || 'Màu hiện tại'}</span><span class="acc-chevron">⌄</span></summary>
+              <div class="acc-dropdown-menu" aria-label="Chọn màu nhấn">
+                ${ACCENTS.map(([c, n]) => `<button class="acc-option${on('accent', c)}" data-k="accent" data-v="${c}" aria-label="${n}" aria-pressed="${settings.accent === c}"><i class="acc-swatch" style="background:${c}"></i><span>${n}</span><span class="acc-check">${settings.accent === c ? '✓' : ''}</span></button>`).join('')}
+              </div>
+            </details>
+          </div>
+          <div class="acc-row">
+            <span class="acc-row-label">Cỡ giao diện</span>
+            <div class="acc-seg" aria-label="Cỡ giao diện">
+              ${ZOOMS.map(([v, n]) => `<button class="${on('zoom', v).trim()}" data-k="zoom" data-v="${v}" aria-pressed="${settings.zoom === v}">${n}</button>`).join('')}
+            </div>
           </div>
         </div>
 
