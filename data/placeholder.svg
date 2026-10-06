@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 700" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #07090b; }
+      .hairline { stroke: rgba(255, 255, 255, 0.08); stroke-width: 1; }
+      .reticle {
+        stroke: rgba(255, 255, 255, 0.35);
+        stroke-width: 2;
+        stroke-linecap: round;
+        transform-origin: 800px 350px;
+        transition: stroke 0.2s ease, transform 0.2s ease;
+      }
+      svg:hover .reticle {
+        stroke: rgba(255, 255, 255, 0.9);
+        transform: scale(1.2);
+      }
+    </style>
+  </defs>
+
+  <!-- Nền đen tối giản -->
+  <rect width="1600" height="700" class="bg" />
+
+  <!-- Sợi chỉ ngắm ngang & dọc qua tâm -->
+  <line x1="0" y1="350" x2="1600" y2="350" class="hairline" />
+  <line x1="800" y1="0" x2="800" y2="700" class="hairline" />
+
+  <!-- Dấu thập tâm ngắm Tactical (+) -->
+  <g class="reticle">
+    <line x1="786" y1="350" x2="814" y2="350" />
+    <line x1="800" y1="336" x2="800" y2="364" />
+  </g>
+</svg>

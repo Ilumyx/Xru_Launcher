@@ -41,15 +41,11 @@ window.LauncherGlobe = (() => {
           const continent = continents.find(c => c.id === region.id);
           const name = continent ? continent.name : region.id.toUpperCase();
           const code = continent ? continent.code : '';
-          const isAlert = region.id === 'eurasia';
-          return `<button class="globe-destination" data-destination="${region.id}" style="--region-color:#${region.color.toString(16).padStart(6, '0')}">
-            <span class="globe-region-dot"></span>
+          return `<button class="globe-destination" data-destination="${region.id}">
             <span class="globe-dest-info">
               <b>${name}</b>
-              <small>${code} · ${region.area}</small>
+              <small>${code}</small>
             </span>
-            ${isAlert ? '<span class="globe-dest-alert" title="548 ảnh chờ duyệt">548</span>' : ''}
-            <span class="globe-arrow">↗</span>
           </button>`;
         }).join('')}</div>
         <div class="globe-side-note">Kéo để xoay · Bấm để chọn</div>
@@ -78,62 +74,255 @@ window.LauncherGlobe = (() => {
     if (!data || !panel) return;
 
     const lands = data.lands || [];
-    const region = REGIONS.find(r => r.id === continentId);
-    const colorHex = region ? '#' + region.color.toString(16).padStart(6, '0') : '#00d2b4';
-
+    const fallbackImg = 'data/placeholder.svg';
     panel.innerHTML = `
-      <div class="lands-panel-head">
-        <div class="lands-eyebrow">
-          <span class="globe-region-dot" style="background:${colorHex};"></span>
-          <span>${continentId.toUpperCase()}</span>
-          <span class="lands-count">${lands.length} LANDS</span>
-        </div>
-        <p class="lands-role">${data.sub || ''}</p>
-      </div>
+      <div class="lands-panel-head">${continentId.toUpperCase()}</div>
       <div class="lands-list">
         ${lands.map(land => {
           const storedImg = localStorage.getItem('xru-land-img-' + land.name);
-          const imgSrc = storedImg || land.image || 'data/crawler_thumbs/01a0e65c-350d-7138-a0e8-3968873eb450.webp';
+          const imgSrc = storedImg || land.image || fallbackImg;
+          const isPlaceholder = imgSrc === fallbackImg;
+          // Link chính của card = module đầu tiên có URL thật ('#' = chưa có trang)
+          const main = (land.mods || []).find(m => m.url && m.url !== '#');
+          const href = main ? main.url : null;
+          const external = href && href.startsWith('http') ? ' target="_blank" rel="noopener"' : '';
+          const tag = href ? 'a' : 'div';
+          const attrs = href ? ` href="${href}"${external}` : '';
           return `
-            <article class="land-card" data-land="${land.name}">
-              <div class="land-thumb" title="Bấm để đổi ảnh" onclick="LauncherGlobe.changeLandImage('${land.name}')">
-                <img src="${imgSrc}" alt="${land.name}" loading="lazy" onerror="this.src='data/crawler_thumbs/01a0e65c-350d-7138-a0e8-3968873eb450.webp'" />
-                <span class="land-thumb-edit" title="Đổi ảnh đại diện">✎</span>
-                ${land.statusType === 'alert' ? '<span class="land-badge-alert">548 CHỜ</span>' : ''}
-              </div>
-              <div class="land-content">
-                <div class="land-head">
-                  <span class="land-code">${land.code}</span>
-                  <b class="land-title">${land.name}</b>
-                </div>
-                <p class="land-tagline">${land.tagline}</p>
-                <div class="land-actions">
-                  ${land.mods ? land.mods.slice(0, 2).map(m => `
-                    <a href="${m.url}" class="land-act-btn ${m.isAlert ? 'is-alert' : ''}" ${m.url.startsWith('http') ? 'target="_blank"' : ''}>
-                      ${m.label} ↗
-                    </a>
-                  `).join('') : ''}
-                </div>
-              </div>
-            </article>
+            <${tag} class="land-card${href ? '' : ' is-idle'}${isPlaceholder ? ' is-empty' : ''}" data-land="${land.name}"${attrs}>
+              <img src="${imgSrc}" alt="" loading="lazy" onerror="this.src='${fallbackImg}'" />
+              <span class="land-code">${land.code}</span>
+              <span class="land-edit" role="button" title="Đổi ảnh" onclick="event.preventDefault();event.stopPropagation();LauncherGlobe.changeLandImage('${land.name}')">✎</span>
+              <span class="land-caption">
+                <b class="land-title">${land.name}</b>
+                ${href ? '<span class="land-arrow">→</span>' : ''}
+              </span>
+            </${tag}>
           `;
         }).join('')}
       </div>
     `;
   }
 
+  // ---------------- SỬA ẢNH CARD: upload + kéo + zoom ----------------
+  // Khung cắt cùng tỉ lệ card (16:7). Lưu ra JPEG đã cắt sẵn (~100KB) vào localStorage,
+  // nên không cần server và card hiển thị đúng thứ bro đã chỉnh.
+  const IMG_KEY = name => 'xru-land-img-' + name;
+  const FRAME_RATIO = 16 / 7;
+  const OUT_W = 1200;
+  const MAX_ZOOM = 4;
+
+  function findLand(landName) {
+    const all = window.CONTINENTAL_DATA || {};
+    for (const key of Object.keys(all)) {
+      const land = (all[key].lands || []).find(l => l.name === landName);
+      if (land) return land;
+    }
+    return null;
+  }
+
   function changeLandImage(landName) {
-    const current = localStorage.getItem('xru-land-img-' + landName) || '';
-    const newUrl = prompt(`Đổi ảnh đại diện cho phân khu [${landName}]:\n(Dán đường dẫn ảnh mới hoặc để trống để khôi phục ảnh mặc định)`, current);
-    if (newUrl === null) return;
-    if (newUrl.trim() === '') {
-      localStorage.removeItem('xru-land-img-' + landName);
-    } else {
-      localStorage.setItem('xru-land-img-' + landName, newUrl.trim());
+    if (document.querySelector('.img-editor')) return;
+    const land = findLand(landName);
+    const startSrc = localStorage.getItem(IMG_KEY(landName)) || (land && land.image) || '';
+
+    const root = document.createElement('div');
+    root.className = 'img-editor';
+    root.setAttribute('role', 'dialog');
+    root.setAttribute('aria-modal', 'true');
+    root.innerHTML = `
+      <div class="img-editor-box">
+        <div class="img-editor-title">ĐỔI ẢNH // ${landName.toUpperCase()}</div>
+        <div class="img-editor-stage">
+          <img alt="" draggable="false" hidden />
+          <div class="img-editor-empty">Chưa có ảnh · Bấm "Tải ảnh lên"</div>
+          <div class="img-editor-crop-window">
+            <div class="crop-grid"></div>
+            <div class="crop-corner tl"></div>
+            <div class="crop-corner tr"></div>
+            <div class="crop-corner bl"></div>
+            <div class="crop-corner br"></div>
+          </div>
+        </div>
+        <div class="img-editor-zoom">
+          <span>−</span>
+          <input type="range" min="1" max="${MAX_ZOOM}" step="0.01" value="1" aria-label="Phóng to" />
+          <span>+</span>
+        </div>
+        <div class="img-editor-hint">Nắm kéo ảnh để căn góc · Lăn chuột hoặc kéo thanh trượt để phóng to/thu nhỏ</div>
+        <div class="img-editor-actions">
+          <label class="ie-btn">Tải ảnh lên<input type="file" accept="image/*" hidden /></label>
+          <button type="button" class="ie-btn" data-reset>Mặc định</button>
+          <span class="ie-spacer"></span>
+          <button type="button" class="ie-btn" data-cancel>Hủy</button>
+          <button type="button" class="ie-btn primary" data-save disabled>Lưu</button>
+        </div>
+      </div>`;
+    document.body.append(root);
+
+    const stage = root.querySelector('.img-editor-stage');
+    const cropWindow = root.querySelector('.img-editor-crop-window');
+    const img = stage.querySelector('img');
+    const empty = stage.querySelector('.img-editor-empty');
+    const slider = root.querySelector('input[type=range]');
+    const fileInput = root.querySelector('input[type=file]');
+    const saveBtn = root.querySelector('[data-save]');
+
+    let objectUrl = null;
+    let loaded = false;
+    let minScale = 1, zoom = 1, ox = 0, oy = 0;
+    let stageW = 0, stageH = 0, cropW = 0, cropH = 0, cropL = 0, cropT = 0;
+
+    const scale = () => minScale * zoom;
+
+    function updateBounds() {
+      stageW = stage.clientWidth;
+      stageH = stage.clientHeight;
+      cropW = cropWindow.clientWidth;
+      cropH = cropWindow.clientHeight;
+      cropL = (stageW - cropW) / 2;
+      cropT = (stageH - cropH) / 2;
     }
-    if (activeInstance && activeInstance.activeContinent) {
-      renderLandsPanel(activeInstance.activeContinent, activeInstance.container);
+
+    function clamp() {
+      // Ảnh luôn phủ kín hoàn toàn khung cắt ở giữa
+      ox = Math.min(cropL, Math.max(cropL + cropW - img.naturalWidth * scale(), ox));
+      oy = Math.min(cropT, Math.max(cropT + cropH - img.naturalHeight * scale(), oy));
     }
+
+    function apply() {
+      img.style.width = Math.round(img.naturalWidth * scale()) + 'px';
+      img.style.height = Math.round(img.naturalHeight * scale()) + 'px';
+      img.style.transform = `translate(${Math.round(ox)}px, ${Math.round(oy)}px)`;
+    }
+
+    function setZoom(next, cx, cy) {
+      if (!loaded) return;
+      if (cx === undefined || cy === undefined) {
+        cx = cropL + cropW / 2;
+        cy = cropT + cropH / 2;
+      }
+      next = Math.min(MAX_ZOOM, Math.max(1, next));
+      const ix = (cx - ox) / scale(), iy = (cy - oy) / scale();
+      zoom = next;
+      ox = cx - ix * scale();
+      oy = cy - iy * scale();
+      clamp();
+      slider.value = zoom;
+      apply();
+    }
+
+    function fit() {
+      updateBounds();
+      // minScale: ảnh vừa khít khung crop ở giữa
+      minScale = Math.max(cropW / img.naturalWidth, cropH / img.naturalHeight);
+      zoom = 1;
+      slider.value = 1;
+      ox = cropL + (cropW - img.naturalWidth * minScale) / 2;
+      oy = cropT + (cropH - img.naturalHeight * minScale) / 2;
+      apply();
+    }
+
+    function show(src) {
+      loaded = false; saveBtn.disabled = true;
+      img.onload = () => {
+        loaded = true; saveBtn.disabled = false;
+        img.hidden = false; empty.hidden = true;
+        fit();
+      };
+      img.onerror = () => { img.hidden = true; empty.hidden = false; };
+      img.src = src;
+    }
+
+    // --- Kéo ảnh ---
+    const k = () => stage.clientWidth / stage.getBoundingClientRect().width;
+    let drag = null;
+    stage.addEventListener('pointerdown', e => {
+      if (!loaded) return;
+      drag = { x: e.clientX, y: e.clientY, ox, oy };
+      stage.setPointerCapture(e.pointerId);
+      stage.classList.add('is-dragging');
+    });
+    stage.addEventListener('pointermove', e => {
+      if (!drag) return;
+      ox = drag.ox + (e.clientX - drag.x) * k();
+      oy = drag.oy + (e.clientY - drag.y) * k();
+      clamp(); apply();
+    });
+    const endDrag = () => { drag = null; stage.classList.remove('is-dragging'); };
+    stage.addEventListener('pointerup', endDrag);
+    stage.addEventListener('pointercancel', endDrag);
+
+    // --- Zoom bằng chuột ---
+    stage.addEventListener('wheel', e => {
+      e.preventDefault();
+      const rect = stage.getBoundingClientRect();
+      const cx = (e.clientX - rect.left) * k(), cy = (e.clientY - rect.top) * k();
+      setZoom(zoom * Math.exp(-e.deltaY * 0.0015), cx, cy);
+    }, { passive: false });
+    slider.addEventListener('input', () => setZoom(parseFloat(slider.value)));
+
+    // --- Upload ---
+    function loadFile(file) {
+      if (!file || !file.type.startsWith('image/')) return;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      objectUrl = URL.createObjectURL(file);
+      show(objectUrl);
+    }
+    fileInput.addEventListener('change', () => loadFile(fileInput.files[0]));
+    stage.addEventListener('dragover', e => e.preventDefault());
+    stage.addEventListener('drop', e => { e.preventDefault(); loadFile(e.dataTransfer.files[0]); });
+
+    // --- Lưu / Hủy / Mặc định ---
+    function refresh() {
+      if (activeInstance && activeInstance.activeContinent) {
+        renderLandsPanel(activeInstance.activeContinent, activeInstance.container);
+      }
+    }
+
+    function close() {
+      document.removeEventListener('keydown', onKey, true);
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      root.remove();
+    }
+
+    function save() {
+      if (!loaded) return;
+      updateBounds();
+      const s = scale();
+      const sx = (cropL - ox) / s;
+      const sy = (cropT - oy) / s;
+      const sw = cropW / s;
+      const sh = cropH / s;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = OUT_W;
+      canvas.height = Math.round(OUT_W / FRAME_RATIO);
+      canvas.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+      let dataUrl;
+      try { dataUrl = canvas.toDataURL('image/jpeg', 0.85); }
+      catch (err) { alert('Không xuất được ảnh này (ảnh từ nguồn ngoài bị chặn). Hãy tải ảnh lên từ máy.'); return; }
+      try { localStorage.setItem(IMG_KEY(landName), dataUrl); }
+      catch (err) { alert('Bộ nhớ trình duyệt đầy. Hãy đặt lại "Mặc định" ở vài card khác rồi lưu lại.'); return; }
+      close(); refresh();
+    }
+
+    function onKey(e) {
+      // Chặn phím tắt của trang (1-4, G, C) khi đang sửa ảnh
+      e.stopPropagation();
+      if (e.key === 'Escape') close();
+    }
+    document.addEventListener('keydown', onKey, true);
+
+    saveBtn.addEventListener('click', save);
+    root.querySelector('[data-cancel]').addEventListener('click', close);
+    root.querySelector('[data-reset]').addEventListener('click', () => {
+      localStorage.removeItem(IMG_KEY(landName));
+      close(); refresh();
+    });
+    root.addEventListener('pointerdown', e => { if (e.target === root) close(); });
+
+    if (startSrc) show(startSrc);
   }
 
   function mount(container, onSelect) {
@@ -200,13 +389,24 @@ window.LauncherGlobe = (() => {
       requestDraw();
     }
 
+    // Bảng màu đơn sắc: chỉ độ sáng phân biệt trạng thái
+    const TONE = {
+      sea: '#1b1b1b',
+      land: '#343434',      // quốc gia ngoài 4 khối
+      region: '#484848',    // lục địa XRU, chưa chọn
+      hover: '#6e6e6e',
+      selected: '#b4b4b4',
+      border: '#1b1b1b',
+      borderSelected: '#ffffff'
+    };
+
     function draw() {
       context.clearRect(0, 0, width, height);
       projection.rotate(rotation);
 
       // Đáy biển quả cầu
       context.beginPath(); path({ type: 'Sphere' });
-      context.fillStyle = '#0a1215'; context.fill();
+      context.fillStyle = TONE.sea; context.fill();
 
       // Vẽ từng nhóm quốc gia
       if (groups) {
@@ -216,46 +416,31 @@ window.LauncherGlobe = (() => {
           const isHovered = region && region === activeHoverRegion;
 
           context.beginPath(); path(group.geometry);
-          context.fillStyle = region ? '#' + region.color.toString(16).padStart(6, '0') : '#202b30';
-
-          if (region) {
-            context.globalAlpha = isSelected ? 1.0 : (isHovered ? 0.75 : 0.35);
-          } else {
-            context.globalAlpha = 0.6;
-          }
+          context.fillStyle = !region ? TONE.land : isSelected ? TONE.selected : isHovered ? TONE.hover : TONE.region;
           context.fill();
 
-          // Viền của lục địa
-          if (isSelected) {
-            context.globalAlpha = 1.0;
-            context.strokeStyle = '#ffffff';
-            context.lineWidth = 1.1;
-            context.stroke();
-          } else {
-            context.globalAlpha = 0.8;
-            context.strokeStyle = '#121d21';
-            context.lineWidth = 0.5;
-            context.stroke();
-          }
+          // Viền quốc gia
+          context.strokeStyle = isSelected ? TONE.borderSelected : TONE.border;
+          context.lineWidth = isSelected ? 0.8 : 0.5;
+          context.stroke();
         }
       }
 
       // Lưới kinh vĩ độ
       if (grid) {
         context.beginPath(); path(grid);
-        context.globalAlpha = 1.0;
-        context.strokeStyle = 'rgba(138,161,168,.1)';
+        context.strokeStyle = 'rgba(255,255,255,.07)';
         context.lineWidth = 0.5;
         context.stroke();
       }
 
       // Đổ bóng 3D hình cầu
       const shade = context.createRadialGradient(width / 2 + radius * .35, height / 2 - radius * .45, radius * .1, width / 2, height / 2, radius);
-      shade.addColorStop(0, 'rgba(5,12,16,0)');
-      shade.addColorStop(1, 'rgba(5,12,16,.36)');
+      shade.addColorStop(0, 'rgba(0,0,0,0)');
+      shade.addColorStop(1, 'rgba(0,0,0,.35)');
       context.beginPath(); path({ type: 'Sphere' });
       context.fillStyle = shade; context.fill();
-      context.strokeStyle = 'rgba(80,122,134,.35)'; context.lineWidth = 1; context.stroke();
+      context.strokeStyle = 'rgba(255,255,255,.16)'; context.lineWidth = 1; context.stroke();
     }
 
     function tick(time) {

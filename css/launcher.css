@@ -57,12 +57,10 @@
   color: var(--accent);
 }
 .stat-value.ok {
-  color: var(--accept);
-}
-  color: var(--accent);
-}
-.stat-value.ok {
   color: var(--active-cyan);
+}
+.stat-value.federal-online {
+  color: #ffffff;
 }
 
 /* ==========================================================================

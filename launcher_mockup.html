@@ -44,31 +44,10 @@
         </a>
 
         <div class="rail-nav">
-          <!-- Tìm kiếm (Array) ngay dưới logo — cùng chỗ với nút đóng/mở bên Gate -->
+          <!-- Tìm kiếm (Array) ngay dưới logo -->
           <a href="array_search.html" class="rail-icon-btn" data-tooltip="Array (/ hoặc Ctrl+K)" style="text-decoration:none;">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-4.35-4.35"/></svg>
           </a>
-          <div class="rail-divider" style="margin:2px 0;"></div>
-
-          <!-- 1. EURAMERIKA: AI Infrastructure & Model Industry -->
-          <button class="rail-icon-btn" data-continent="euramerika" data-tooltip="EURAMERIKA" onclick="switchContinent('euramerika')">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>
-          </button>
-
-          <!-- 2. EURASIA: Data & Labeling Industry (Mặc định) -->
-          <button class="rail-icon-btn is-active" data-continent="eurasia" data-tooltip="EURASIA" onclick="switchContinent('eurasia')">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-          </button>
-
-          <!-- 3. EURUSKA: Content Factory (Montage & Render Shorts 9:16) -->
-          <button class="rail-icon-btn" data-continent="euruska" data-tooltip="EURUSKA" onclick="switchContinent('euruska')">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M7 4v16M17 4v16M3 9h4M17 9h4M3 15h4M17 15h4"/><polygon points="11 10 14 12 11 14" fill="currentColor"/></svg>
-          </button>
-
-          <!-- 4. EUROPA: Tenant-Facing (SaaS & Ngoại giao Đối tác) -->
-          <button class="rail-icon-btn" data-continent="europa" data-tooltip="EUROPA" onclick="switchContinent('europa')">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.5 9h17M3.5 15h17"/></svg>
-          </button>
         </div>
       </div>
 
@@ -260,31 +239,15 @@
       <section class="list-view" id="view-list">
         <div class="itin-header">
           <span>Mã</span>
-          <span>Phân Khu (Land)</span>
+          <span>Phân Khu (Sector)</span>
           <span>Module Khả Dụng</span>
           <span>Hoạt Động Cuối</span>
           <span>Trạng Thái</span>
         </div>
 
-        <!-- ROW 1: Gate -->
-        <div class="itin-row" onclick="if(!event.target.closest('a')) window.location.href='gate_image.html'" style="cursor:pointer;">
-          <span class="itin-code">SEC-01</span>
-          <div class="itin-name">
-            <span class="status-dot"></span>
-            <a href="gate_image.html" style="color:inherit; text-decoration:none;" title="Vào bàn làm việc Gate"><b>Gate</b> ↗</a>
-          </div>
-          <div class="itin-mods">
-            <a href="gate_image.html" class="itin-mod-pill alert" target="_blank">Duyệt ảnh (548 chờ)</a>
-            <a href="gate_video.html" class="itin-mod-pill" target="_blank">Duyệt video</a>
-            <a href="/p/loadout?land=Gate" class="itin-mod-pill">Loadout</a>
-          </div>
-          <div class="itin-ago">Vừa xong</div>
-          <div class="itin-status live">● SẴN SÀNG</div>
-        </div>
-
-        <!-- ROW 2: Crawler -->
+        <!-- ROW 1: Crawler -->
         <div class="itin-row">
-          <span class="itin-code">SEC-02</span>
+          <span class="itin-code">SECTOR-1</span>
           <div class="itin-name">
             <span class="status-dot"></span>
             <b>Crawler</b>
@@ -298,9 +261,25 @@
           <div class="itin-status live">● HOẠT ĐỘNG</div>
         </div>
 
+        <!-- ROW 2: Gate -->
+        <div class="itin-row" onclick="if(!event.target.closest('a')) window.location.href='gate_image.html'" style="cursor:pointer;">
+          <span class="itin-code">SECTOR-2</span>
+          <div class="itin-name">
+            <span class="status-dot"></span>
+            <a href="gate_image.html" style="color:inherit; text-decoration:none;" title="Vào bàn làm việc Gate"><b>Gate</b> ↗</a>
+          </div>
+          <div class="itin-mods">
+            <a href="gate_image.html" class="itin-mod-pill alert" target="_blank">Duyệt ảnh (548 chờ)</a>
+            <a href="gate_video.html" class="itin-mod-pill" target="_blank">Duyệt video</a>
+            <a href="/p/loadout?land=Gate" class="itin-mod-pill">Loadout</a>
+          </div>
+          <div class="itin-ago">Vừa xong</div>
+          <div class="itin-status live">● SẴN SÀNG</div>
+        </div>
+
         <!-- ROW 3: Foundry -->
         <div class="itin-row">
-          <span class="itin-code">SEC-03</span>
+          <span class="itin-code">SECTOR-3</span>
           <div class="itin-name">
             <span class="status-dot stale"></span>
             <b>Foundry</b>
@@ -315,7 +294,7 @@
 
         <!-- ROW 4: Division -->
         <div class="itin-row">
-          <span class="itin-code">SEC-04</span>
+          <span class="itin-code">SECTOR-4</span>
           <div class="itin-name">
             <span class="status-dot"></span>
             <b>Division</b>
@@ -332,11 +311,11 @@
       <!-- Footer HUD -->
       <footer class="hud-footer">
         <div class="key-hints">
-          <span><span class="key">1</span> Cards</span>
-          <span><span class="key">2</span> List</span>
-          <span><span class="key">/</span> Tìm kiếm</span>
-          <span><span class="key">G</span> Gate</span>
-          <span><span class="key">C</span> Crawler</span>
+          <span><span class="key">1</span> Euramerika</span>
+          <span><span class="key">2</span> Eurasia</span>
+          <span><span class="key">3</span> Euruska</span>
+          <span><span class="key">4</span> Europa</span>
+          <span><span class="key">/</span> Array</span>
         </div>
         <div>XRU FEDERAL SYSTEM // 2026</div>
       </footer>

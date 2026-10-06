@@ -21,7 +21,7 @@ const CONTINENTAL_DATA = {
         name: 'EURAMERIKA',
         role: 'AI Infrastructure & Model Industry',
         desc: 'Hậu phương AI Liên Bang: Cung cấp API LLM local, YOLO, SAM và ươm tạo model',
-        landsCount: '2 Countries (Grid, Incubator)',
+        landsCount: '2 Sectors (Grid, Incubator)',
         status: '● SẴN SÀNG',
         statusType: 'live'
       },
@@ -31,7 +31,7 @@ const CONTINENTAL_DATA = {
         name: 'EURASIA',
         role: 'Data & Labeling Industry',
         desc: 'Công xưởng dữ liệu Liên Bang: Thu thập, kiểm định thông quan và bầy AI gán nhãn',
-        landsCount: '4 Countries (Gate, Crawler, Foundry, Division)',
+        landsCount: '4 Sectors (Crawler, Gate, Foundry, Division)',
         status: '● HOẠT ĐỘNG (548 chờ)',
         statusType: 'alert'
       },
@@ -41,7 +41,7 @@ const CONTINENTAL_DATA = {
         name: 'EURUSKA',
         role: 'Content Factory',
         desc: 'Tổ hợp chế tạo khí tài: Cắt dựng montage, hiệu ứng, render Shorts 9:16',
-        landsCount: '2 Countries (Processing, Manufacturing)',
+        landsCount: '2 Sectors (Processing, Manufacturing)',
         status: '● HOẠT ĐỘNG',
         statusType: 'live'
       },
@@ -51,7 +51,7 @@ const CONTINENTAL_DATA = {
         name: 'EUROPA',
         role: 'Tenant-Facing & SaaS',
         desc: 'Khối ngoại giao: Giao diện SaaS bóng bẩy, tactical dashboard và tiếp đón đối tác',
-        landsCount: '3 Countries (Interface, Delivery, Tenant)',
+        landsCount: '3 Sectors (Interface, Delivery, Tenant)',
         status: '▲ STAGING',
         statusType: 'stale'
       }
@@ -69,10 +69,10 @@ const CONTINENTAL_DATA = {
     ],
     lands: [
       {
-        code: '1.1',
+        code: 'SECTOR-1',
         name: 'Grid',
         tagline: 'Cung cấp API LLM local, YOLO và SAM cho Eurasia (Xru_Grid)',
-        image: 'data/crawler_thumbs/01a0e65c-350e-7bd8-8a56-2b759bc978d6.webp',
+        image: '',
         mods: [
           { label: 'API Local', url: '#' },
           { label: 'YOLO v11', url: '#' },
@@ -83,10 +83,10 @@ const CONTINENTAL_DATA = {
         statusType: 'live'
       },
       {
-        code: '1.2',
+        code: 'SECTOR-2',
         name: 'Incubator',
         tagline: 'Huấn luyện và ươm tạo model chuyên dụng (Xru_Incubator)',
-        image: 'data/crawler_thumbs/01a0e65c-350e-7e06-b816-b0d9bcca38ea.webp',
+        image: '',
         mods: [
           { label: 'Training Pipeline', url: '#' },
           { label: 'Weights & Ckpt', url: '#' }
@@ -104,28 +104,15 @@ const CONTINENTAL_DATA = {
     sub: 'Lục địa Công xưởng Dữ liệu & Kiểm định Thông quan Liên Bang XRU',
     stats: [
       { label: 'PO Pending', value: '548', type: 'alert' },
-      { label: 'Active Lands', value: '3 / 4', type: 'ok' },
+      { label: 'Active Sectors', value: '4 / 4', type: 'ok' },
       { label: 'System State', value: 'ONLINE', type: 'ok' }
     ],
     lands: [
       {
-        code: 'SEC-01',
-        name: 'Gate',
-        tagline: 'Kiểm định đầu vào & Cửa khẩu thông quan',
-        image: 'data/crawler_thumbs/01a0e65c-350d-7138-a0e8-3968873eb450.webp',
-        mods: [
-          { label: 'Duyệt ảnh (548 chờ)', url: 'gate_image.html', isAlert: true },
-          { label: 'Duyệt video', url: 'gate_video.html' }
-        ],
-        ago: 'Vừa xong',
-        status: '● SẴN SÀNG',
-        statusType: 'live'
-      },
-      {
-        code: 'SEC-02',
+        code: 'SECTOR-1',
         name: 'Crawler',
         tagline: 'Vòi bạch tuộc thu thập nguyên liệu thô (Video / Image / News)',
-        image: 'data/crawler_thumbs/01a0e65c-350d-72bf-9bf8-4bd81d579c2c.webp',
+        image: '',
         mods: [
           { label: 'Dashboard', url: 'crawler_dash.html' },
           { label: 'Nguồn đã thêm', url: 'crawler_sources.html' }
@@ -135,10 +122,23 @@ const CONTINENTAL_DATA = {
         statusType: 'live'
       },
       {
-        code: 'SEC-03',
+        code: 'SECTOR-2',
+        name: 'Gate',
+        tagline: 'Kiểm định đầu vào & Cửa khẩu thông quan',
+        image: '',
+        mods: [
+          { label: 'Duyệt ảnh (548 chờ)', url: 'gate_image.html', isAlert: true },
+          { label: 'Duyệt video', url: 'gate_video.html' }
+        ],
+        ago: 'Vừa xong',
+        status: '● SẴN SÀNG',
+        statusType: 'live'
+      },
+      {
+        code: 'SECTOR-3',
         name: 'Foundry',
         tagline: 'Tiền xử lý + Đóng gói Work Item cho dây chuyền gán nhãn',
-        image: 'data/crawler_thumbs/01a0e65c-350d-782e-b5fa-3783d85bec0b.webp',
+        image: '',
         mods: [
           { label: 'Tiền xử lý', url: '#' },
           { label: 'Work Item', url: '#' }
@@ -148,10 +148,10 @@ const CONTINENTAL_DATA = {
         statusType: 'stale'
       },
       {
-        code: 'SEC-04',
+        code: 'SECTOR-4',
         name: 'Division',
         tagline: 'Bầy AI gán nhãn & Định danh thực thể (Labeling platoon)',
-        image: 'data/crawler_thumbs/01a0e65c-350d-7b31-ba9e-cf7db848360d.webp',
+        image: '',
         mods: [
           { label: 'Trực chiến (:5057)', url: 'http://127.0.0.1:5057' }
         ],
@@ -173,10 +173,10 @@ const CONTINENTAL_DATA = {
     ],
     lands: [
       {
-        code: '3.1',
+        code: 'SECTOR-1',
         name: 'Processing',
         tagline: 'Cắt dựng montage, hiệu ứng âm thanh, render engine',
-        image: 'data/crawler_thumbs/01a0e65c-350d-7c5a-a367-bf1bdfaf6e21.webp',
+        image: '',
         mods: [
           { label: 'Montage Editor', url: '#' },
           { label: 'Render Queue', url: '#' }
@@ -186,10 +186,10 @@ const CONTINENTAL_DATA = {
         statusType: 'live'
       },
       {
-        code: '3.2',
+        code: 'SECTOR-2',
         name: 'Manufacturing',
         tagline: 'Đóng gói xuất xưởng Content thành phẩm (Shorts 9:16)',
-        image: 'data/crawler_thumbs/01a0e65c-350e-704b-b262-4f62b73d7eb4.webp',
+        image: '',
         mods: [
           { label: 'Kho thành phẩm', url: '#' },
           { label: 'Xuất bản tự động', url: '#' }
@@ -212,10 +212,10 @@ const CONTINENTAL_DATA = {
     ],
     lands: [
       {
-        code: '4.1',
+        code: 'SECTOR-1',
         name: 'Interface',
         tagline: 'Giao diện SaaS bóng bẩy, tactical dashboard',
-        image: 'data/crawler_thumbs/01a0e65c-350f-7a2c-bb29-be0f481a670c.webp',
+        image: '',
         mods: [
           { label: 'Tactical Dashboard', url: '#' },
           { label: 'Client Portal', url: '#' }
@@ -225,10 +225,10 @@ const CONTINENTAL_DATA = {
         statusType: 'live'
       },
       {
-        code: '4.2',
+        code: 'SECTOR-2',
         name: 'Delivery',
         tagline: 'Kênh phân phối nội dung đa nền tảng tự động',
-        image: 'data/crawler_thumbs/01a0e65c-350f-7aaf-b364-73fd3253bfb1.webp',
+        image: '',
         mods: [
           { label: 'Multi-Platform', url: '#' },
           { label: 'Schedules', url: '#' }
@@ -238,10 +238,10 @@ const CONTINENTAL_DATA = {
         statusType: 'live'
       },
       {
-        code: '4.3',
+        code: 'SECTOR-3',
         name: 'Tenant Interaction',
         tagline: 'Tiếp đón và quản lý quyền truy cập đối tác / khách hàng bên ngoài',
-        image: 'data/crawler_thumbs/01a0e65c-350f-7b98-9d9d-e11aca3402dd.webp',
+        image: '',
         mods: [
           { label: 'Access Keys', url: '#' },
           { label: 'Contracts', url: '#' }
@@ -291,20 +291,11 @@ function renderStage() {
     <header class="hud-header federal-header">
       <div class="hud-title-group">
         <h1>XRU FEDERAL</h1>
-        <p class="hud-sub">Trung Tâm Chỉ Huy Liên Bang // 4 Lục Địa</p>
       </div>
       <div class="hud-stats">
         <div class="stat-block">
-          <span class="stat-label">PO Pending</span>
-          <span class="stat-value alert">548</span>
-        </div>
-        <div class="stat-block">
-          <span class="stat-label">Lục Địa</span>
-          <span class="stat-value ok">4 Khối</span>
-        </div>
-        <div class="stat-block">
           <span class="stat-label">Hệ Thống</span>
-          <span class="stat-value ok">ONLINE</span>
+          <span class="stat-value federal-online">ONLINE</span>
         </div>
       </div>
     </header>
@@ -322,8 +313,6 @@ function renderStage() {
         <span><span class="key">3</span> Euruska</span>
         <span><span class="key">4</span> Europa</span>
         <span><span class="key">/</span> Array</span>
-        <span><span class="key">G</span> Gate</span>
-        <span><span class="key">C</span> Crawler</span>
       </div>
       <div>XRU FEDERAL SYSTEM // 2026</div>
     </footer>
@@ -352,12 +341,6 @@ window.addEventListener('keydown', (e) => {
   if (e.key === '2') switchContinent('eurasia');
   if (e.key === '3') switchContinent('euruska');
   if (e.key === '4') switchContinent('europa');
-  if (e.key.toLowerCase() === 'g') {
-    window.location.href = 'gate_image.html';
-  }
-  if (e.key.toLowerCase() === 'c') {
-    window.location.href = 'crawler_dash.html';
-  }
 });
 
 // Khởi chạy mặc định lúc nạp trang
