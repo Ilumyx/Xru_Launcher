@@ -26,7 +26,7 @@
 .stage:has(> .federal-map) {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  height: calc(100vh / var(--ui-zoom));
   padding-top: 18px; /* Đẩy cụm header lên cao hơn */
 }
 
@@ -534,9 +534,3 @@
   }
   .land-card { aspect-ratio: 16 / 7; }
 }
-
-.land-edit {border:0;background:transparent;color:inherit;cursor:pointer;font:inherit;}
-.land-caption {flex-wrap:wrap;}
-.land-portals {display:flex;gap:12px;flex-wrap:wrap;font-size:12px;}
-.land-portals a:hover {text-decoration:underline;}
-@media(min-width:761px) and (max-width:1250px) { .federal-map {grid-template-columns:180px minmax(240px,1fr) 280px;gap:16px;} }

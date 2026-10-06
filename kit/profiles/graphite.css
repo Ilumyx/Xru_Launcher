@@ -1,0 +1,34 @@
+/* ==========================================================================
+   PROFILE: GRAPHITE — mặc định
+   Đơn sắc xám ấm, màu nhấn là trắng ngà. Màu thật chỉ còn ở ảnh và ở cảnh báo.
+
+   Sửa profile: chỉ sửa file này, mọi trang đổi theo.
+   Màu viết dạng "R, G, B" (ví dụ 231, 231, 226) để trang tự pha độ mờ.
+   ========================================================================== */
+:root, :root[data-profile="graphite"] {
+  /* Thang xám 16 nấc: 0 đen nhất → 15 trắng nhất */
+  --m-0:  #060605;  --m-1:  #0a0a09;  --m-2:  #10100f;  --m-3:  #161615;
+  --m-4:  #1d1d1c;  --m-5:  #242423;  --m-6:  #2d2d2b;  --m-7:  #383836;
+  --m-8:  #484845;  --m-9:  #5e5e5b;  --m-10: #767673;  --m-11: #92928f;
+  --m-12: #aeaea9;  --m-13: #cbcbc5;  --m-14: #e7e7e2;  --m-15: #fbfbf7;
+
+  --hairline-rgb: 255, 255, 255;   /* vạch kẻ mảnh */
+
+  --accent-rgb: 231, 231, 226;     /* màu nhấn: đang chạy, đang chọn, nút chính */
+  --on-accent:  #060605;           /* chữ nằm trên nền màu nhấn */
+  --warn-rgb:   240, 80, 46;       /* cảnh báo, chờ duyệt */
+  --hold-rgb:   229, 168, 59;      /* tạm giữ, quá hạn */
+}
+
+:root[data-ui-mode="light"]:not([data-profile]),
+:root[data-profile="graphite"][data-ui-mode="light"] {
+  --m-0:  #ffffff;  --m-1:  #f7f7f4;  --m-2:  #f0f0ed;  --m-3:  #e8e8e4;
+  --m-4:  #dfdfda;  --m-5:  #d4d4ce;  --m-6:  #c8c8c1;  --m-7:  #b4b4ac;
+  --m-8:  #909089;  --m-9:  #76766e;  --m-10: #62625b;  --m-11: #505049;
+  --m-12: #3c3c36;  --m-13: #292924;  --m-14: #191915;  --m-15: #0a0a09;
+
+  --hairline-rgb: 0, 0, 0;
+
+  --accent-rgb: 25, 25, 21;
+  --on-accent:  #fbfbf7;
+}

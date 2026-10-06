@@ -1,0 +1,7 @@
+<!doctype html>
+<!-- Link cũ: tự chuyển sang trang Gate mới (gate_image / gate_video / gate_dash) -->
+<meta charset="utf-8">
+<script>
+  const v = new URLSearchParams(location.search).get('view');
+  location.replace(['video', 'dash'].includes(v) ? `gate_${v}.html` : 'gate_image.html');
+</script>

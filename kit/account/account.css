@@ -1,0 +1,321 @@
+/* ==========================================================================
+   XRU ACCOUNT — MENU AVATAR + BẢNG CÀI ĐẶT GIAO DIỆN (PURE BLACK BRUTALIST)
+   Đen tuyền 100% (#000000), không nền xám, viền hairline trắng mỏng sắc lẹm
+   ========================================================================== */
+.user-avatar { user-select: none; }
+
+/* ---------- Menu bật lên cạnh avatar ---------- */
+.acc-menu {
+  position: fixed;
+  left: 72px;
+  bottom: 16px;
+  z-index: 300;
+  width: 220px;
+  padding: 4px;
+  background: #000000;
+  border: 1px solid var(--hairline-hi);
+  border-radius: 0;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  transform: translateY(4px);
+  pointer-events: none;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+.acc-menu.is-open { opacity: 1; transform: none; pointer-events: auto; }
+
+.acc-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 10px;
+}
+.acc-ava {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 0;
+  background: #000000;
+  border: 1px solid var(--hairline-hi);
+  font: 600 11px var(--font-mono);
+  color: #ffffff;
+}
+.acc-name {
+  font: 600 13px var(--font-sans);
+  color: #ffffff;
+}
+.acc-role {
+  font: 11px var(--font-mono);
+  color: var(--fg-dim);
+}
+.acc-sep {
+  display: none;
+}
+
+.acc-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--fg);
+  font: 13px var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+.acc-item:hover {
+  background: #ffffff;
+  color: #000000;
+}
+.acc-item svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+/* ---------- Bảng cài đặt ---------- */
+.acc-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.acc-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.acc-panel {
+  width: min(560px, calc(100vw / var(--ui-zoom) - 32px));
+  background: #000000;
+  border: 1px solid var(--hairline-hi);
+  border-radius: 0;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.95);
+}
+
+.acc-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 28px 8px;
+  border-bottom: 0;
+  font: 600 13px var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.acc-x {
+  background: none;
+  border: 0;
+  color: var(--fg-dim);
+  font: 16px var(--font-mono);
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.12s;
+}
+.acc-x:hover {
+  color: #ffffff;
+}
+
+/* Các hàng tùy chọn — Không vạch kẻ chia đôi, dùng khoảng thở tự nhiên */
+.acc-options {
+  padding: 10px 28px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.acc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 4px 0;
+  border-bottom: 0;
+}
+
+.acc-row-label {
+  color: var(--fg-dim);
+  font: 12px var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Dropdown chọn Font & Màu — Nền đen tuyền, viền hairline */
+.acc-dropdown {
+  position: relative;
+  width: 310px;
+}
+
+.acc-dropdown summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  min-height: 38px;
+  border: 1px solid var(--hairline-hi);
+  border-radius: 0;
+  background: #000000;
+  color: #ffffff;
+  font: 13px var(--font-sans);
+  cursor: pointer;
+  list-style: none;
+  transition: border-color 0.12s;
+}
+.acc-dropdown summary::-webkit-details-marker { display: none; }
+.acc-dropdown[open] summary,
+.acc-dropdown summary:hover { border-color: #ffffff; }
+
+.acc-chevron {
+  margin-left: auto;
+  color: var(--fg-dim);
+  font-size: 11px;
+}
+
+.acc-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 2px);
+  z-index: 10;
+  width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 2px;
+  border: 1px solid var(--hairline-hi);
+  border-radius: 0;
+  background: #000000;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.95);
+}
+
+.acc-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--fg);
+  font: 13px var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+.acc-option:hover,
+.acc-option.is-on {
+  background: #ffffff;
+  color: #000000;
+}
+
+.acc-check {
+  margin-left: auto;
+  font-weight: bold;
+}
+.acc-font-sample {
+  font-size: 14px;
+  font-weight: 600;
+}
+.acc-swatch {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* Nút chia đốt (Segmented) — Nền trong suốt/đen, active là khối trắng chữ đen đanh thép */
+.acc-seg {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 1px;
+  width: 310px;
+  padding: 1px;
+  background: transparent;
+  border: 1px solid var(--hairline-hi);
+  border-radius: 0;
+}
+
+.acc-seg button {
+  padding: 8px 4px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--fg-dim);
+  font: 12px var(--font-mono);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+.acc-seg button:hover {
+  color: #ffffff;
+}
+.acc-seg button.is-on {
+  background: #ffffff;
+  color: #000000;
+  font-weight: 700;
+}
+
+/* Đáy bảng cài đặt — Nút hành động */
+.acc-foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding: 14px 28px 22px;
+  border-top: 0;
+}
+
+.acc-ghost,
+.acc-primary {
+  padding: 9px 18px;
+  border-radius: 0;
+  font: 600 12px var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.acc-ghost {
+  background: transparent;
+  border: 1px solid var(--hairline-hi);
+  color: var(--fg-dim);
+}
+.acc-ghost:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.acc-primary {
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  color: #000000;
+  font-weight: 700;
+}
+.acc-primary:hover {
+  background: #f0f0ed;
+}
+
+:root[data-ui-mode="dark"] { color-scheme: dark; }
+
+@media (max-width: 680px) {
+  .acc-row { flex-wrap: wrap; gap: 10px; }
+  .acc-dropdown, .acc-seg { width: 100%; }
+  .acc-options { padding: 0 16px; }
+  .acc-panel { max-height: calc(100vh / var(--ui-zoom) - 24px); overflow-y: auto; }
+}

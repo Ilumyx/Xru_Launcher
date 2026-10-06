@@ -33,10 +33,10 @@ window.LauncherGlobe = (() => {
   }
 
   function markup(continents) {
-    return `<section class="federal-map" aria-label="Bản đồ chỉ huy Liên Bang">
+    return `<section class="federal-map" aria-label="Bản đồ chỉ huy Liên Bang" data-i18n-attr="aria-label:globe_cmd_map">
       <!-- CỘT 1: MENU LỤC ĐỊA -->
       <div class="globe-side">
-        <div class="globe-eyebrow">XRU // 4 LỤC ĐỊA</div>
+        <div class="globe-eyebrow">XRU // 4 CONTINENTS</div>
         <div class="globe-destinations">${REGIONS.map(region => {
           const continent = continents.find(c => c.id === region.id);
           const name = continent ? continent.name : region.id.toUpperCase();
@@ -48,21 +48,21 @@ window.LauncherGlobe = (() => {
             </span>
           </button>`;
         }).join('')}</div>
-        <div class="globe-side-note">Kéo để xoay · Bấm để chọn</div>
+        <div class="globe-side-note" data-i18n="rotate_hint">Kéo để xoay · Bấm để chọn</div>
       </div>
 
       <!-- CỘT 2: QUẢ CẦU 3D TRUNG TÂM -->
       <div class="globe-scene">
-        <canvas class="globe-chart" role="img" aria-label="Địa cầu tương tác 3D"></canvas>
-        <div class="globe-loading" role="status">Đang mở bản đồ…</div>
+        <canvas class="globe-chart" role="img" aria-label="Địa cầu tương tác 3D" data-i18n-attr="aria-label:globe_3d_aria"></canvas>
+        <div class="globe-loading" role="status" data-i18n="loading_map">Đang mở bản đồ…</div>
         <div class="globe-tools">
-          <button data-spin aria-label="Tạm dừng xoay">Ⅱ</button>
-          <button data-home aria-label="Đưa bản đồ về góc ban đầu">↺</button>
+          <button data-spin aria-label="Tạm dừng xoay" data-i18n-attr="aria-label:pause_spin">Ⅱ</button>
+          <button data-home aria-label="Đưa bản đồ về góc ban đầu" data-i18n-attr="aria-label:reset_view">↺</button>
         </div>
       </div>
 
       <!-- CỘT 3: THẺ LANDS + ẢNH (BÊN PHẢI) -->
-      <aside class="globe-lands-panel" id="globe-lands-panel" aria-label="Phân khu trực thuộc">
+      <aside class="globe-lands-panel" id="globe-lands-panel" aria-label="Phân khu trực thuộc" data-i18n-attr="aria-label:sectors_lbl">
         <!-- Render động qua renderLandsPanel -->
       </aside>
     </section>`;
@@ -73,7 +73,7 @@ window.LauncherGlobe = (() => {
     const panel = container ? container.querySelector('#globe-lands-panel') : document.getElementById('globe-lands-panel');
     if (!data || !panel) return;
 
-    const editTip = 'Đổi ảnh';
+    const editTip = window.XRU_I18N ? window.XRU_I18N.t('edit_img_tip') : 'Đổi ảnh';
     const lands = data.lands || [];
     panel.innerHTML = `
       <div class="lands-panel-head">${continentId.toUpperCase()}</div>
@@ -81,16 +81,24 @@ window.LauncherGlobe = (() => {
         ${lands.map(land => {
           // Ảnh card = file trên đĩa (assets/sectors/<tên>.jpg, do Launcher lưu). Chưa có file thì ô xám.
           const imgSrc = land.image || sectorImg(land.name);
-          const mods = (land.mods || []).filter(m => m.url && m.url !== '#');
+          const isPlaceholder = false;
+          // Link chính của card = module đầu tiên có URL thật ('#' = chưa có trang)
+          const main = (land.mods || []).find(m => m.url && m.url !== '#');
+          const href = main ? main.url : null;
+          const external = href && href.startsWith('http') ? ' target="_blank" rel="noopener"' : '';
+          const tag = href ? 'a' : 'div';
+          const attrs = href ? ` href="${href}"${external}` : '';
           return `
-            <article class="land-card${mods.length ? '' : ' is-idle'}" data-land="${land.name}">
+            <${tag} class="land-card${href ? '' : ' is-idle'}${isPlaceholder ? ' is-empty' : ''}" data-land="${land.name}"${attrs}>
               <img src="${imgSrc}" alt="" loading="lazy" onerror="this.closest('.land-card').classList.add('is-empty');this.remove()" />
               <span class="land-code">${land.code}</span>
-              <button class="land-edit" title="${editTip}" onclick="LauncherGlobe.changeLandImage('${land.name}')">✎</button>
-              <span class="land-caption"><b class="land-title">${land.name}</b>
-                <span class="land-portals">${mods.map(m => `<a href="${m.url}" target="_blank" rel="noopener">${m.label} ↗</a>`).join('')}</span>
+              <span class="land-edit" role="button" title="${editTip}" data-i18n-attr="title:edit_img_tip" onclick="event.preventDefault();event.stopPropagation();LauncherGlobe.changeLandImage('${land.name}')">✎</span>
+              <span class="land-caption">
+                <b class="land-title">${land.name}</b>
+                ${href ? '<span class="land-arrow">→</span>' : ''}
               </span>
-            </article>`;
+            </${tag}>
+          `;
         }).join('')}
       </div>
     `;
@@ -135,16 +143,18 @@ window.LauncherGlobe = (() => {
     if (document.querySelector('.img-editor')) return;
     const land = findLand(landName);
     const startSrc = (land && land.image) || sectorImg(landName);
+
+    const t = (k, fallback) => (window.XRU_I18N ? window.XRU_I18N.t(k) : fallback);
     const root = document.createElement('div');
     root.className = 'img-editor';
     root.setAttribute('role', 'dialog');
     root.setAttribute('aria-modal', 'true');
     root.innerHTML = `
       <div class="img-editor-box">
-        <div class="img-editor-title">ĐỔI ẢNH // ${landName.toUpperCase()}</div>
+        <div class="img-editor-title">${t('img_editor_title', 'ĐỔI ẢNH')} // ${landName.toUpperCase()}</div>
         <div class="img-editor-stage">
           <img alt="" draggable="false" hidden />
-          <div class="img-editor-empty">Chưa có ảnh · Bấm "Tải ảnh lên"</div>
+          <div class="img-editor-empty">${t('img_editor_empty', 'Chưa có ảnh · Bấm "Tải ảnh lên"')}</div>
           <div class="img-editor-crop-window">
             <div class="crop-grid"></div>
             <div class="crop-corner tl"></div>
@@ -155,16 +165,16 @@ window.LauncherGlobe = (() => {
         </div>
         <div class="img-editor-zoom">
           <span>−</span>
-          <input type="range" min="1" max="${MAX_ZOOM}" step="0.01" value="1" aria-label="Phóng to" />
+          <input type="range" min="1" max="${MAX_ZOOM}" step="0.01" value="1" aria-label="${t('zoom_in', 'Phóng to')}" />
           <span>+</span>
         </div>
-        <div class="img-editor-hint">Nắm kéo ảnh để căn góc · Lăn chuột hoặc kéo thanh trượt để phóng to/thu nhỏ</div>
+        <div class="img-editor-hint">${t('img_editor_hint', 'Nắm kéo ảnh để căn góc · Lăn chuột hoặc kéo thanh trượt để phóng to/thu nhỏ')}</div>
         <div class="img-editor-actions">
-          <label class="ie-btn">Tải ảnh lên<input type="file" accept="image/*" hidden /></label>
-          <button type="button" class="ie-btn" data-reset>Mặc định</button>
+          <label class="ie-btn">${t('img_editor_upload', 'Tải ảnh lên')}<input type="file" accept="image/*" hidden /></label>
+          <button type="button" class="ie-btn" data-reset>${t('img_editor_default', 'Mặc định')}</button>
           <span class="ie-spacer"></span>
-          <button type="button" class="ie-btn" data-cancel>Hủy</button>
-          <button type="button" class="ie-btn primary" data-save disabled>Lưu</button>
+          <button type="button" class="ie-btn" data-cancel>${t('img_editor_cancel', 'Hủy')}</button>
+          <button type="button" class="ie-btn primary" data-save disabled>${t('img_editor_save', 'Lưu')}</button>
         </div>
       </div>`;
     document.body.append(root);
@@ -310,10 +320,10 @@ window.LauncherGlobe = (() => {
       canvas.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
       let dataUrl;
       try { dataUrl = canvas.toDataURL('image/jpeg', 0.85); }
-      catch (err) { alert('Không xuất được ảnh này (ảnh từ nguồn ngoài bị chặn). Hãy tải ảnh lên từ máy.'); return; }
+      catch (err) { alert(t('export_err', 'Không xuất được ảnh này (ảnh từ nguồn ngoài bị chặn). Hãy tải ảnh lên từ máy.')); return; }
       putSectorImage(landName, dataUrl)
         .then(() => { close(); refresh(); })
-        .catch(() => alert('Không lưu được ảnh: hãy mở trang qua Launcher (python3 launcher.py).'));
+        .catch(() => alert(t('sector_save_err', 'Không lưu được ảnh: hãy mở trang qua Launcher (python3 launcher.py).')));
     }
 
     function onKey(e) {
@@ -350,8 +360,9 @@ window.LauncherGlobe = (() => {
     let projection, path, countries, groups, grid;
 
     function updateButton() {
+      const t = (k, fallback) => (window.XRU_I18N ? window.XRU_I18N.t(k) : fallback);
       spinButton.textContent = spinning ? 'Ⅱ' : '▷';
-      spinButton.setAttribute('aria-label', spinning ? 'Tạm dừng xoay' : 'Tiếp tục xoay');
+      spinButton.setAttribute('aria-label', spinning ? t('pause_spin', 'Tạm dừng xoay') : t('resume_spin', 'Tiếp tục xoay'));
       spinButton.setAttribute('aria-pressed', String(!spinning));
     }
 
@@ -624,7 +635,8 @@ window.LauncherGlobe = (() => {
       selectContinent(selectedContinent, false);
     }).catch(error => {
       if (disposed) return;
-      loading.textContent = 'Chưa mở được bản đồ. Chọn lục địa bằng các nút bên cạnh.';
+      const t = (k, fallback) => (window.XRU_I18N ? window.XRU_I18N.t(k) : fallback);
+      loading.textContent = t('map_load_err', 'Chưa mở được bản đồ. Chọn lục địa bằng các nút bên cạnh.');
       console.error(error);
     });
 

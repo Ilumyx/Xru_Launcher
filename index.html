@@ -1,55 +1,41 @@
 <!doctype html>
-<!-- chép từ template @71d58707aa093dddf0054a6ea4ada383b08daefc -->
-<html lang="vi"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sảnh · XRU Federal</title>
-<link rel="stylesheet" href="home/color.css">
-  <style>
-    :root {
-      --font-sans:Arial,system-ui,sans-serif; --font-mono:ui-monospace,monospace;
-      --fs-label:12px; --fs-small:13px; --fs-body:14px; --fs-lead:16px;
-      --fs-title:22px; --fs-num:32px; --fs-hero:56px;
-      --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
-      --space-6:24px; --space-8:32px; --space-12:48px;
-      --h-control:40px; --h-action:44px; --radius:2px;
-    }
-    *,*::before,*::after { box-sizing:border-box; }
-    html,body { margin:0; height:100%; }
-    body { background:var(--bg); color:var(--fg); font:14px/1.5 var(--font-sans); }
-    a { color:inherit; text-decoration:none; }
-    button,input,select,textarea { font:inherit; color:inherit; }
-    button,a,select { touch-action:manipulation; }
-    :focus-visible { outline:2px solid var(--fg); outline-offset:2px; }
-    .screen { display:grid; grid-template-columns:64px 240px minmax(0,1fr); height:100dvh; }
-    .rail { display:flex; flex-direction:column; align-items:center; gap:20px; padding:20px 8px; background:var(--bg); border-right:1px solid var(--line); }
-    .rail a { display:grid; place-items:center; width:44px; min-height:40px; color:var(--fg-dim); font:12px var(--font-mono); }
-    .rail a:hover,.rail a[aria-current] { background:var(--panel); color:var(--fg-strong); }
-    .rail .rail-account { margin-top:auto; }
-    .filter-shelf { display:flex; flex-direction:column; gap:24px; min-height:0; padding:24px 20px; background:var(--panel); overflow:auto; }
-    .filter-shelf h2 { margin:0; color:var(--fg-strong); font-size:16px; }
-    .filter-shelf label { display:flex; flex-direction:column; gap:8px; font-size:13px; }
-    .filter-shelf select { width:100%; background:var(--surface); border:0; padding:10px; }
-    .screen-body { display:grid; grid-template-rows:auto minmax(0,1fr) auto; min-width:0; min-height:0; }
-    .page-head { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; padding:20px 24px; border-bottom:1px solid var(--line); }
-    .page-head h1 { margin:0; font-size:22px; color:var(--fg-strong); }
-    .room { min-width:0; min-height:0; overflow:auto; }
-    .page-foot { display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:14px 24px; border-top:1px solid var(--line); color:var(--fg-dim); font:12px var(--font-mono); }
-    @media(max-width:760px) {
-      .screen { grid-template-columns:52px minmax(0,1fr); height:auto; min-height:100dvh; }
-      .rail { grid-row:1 / 3; padding:16px 4px; }
-      .filter-shelf { grid-column:2; max-height:340px; }
-      .screen-body { grid-column:2; min-height:70dvh; }
-      .page-head,.page-foot { padding:16px; }
-    }
-  </style>
-<link rel="stylesheet" href="home/launcher.css"><link rel="stylesheet" href="home/globe/globe.css">
-</head><body>
-<div class="screen lobby">
-<nav class="rail" aria-label="Điều hướng sảnh">
-  <a href="/" aria-current="page" aria-label="Sảnh XRU">XRU</a>
-  <a class="rail-account" href="/account/" aria-label="Tài khoản">IL</a>
-</nav>
-<main class="stage" aria-label="Sảnh Liên Bang"></main>
-</div>
-<script src="home/globe/globe.js"></script><script src="home/launcher.js"></script>
-</body></html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XRU Federal Launcher</title>
+  
+  <!-- Font Stacks -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Modular CSS -->
+  <link rel="stylesheet" href="kit/tokens.css">
+  <link rel="stylesheet" href="kit/rail/rail.css">
+  <link rel="stylesheet" href="kit/page/page.css">
+  <link rel="stylesheet" href="home/launcher.css">
+  <link rel="stylesheet" href="home/globe/globe.css">
+  <link rel="stylesheet" href="kit/account/account.css?v=2">
+  <script src="kit/i18n/i18n.js"></script>
+  <script src="home/rail_menu.js"></script>
+  <script src="kit/account/account.js?v=2"></script>
+</head>
+<body>
+
+  <div class="shell">
+    
+    <!-- Rail dọc mỏng kiểu Codex (64px) — Bản đồ Lục Địa XRU FEDERAL -->
+    <nav class="rail" data-rail="launcher"></nav><script src="kit/rail/rail.js"></script>
+
+    <!-- Vùng sân khấu chính -->
+    <!-- Sân khấu: home/launcher.js vẽ (quả cầu, lục địa, sector) -->
+    <main class="stage"></main>
+  </div>
+
+  <!-- Modular Scripts -->
+  <script src="home/search.js?v=4"></script>
+  <script src="home/globe/globe.js"></script>
+  <script src="home/launcher.js?v=4"></script>
+</body>
+</html>
