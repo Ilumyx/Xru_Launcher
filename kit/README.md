@@ -13,7 +13,7 @@ Phiên bản: `kit/VERSION`. Kit **không biết land nào có màn gì**: menu,
 | Đầu/chân trang? | `page/page.css` | `.page-head` (LỤC ĐỊA / LAND / MÀN) + `.page-foot` (phím tắt trái, nhãn phải). |
 | Cột lọc trái? | `sidebar/` | Số đếm · tìm nhanh · lọc · sắp xếp · danh sách · phân trang. Rộng `--side-w`. Rail gắn `data-panel` để đóng/mở. |
 | Cài đặt (avatar IL)? | `account/` | Ngôn ngữ, profile, sáng/tối, font, màu nhấn, cỡ. Lưu trong trình duyệt. |
-| Chữ hai thứ tiếng? | `i18n/i18n.js` | `data-i18n="khóa"`, đủ `vi` + `en`. English mặc định. Dữ liệu (tên kênh, chú thích) giữ tiếng gốc. |
+| Chữ hai thứ tiếng? | `i18n/i18n.js` | `data-i18n="khóa"`, đủ `vi` + `en`. English mặc định. Dữ liệu (tên kênh, chú thích) giữ tiếng gốc. Chữ riêng của land: land tự giữ, nạp bằng `XRU_I18N.add({vi, en})`. |
 
 ## Thêm profile
 Copy `profiles/graphite.css` → đổi tên + `data-profile`; thêm 1 dòng `@import` trong `tokens.css`; 1 dòng vào `PROFILES` trong `account/account.js`.

@@ -499,14 +499,24 @@
       });
     });
 
+    applied = true;
     // Bắn sự kiện để các view (Launcher, Globe, Gate) tự re-render nếu cần
     window.dispatchEvent(new CustomEvent('xru-lang-applied', { detail: l }));
+  }
+
+  // Land mang từ điển riêng (chữ của màn land, không nhét vào kit):
+  //   XRU_I18N.add({ vi: { khoa: '...' }, en: { khoa: '...' } })  — gọi trước khi trang vẽ xong; gọi muộn thì tự áp lại.
+  let applied = false;
+  function add(more) {
+    for (const lang of Object.keys(more)) DICT[lang] = { ...(DICT[lang] || {}), ...more[lang] };
+    if (applied) apply();
   }
 
   window.XRU_I18N = {
     dict: DICT,
     t,
     apply,
+    add,
     getActiveLang
   };
 
