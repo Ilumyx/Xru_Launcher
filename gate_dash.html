@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/rail.css"><link rel="stylesheet" href="css/page.css">
-  <link rel="stylesheet" href="css/gate_dash.css?v=3">
+  <link rel="stylesheet" href="css/gate_dash.css?v=4">
   <link rel="stylesheet" href="css/account.css?v=2">
   <script src="js/account.js?v=2"></script>
 </head>
@@ -18,13 +18,44 @@
     <nav class="rail" data-rail="gate" data-active="dash"></nav><script src="js/rail.js"></script>
 
     <main class="gd-stage">
-<header class="page-head"><div class="page-title"><a href="launcher_mockup.html">EURASIA</a><span>/</span><h1>GATE</h1></div><span class="gd-label">DASHBOARD</span></header>
-<section class="gd-board" aria-label="Hàng duyệt"><div class="gd-board-head"><span>HÀNG DUYỆT</span><span>WAIT</span><span>MACHINE FLAG</span><span>DETAIN</span><span>ACCEPT</span><span>PURGE</span></div>
-<div class="gd-board-row"><a href="gate_image.html"><b>Ảnh ↗</b><small>904 hồ sơ</small></a><strong class="red">548</strong><strong class="muted">—</strong><strong class="amber">24</strong><strong class="cyan">320</strong><strong class="muted">12</strong></div>
-<div class="gd-board-row"><a href="gate_video.html"><b>Video ↗</b><small>5,626 hồ sơ</small></a><strong class="red">2,410</strong><strong class="red">36</strong><strong class="amber">2,226</strong><strong class="cyan">880</strong><strong class="muted">74</strong></div></section>
-<div class="gd-inspection"><section><div class="gd-section-head"><h2>Máy tìm thấy gì?</h2><span class="gd-label">VIDEO · CÓ THỂ CÓ NHIỀU LÝ DO</span></div><div class="gd-findings" aria-label="Chọn lý do"><button data-finding="music" aria-pressed="false">Nhạc <b>849</b></button><button data-finding="duplicate" aria-pressed="true">Trùng <b>213</b></button><button data-finding="watermark" aria-pressed="false">Watermark <b>186</b></button><button data-finding="text" aria-pressed="false">Chữ chèn <b>36</b></button></div><div id="gd-case"></div></section>
-<aside class="gd-quality"><div class="gd-section-head"><h2>Hồ sơ đầu vào</h2><div class="gd-tabs"><button data-quality="image" aria-pressed="false">Ảnh</button><button data-quality="video" aria-pressed="true">Video</button></div></div><div id="gd-quality"></div></aside></div>
-<section class="gd-sources"><div class="gd-section-head"><h2>Gate theo nguồn</h2><div class="gd-tabs"><button data-source-filter="all" aria-pressed="true">Tất cả</button><button data-source-filter="image" aria-pressed="false">Ảnh</button><button data-source-filter="video" aria-pressed="false">Video</button></div></div><div class="gd-table-wrap"><table><thead><tr><th>NGUỒN</th><th>LOẠI</th><th>WAIT</th><th>FLAG</th><th>DETAIN</th><th>ACCEPT</th><th>PURGE</th><th>CHỜ LÂU NHẤT</th></tr></thead><tbody id="gd-source-rows"></tbody></table></div></section>
-<div class="gd-bottom"><section><div class="gd-section-head"><h2>Quyết định của PO</h2><span class="gd-label">7 NGÀY GẦN NHẤT</span></div><div id="gd-history" class="gd-history"></div><div class="gd-legend"><span><i class="cyan-bg"></i>Accept</span><span><i class="amber-bg"></i>Giữ</span><span><i class="gray-bg"></i>Cứu lại</span></div></section><section><div class="gd-section-head"><h2>Gần đây</h2><span class="gd-label">LỊCH SỬ QUYẾT ĐỊNH</span></div><div class="gd-event"><time>19:42</time><div><b>U.S. Central Command · Video</b><p>WAIT → ACCEPT</p></div><span class="cyan">PO</span></div><div class="gd-event"><time>19:38</time><div><b>Tankers · Video</b><p>ACCEPT → DETAIN</p><blockquote>“Giữ lại để đối chiếu bản không có nhạc.”</blockquote></div><span class="amber">PO</span></div><div class="gd-event"><time>19:35</time><div><b>MIKN · Ảnh</b><p>DETAIN → WAIT · Cứu lại</p></div><span class="muted">PO</span></div></section></div>
-<footer class="page-foot"><div class="key-hints"><span><span class="key">1</span> Ảnh</span><span><span class="key">2</span> Video</span><span><span class="key">3</span> Dashboard</span><span><span class="key">ESC</span> Launcher</span></div><div>MOCKUP · TOÀN BỘ SỐ LIỆU VÀ HỒ SƠ MINH HOẠ</div></footer>
-</main></div><script src="js/gate.js"></script><script src="js/gate_dash.js?v=3"></script></body></html>
+<header class="page-head"><div class="page-title"><a href="launcher_mockup.html">EURASIA</a><span>/</span><h1>GATE</h1></div>
+  <div class="gd-kind" role="tablist" aria-label="Loại hồ sơ"><button data-kind="video" aria-pressed="true">Video</button><button data-kind="image" aria-pressed="false">Ảnh</button></div></header>
+
+<!-- 1. PHỄU: hồ sơ đang nằm ở cửa nào -->
+<section class="gd-funnel" aria-label="Phễu Gate">
+  <div class="gd-funnel-cols" id="gd-funnel"></div>
+  <div class="gd-flow" id="gd-flow" aria-hidden="true"></div>
+</section>
+
+<!-- 2. BẢNG CHẤM ĐIỂM MÁY: mỗi loại cờ máy bắt đúng/lộn/hụt bao nhiêu -->
+<section class="gd-block">
+  <div class="gd-section-head"><h2>Máy chấm điểm</h2><span class="gd-label">CHỈ TÍNH HỒ SƠ PO ĐÃ QUYẾT</span></div>
+  <table class="gd-score">
+    <thead><tr>
+      <th>LOẠI CỜ</th><th>MÁY BẮT</th><th>PO ĐÃ XEM</th><th>ĐÚNG</th><th>BẮT LỘN</th><th>HỤT</th>
+      <th title="Trong số máy bắt, bao nhiêu là lỗi thật (precision)">BẮT TRÚNG</th>
+      <th title="Trong số lỗi thật, máy bắt được bao nhiêu (recall)">BẮT ĐỦ</th>
+    </tr></thead>
+    <tbody id="gd-score"></tbody>
+  </table>
+  <p class="gd-note"><b>Bắt trúng</b> = máy cắm cờ thì đúng mấy phần (precision). <b>Bắt đủ</b> = lỗi thật thì máy thấy mấy phần (recall).
+  <b>Hụt</b> chỉ biết được khi PO giữ một hồ sơ máy đã cho qua. Số đỏ = chỗ máy yếu nhất.</p>
+</section>
+
+<!-- 3. CA SAI: hồ sơ máy và PO không cùng ý, để soi lại và chỉnh máy -->
+<section class="gd-block gd-wrong">
+  <div class="gd-section-head"><h2>Ca sai để xem lại</h2>
+    <div class="gd-tabs" id="gd-wrong-tabs"><button data-wrong="fp" aria-pressed="true">Bắt lộn</button><button data-wrong="fn" aria-pressed="false">Hụt</button></div></div>
+  <div class="gd-wrong-grid">
+    <div><div class="gd-filter" id="gd-filter"></div><div class="gd-cases" id="gd-cases"></div></div>
+    <div id="gd-case"></div>
+  </div>
+</section>
+
+<div class="gd-bottom">
+  <section class="gd-sources"><div class="gd-section-head"><h2>Gate theo nguồn</h2><span class="gd-label">ĐANG NẰM Ở CỬA NÀO</span></div>
+    <div class="gd-table-wrap"><table><thead><tr><th>NGUỒN</th><th>WAIT</th><th>FLAG</th><th>DETAIN</th><th>ACCEPT</th><th>PURGE</th><th>CHỜ LÂU NHẤT</th></tr></thead><tbody id="gd-source-rows"></tbody></table></div></section>
+  <aside class="gd-quality"><div class="gd-section-head"><h2>Hồ sơ đầu vào</h2></div><div id="gd-quality"></div></aside>
+</div>
+<footer class="page-foot"><div class="key-hints"><span><span class="key">1</span> Ảnh</span><span><span class="key">2</span> Video</span><span><span class="key">3</span> Dashboard</span><span><span class="key">V</span> Video / Ảnh</span><span><span class="key">ESC</span> Launcher</span></div><div>MOCKUP · TOÀN BỘ SỐ LIỆU VÀ HỒ SƠ MINH HOẠ</div></footer>
+</main></div><script src="js/gate.js"></script><script src="js/gate_dash.js?v=4"></script></body></html>
