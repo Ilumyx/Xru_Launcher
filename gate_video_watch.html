@@ -25,14 +25,14 @@
       <aside class="side">
         <div class="side-head">
           <div class="side-count"><b>2446</b><span>WAITING_PO</span></div>
-          <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" placeholder="Tìm tiêu đề, nguồn…" aria-label="Tìm trong danh sách"></label>
+          <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" placeholder="Tìm tiêu đề, nguồn…" aria-label="Tìm trong danh sách" data-i18n-attr="placeholder:search_title_src"></label>
           <div class="side-field">
-            <label>Nguồn</label>
-            <select><option>Mọi nguồn (2446)</option><option>U.S. Central Command</option><option>Jamie Wearmouth</option><option>MIKN</option></select>
+            <label data-i18n="source_lbl">Nguồn</label>
+            <select><option data-i18n="all_sources">Mọi nguồn (2446)</option><option>U.S. Central Command</option><option>Jamie Wearmouth</option><option>MIKN</option></select>
           </div>
           <div class="side-field">
-            <label>Sắp xếp</label>
-            <select><option>Cũ nhất trước</option><option>Mới nhất trước</option><option>Dài nhất trước</option></select>
+            <label data-i18n="sort_lbl">Sắp xếp</label>
+            <select><option data-i18n="sort_oldest">Cũ nhất trước</option><option data-i18n="sort_newest">Mới nhất trước</option><option data-i18n="sort_longest">Dài nhất trước</option></select>
           </div>
         </div>
         <div class="side-items">
@@ -97,7 +97,7 @@
             <div><div class="t">T-90M Proryv firing from closed position</div><div class="s">MIKN · 0:25</div></div>
           </div>
         </div>
-        <div class="side-pager"><span>← Trước</span><b>1–100 / 2446</b><span>Sau →</span></div>
+        <div class="side-pager"><span data-i18n="pager_prev">← Trước</span><b>1–100 / 2446</b><span>Sau →</span></div>
       </aside>
 
       <!-- CỘT GIỮA: Tiêu đề + lane + player to -->
@@ -136,10 +136,10 @@
 
         <footer class="page-foot">
           <div class="key-hints">
-            <span><span class="key">←</span><span class="key">→</span> Đổi clip</span>
-            <span><span class="key">Space</span> Phát / dừng</span>
-            <span><span class="key">A</span><span class="key">D</span><span class="key">S</span> Chấm xong tự sang clip kế</span>
-            <span><span class="key">ESC</span> Về Launcher</span>
+            <span><span class="key">←</span><span class="key">→</span> <span data-i18n="w_switch_clip">Đổi clip</span></span>
+            <span><span class="key">Space</span> <span data-i18n="w_play_pause">Phát / dừng</span></span>
+            <span><span class="key">A</span><span class="key">D</span><span class="key">S</span> <span data-i18n="w_auto_next">Chấm xong tự sang clip kế</span></span>
+            <span><span class="key">ESC</span> <span data-i18n="esc_launcher">Về Launcher</span></span>
           </div>
           <div>XRU GATE // 2026</div>
         </footer>
@@ -150,15 +150,15 @@
         <div class="insp-top"><span class="insp-tag">WAITING_PO</span><span class="insp-num" id="insp-num">001 / 2446</span></div>
         <div class="insp-title" id="insp-title">Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil</div>
         <div>
-          <div class="insp-label">Mô tả</div>
+          <div class="insp-label" data-i18n="desc_lbl">Mô tả</div>
           <p class="insp-cap" id="insp-cap">Đoàn xe địa hình UTV hành quân trên đường rừng trong buổi huấn luyện.</p>
         </div>
         <div>
           <div class="insp-label">Technical manifest</div>
           <dl class="insp-meta">
             <dt>XRU ID</dt><dd id="insp-xid" style="color:var(--accent);">01a0e65c-350d-1c84-93ff-a4862a700900</dd>
-            <dt>Nguồn</dt><dd id="insp-src">facebook / U.S. Central Command</dd>
-            <dt>Khổ</dt><dd id="insp-res">1280×720 (16:9)</dd>
+            <dt data-i18n="source_lbl">Nguồn</dt><dd id="insp-src">facebook / U.S. Central Command</dd>
+            <dt data-i18n="res_lbl">Khổ</dt><dd id="insp-res">1280×720 (16:9)</dd>
             <dt>Lane</dt><dd>WAITING_PO</dd>
           </dl>
         </div>
@@ -169,7 +169,7 @@
             <button onclick="toggleChip(this)">EVENT<kbd>3</kbd></button>
             <button onclick="toggleChip(this)">CAUTION<kbd>4</kbd></button>
           </div>
-          <textarea class="insp-note" placeholder="Ghi chú (tùy chọn)..."></textarea>
+          <textarea class="insp-note" placeholder="Ghi chú (tùy chọn)..." data-i18n-attr="placeholder:note_ph"></textarea>
           <div class="insp-acts">
             <button class="card-act-btn approve" onclick="judge('accept')">Accept<kbd>A</kbd></button>
             <button class="card-act-btn detain" onclick="judge('detain')">Detain<kbd>D</kbd></button>

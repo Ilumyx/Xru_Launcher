@@ -26,7 +26,7 @@
     return {
       launcher: {
         label: t('rail_fed_continents', 'Lục địa Liên Bang'), home: 'launcher_mockup.html?continent=xru', homeTip: t('rail_overview_tip', 'XRU FEDERAL // Bản đồ Toàn Cảnh Liên Bang'),
-        groups: [[{ key: 'array', href: 'array_search.html', icon: 'search', tip: 'Array (/ hoặc Ctrl+K)' }]],
+        groups: [[{ key: 'array', href: 'array_search.html', icon: 'search', tip: t('rail_array_tip', 'Array (/ hoặc Ctrl+K)') }]],
       },
       array: {
         label: t('rail_fed_continents', 'Lục địa Liên Bang'), home: 'launcher_mockup.html?continent=xru', homeTip: t('rail_esc_launcher', 'Về Launcher (ESC)'),

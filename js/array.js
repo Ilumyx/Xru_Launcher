@@ -381,9 +381,10 @@ window.addEventListener('keydown', (e) => {
 const shortGen = (S.generation || '').replace('generation-', '').slice(0, 8);
 const taken = (S.taken_at || '').replace('T', ' ');
 $('ax-gen').textContent = `gen ${shortGen} · chụp ${taken}`;
-$('ax-foot-l').innerHTML = `Index: <b>Atlas</b> · <i>Wiki XRU, XRU DB chưa</i> · gen ${esc(shortGen)}`;
+const tr = (k, vi) => (window.XRU_I18N ? window.XRU_I18N.t(k) : vi);
+$('ax-foot-l').innerHTML = `Index: <b>Atlas</b> · <i>${tr('ax_not_yet', 'Wiki XRU, XRU DB chưa')}</i> · gen ${esc(shortGen)}`;
 $('ax-hint-qs').innerHTML = S.order.map((q) => `<a href="?q=${encodeURIComponent(q)}" data-q="${esc(q)}">${esc(q)}</a>`).join('');
-document.querySelectorAll('#ax-tabs .is-soon').forEach((b) => (b.title = 'Chưa có ruột — bấm để xem sẽ là gì'));
+document.querySelectorAll('#ax-tabs .is-soon').forEach((b) => (b.title = tr('ax_soon_tip', 'Chưa có ruột — bấm để xem sẽ là gì')));
 {
   const p = new URLSearchParams(location.search);
   apply(p.get('q') || '', TABS.includes(p.get('tab')) ? p.get('tab') : 'all', false);

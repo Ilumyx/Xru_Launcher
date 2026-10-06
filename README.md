@@ -52,5 +52,6 @@ python3 tools/gate_snapshot.py
 - Trang chỉ gọi màu theo vai trò: `--accent` (nhấn), `--warn` (cảnh báo/chờ duyệt), `--hold` (tạm giữ), `--idle`, thang `--m-0..15`. Không viết mã màu trong trang.
 - Độ mờ: `rgba(var(--accent-rgb), .2)`, không pha màu bằng mã cứng.
 - Thêm profile: copy `profiles/graphite.css` → đổi tên + `data-profile`, thêm 1 dòng `@import` trong `css/tokens.css`, 1 dòng vào `PROFILES` trong `js/account.js`.
+- Chữ hiển thị: viết bản tiếng Việt trong HTML + gắn `data-i18n="khóa"` (thuộc tính: `data-i18n-attr="placeholder:khóa"`); thêm khóa vào cả `vi` và `en` trong `js/i18n.js`. Chữ vẽ bằng JS: `XRU_I18N.t('khóa')` và vẽ lại khi có sự kiện `xru-lang-applied`. Mặc định: English.
 - Avoid `color-mix()`; use the rgba tokens.
 - Placeholders are CSS dot patterns (`.ph-1..6`), no image assets.

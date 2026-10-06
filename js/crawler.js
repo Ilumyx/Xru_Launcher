@@ -15,10 +15,12 @@
         if (!row.hidden) count++;
       }
       for (const button of filters) button.setAttribute('aria-pressed', String(button.dataset.statusFilter === status));
-      document.getElementById('source-result-count').textContent = `${count} / ${rows.length} nguồn`;
+      const word = window.XRU_I18N ? window.XRU_I18N.t('cr_sources_word') : 'nguồn';
+      document.getElementById('source-result-count').textContent = `${count} / ${rows.length} ${word}`;
       document.getElementById('source-empty').hidden = count !== 0;
     }
     search.addEventListener('input', filter);
+    window.addEventListener('xru-lang-applied', filter);
     for (const button of filters) button.addEventListener('click', () => { status = button.dataset.statusFilter; filter(); });
     filter();
 

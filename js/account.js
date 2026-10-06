@@ -1,14 +1,18 @@
 // ==========================================================================
 // XRU ACCOUNT — Menu tài khoản (bấm avatar IL) + Cài đặt giao diện
-// Đổi: profile màu, chế độ sáng/tối, font chữ, màu nhấn, cỡ giao diện, ngôn ngữ.
+// Đổi: ngôn ngữ, profile màu, chế độ sáng/tối, font chữ, màu nhấn, cỡ giao diện. Lưu vào trình duyệt, mọi trang dùng chung.
+// Màu của từng profile nằm ở profiles/<tên>.css. Thêm profile: tạo file đó, thêm 1 dòng @import
+// trong css/tokens.css và 1 dòng vào PROFILES dưới đây.
+// Chữ của menu và bảng cài đặt lấy từ js/i18n.js (không viết cứng hai thứ tiếng ở đây).
+// File này nạp trong <head> để áp cài đặt ngay, không bị nháy màu cũ.
 // ==========================================================================
 (() => {
   const KEY = 'xru-ui-settings';
-  const DEFAULTS = { profile: 'graphite', mode: 'dark', font: 'Inter', accent: '', zoom: '1.15', lang: 'vi' };
+  const DEFAULTS = { profile: 'graphite', mode: 'dark', font: 'Inter', accent: '', zoom: '1.15', lang: 'en' };
   const PROFILES = [['graphite', 'Graphite'], ['cyan', 'Cyan XRU']];
-  const MODES = [['system', 'Hệ thống'], ['light', 'Sáng'], ['dark', 'Tối']];
-  const MODES_EN = [['system', 'System'], ['light', 'Light'], ['dark', 'Dark']];
+  const MODES = ['system', 'light', 'dark'];
   const LANGUAGES = [['vi', 'Tiếng Việt'], ['en', 'English']];
+  const t = (k) => (window.XRU_I18N ? window.XRU_I18N.t(k, settings.lang) : k);
   const systemMode = window.matchMedia('(prefers-color-scheme: dark)');
 
   // Nạp i18n nếu chưa có
@@ -25,17 +29,17 @@
     'IBM Plex Sans':  'IBM+Plex+Sans:wght@300;400;500;600;700',
     'Roboto':         'Roboto:wght@300;400;500;700',
   };
-  // Chọn màu nhấn theo tên; không có ô nhập mã màu. '' = dùng màu nhấn của profile.
+  // Chọn màu nhấn theo tên; không có ô nhập mã màu. [mã màu, khóa chữ trong js/i18n.js]; '' = màu nhấn của profile.
   const ACCENTS = [
-    ['', 'Theo profile'],
-    ['#00d2b4', 'Cyan XRU'],
-    ['#4da3ff', 'Xanh dương'],
-    ['#9b8cff', 'Tím'],
-    ['#7fd17f', 'Xanh lá'],
-    ['#e7e7e2', 'Trắng'],
-    ['#f3ce5c', 'Vàng'],
-    ['#f574bd', 'Hồng'],
-    ['#ff8a70', 'Cam'],
+    ['', 'accent_profile'],
+    ['#00d2b4', 'acc_cyan'],
+    ['#4da3ff', 'acc_blue'],
+    ['#9b8cff', 'acc_purple'],
+    ['#7fd17f', 'acc_green'],
+    ['#e7e7e2', 'acc_white'],
+    ['#f3ce5c', 'acc_yellow'],
+    ['#f574bd', 'acc_pink'],
+    ['#ff8a70', 'acc_orange'],
   ];
   const ZOOMS = [['1', '100%'], ['1.1', '110%'], ['1.15', '115%'], ['1.2', '120%']];
 
@@ -58,8 +62,8 @@
 
   function apply(s) {
     document.documentElement.dataset.uiMode = s.mode === 'system' ? (systemMode.matches ? 'dark' : 'light') : s.mode;
-    document.documentElement.lang = s.lang || 'vi';
-    document.documentElement.dataset.lang = s.lang || 'vi';
+    document.documentElement.lang = s.lang;
+    document.documentElement.dataset.lang = s.lang;
     const r = document.documentElement.style;
     r.setProperty('--font-sans', `'${s.font}', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`);
     document.documentElement.dataset.profile = PROFILES.some(([k]) => k === s.profile) ? s.profile : DEFAULTS.profile;
@@ -68,7 +72,7 @@
     r.setProperty('--ui-zoom', s.zoom);
     ensureFont(s.font);
     if (window.XRU_I18N && typeof window.XRU_I18N.apply === 'function') {
-      window.XRU_I18N.apply(s.lang || 'vi');
+      window.XRU_I18N.apply(s.lang);
     }
   }
 
@@ -89,7 +93,6 @@
 
   function renderMenu() {
     if (!menu) return;
-    const isEn = settings.lang === 'en';
     menu.innerHTML = `
       <div class="acc-head">
         <div class="acc-ava">IL</div>
@@ -98,12 +101,12 @@
       <div class="acc-sep"></div>
       <button class="acc-item" data-act="settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
-        <span>${isEn ? 'UI Settings' : 'Cài đặt giao diện'}</span>
+        <span>${t('menu_settings')}</span>
       </button>
       <div class="acc-sep"></div>
       <button class="acc-item" data-act="close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        <span>${isEn ? 'Log out' : 'Đăng xuất'}</span>
+        <span>${t('menu_logout')}</span>
       </button>`;
   }
 
@@ -137,20 +140,18 @@
 
   function renderPanel() {
     if (!modal) return;
-    const isEn = settings.lang === 'en';
     const on = (k, v) => (settings[k] === v ? ' is-on' : '');
-    const activeModes = isEn ? MODES_EN : MODES;
     modal.innerHTML = `
-      <div class="acc-panel" role="dialog" aria-label="${isEn ? 'UI Settings' : 'Cài đặt giao diện'}">
+      <div class="acc-panel" role="dialog" aria-label="${t('menu_settings')}">
         <div class="acc-panel-head">
-          <span>${isEn ? 'UI SETTINGS' : 'CÀI ĐẶT GIAO DIỆN'}</span>
-          <button class="acc-x" data-done aria-label="${isEn ? 'Close' : 'Đóng'}">✕</button>
+          <span>${t('settings_title')}</span>
+          <button class="acc-x" data-done aria-label="${t('close_tip')}">✕</button>
         </div>
 
         <div class="acc-options">
           <div class="acc-row">
-            <span class="acc-row-label">${isEn ? 'Language' : 'Ngôn ngữ'}</span>
-            <div class="acc-seg" aria-label="${isEn ? 'Language' : 'Ngôn ngữ'}">
+            <span class="acc-row-label">${t('lang_lbl')}</span>
+            <div class="acc-seg" aria-label="${t('lang_lbl')}">
               ${LANGUAGES.map(([v, n]) => `<button class="${on('lang', v).trim()}" data-k="lang" data-v="${v}" aria-pressed="${settings.lang === v}">${n}</button>`).join('')}
             </div>
           </div>
@@ -161,16 +162,16 @@
             </div>
           </div>
           <div class="acc-row">
-            <span class="acc-row-label">${isEn ? 'Theme' : 'Chế độ'}</span>
-            <div class="acc-seg acc-modes" aria-label="${isEn ? 'Theme' : 'Chế độ'}">
-              ${activeModes.map(([v, n]) => `<button class="${on('mode', v).trim()}" data-k="mode" data-v="${v}" aria-pressed="${settings.mode === v}">${n}</button>`).join('')}
+            <span class="acc-row-label">${t('mode_lbl')}</span>
+            <div class="acc-seg acc-modes" aria-label="${t('mode_lbl')}">
+              ${MODES.map((v) => [v, t('mode_' + v)]).map(([v, n]) => `<button class="${on('mode', v).trim()}" data-k="mode" data-v="${v}" aria-pressed="${settings.mode === v}">${n}</button>`).join('')}
             </div>
           </div>
           <div class="acc-row">
-            <span class="acc-row-label">${isEn ? 'Font' : 'Font chữ'}</span>
+            <span class="acc-row-label">${t('font_lbl')}</span>
             <details class="acc-dropdown" name="acc-setting-picker">
               <summary><b class="acc-font-sample">Aa</b><span>${settings.font}</span><span class="acc-chevron">⌄</span></summary>
-              <div class="acc-dropdown-menu" aria-label="${isEn ? 'Choose font' : 'Chọn font chữ'}">
+              <div class="acc-dropdown-menu" aria-label="${t('font_lbl')}">
                 ${Object.keys(FONTS).map(f => {
                   ensureFont(f);
                   return `<button class="acc-option${on('font', f)}" data-k="font" data-v="${f}" aria-label="${f}" style="font-family:'${f}'" aria-pressed="${settings.font === f}"><b class="acc-font-sample">Aa</b><span>${f}</span><span class="acc-check">${settings.font === f ? '✓' : ''}</span></button>`;
@@ -179,28 +180,28 @@
             </details>
           </div>
           <div class="acc-row">
-            <span class="acc-row-label">${isEn ? 'Accent' : 'Màu nhấn'}</span>
+            <span class="acc-row-label">${t('accent_lbl')}</span>
             <details class="acc-dropdown" name="acc-setting-picker">
-              <summary><i class="acc-swatch" style="background:${settings.accent || 'var(--accent)'}"></i><span>${ACCENTS.find(([c]) => c === settings.accent)?.[1] || (isEn ? 'From profile' : 'Theo profile')}</span><span class="acc-chevron">⌄</span></summary>
-              <div class="acc-dropdown-menu" aria-label="${isEn ? 'Choose accent color' : 'Chọn màu nhấn'}">
+              <summary><i class="acc-swatch" style="background:${settings.accent || 'var(--accent)'}"></i><span>${t(ACCENTS.find(([c]) => c === settings.accent)?.[1] || 'accent_profile')}</span><span class="acc-chevron">⌄</span></summary>
+              <div class="acc-dropdown-menu" aria-label="${t('accent_lbl')}">
                 ${ACCENTS.map(([c, n]) => {
-                  const label = (!c && isEn) ? 'From profile' : n;
+                  const label = t(n);
                   return `<button class="acc-option${on('accent', c)}" data-k="accent" data-v="${c}" aria-label="${label}" aria-pressed="${settings.accent === c}"><i class="acc-swatch" style="background:${c || 'var(--accent)'}"></i><span>${label}</span><span class="acc-check">${settings.accent === c ? '✓' : ''}</span></button>`;
                 }).join('')}
               </div>
             </details>
           </div>
           <div class="acc-row">
-            <span class="acc-row-label">${isEn ? 'UI Scale' : 'Cỡ giao diện'}</span>
-            <div class="acc-seg" aria-label="${isEn ? 'UI Scale' : 'Cỡ giao diện'}">
+            <span class="acc-row-label">${t('zoom_lbl')}</span>
+            <div class="acc-seg" aria-label="${t('zoom_lbl')}">
               ${ZOOMS.map(([v, n]) => `<button class="${on('zoom', v).trim()}" data-k="zoom" data-v="${v}" aria-pressed="${settings.zoom === v}">${n}</button>`).join('')}
             </div>
           </div>
         </div>
 
         <div class="acc-foot">
-          <button class="acc-ghost" data-reset>${isEn ? 'Reset' : 'Về mặc định'}</button>
-          <button class="acc-primary" data-done>${isEn ? 'Done' : 'Xong'}</button>
+          <button class="acc-ghost" data-reset>${t('btn_reset')}</button>
+          <button class="acc-primary" data-done>${t('btn_done')}</button>
         </div>
       </div>`;
   }
