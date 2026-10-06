@@ -1,7 +1,8 @@
-# Xru_UI
+# Xru_Launcher
 
-Carbon-side UI mockups for XRU Federal (Launcher, Gate, Array blind test, Crawler).
-Static HTML/CSS/JS only — view logic, no Silicon logic, no backend calls.
+Land Launcher của XRU Federal (trước là Xru_UI, bản nháp UI). Đang chuyển từ mockup sang đồ thật:
+vỏ + trang chủ + thư viện UI chung (profiles, rail, page, sidebar, i18n). Không import code của land nào.
+Các trang Gate/Crawler/Array trong đây hiện vẫn là mockup (trừ Gate Dash chạy số thật); cách nối thật chờ BA chốt.
 
 ## Run
 
