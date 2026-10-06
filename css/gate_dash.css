@@ -36,39 +36,23 @@
 .f-ACCEPT_APPROVED { background: var(--m-14); }
 .f-PURGE_APPROVED { background: var(--m-7); }
 
-/* 2. Độ sạch: số to + xếp hạng nguồn con */
 .gd-note { margin-top: 14px; max-width: 900px; font-size: 13px; line-height: 1.6; color: var(--fg-dim); }
-.gd-clean-big { display: flex; align-items: baseline; gap: 24px; flex-wrap: wrap; }
-.gd-clean-big b { font: 500 56px/1 var(--font-mono); letter-spacing: -.06em; color: var(--fg-strong); }
-.gd-clean-big p { font-size: 14px; color: var(--fg-dim); }
-.gd-clean-big p span { font-family: var(--font-mono); color: var(--fg); }
-.is-low { color: var(--warn) !important; }
-.gd-rank { margin-top: 26px; }
-.gd-rank-head { display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--hairline-hi); }
-.gd-rank-row { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr) 56px 200px; align-items: center; gap: 18px; width: 100%;
-  padding: 11px 0; border: 0; border-bottom: 1px solid var(--hairline); background: none; text-align: left; cursor: pointer; color: var(--fg); }
-.gd-rank-row:hover { background: var(--m-2); }
-.gd-rank-name { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gd-rank-row i, .gd-findings i { display: block; height: 4px; background: var(--m-4); }
-.gd-rank-row s, .gd-findings s { display: block; height: 100%; background: var(--m-12); }
-.gd-rank-row b { font: 15px var(--font-mono); text-align: right; color: var(--fg-strong); font-weight: 400; }
-.gd-rank-row small { font: 11px var(--font-mono); color: var(--fg-faint); }
-.gd-rank-row.is-thin { opacity: .55; }
-
 /* Thanh nhỏ dưới dòng nguồn (Gate Dash: độ sạch) */
 .gd-mini { display: block; height: 2px; margin-top: 6px; background: var(--m-4); }
 .gd-mini s { display: block; height: 100%; background: var(--m-11); }
 .gd-mini.is-thin s { background: var(--m-7); }
 
-/* 3. Máy soi */
+/* 2. Máy soi */
 .gd-machine-line { font-size: 15px; color: var(--fg-dim); margin-bottom: 18px; }
 .gd-machine-line b { font: 500 15px var(--font-mono); color: var(--fg-strong); }
+.gd-findings i { display: block; height: 4px; background: var(--m-4); }
+.gd-findings s { display: block; height: 100%; background: var(--m-12); }
 .gd-findings > div { display: grid; grid-template-columns: 160px minmax(0, 1fr) 70px; align-items: center; gap: 18px; padding: 9px 0; border-bottom: 1px solid var(--hairline); }
 .gd-findings span { font-size: 14px; color: var(--fg); }
 .gd-findings b { font: 14px var(--font-mono); text-align: right; font-weight: 400; color: var(--fg-strong); }
 
 @media (max-width: 1100px) {
-  .gd-rank-row { grid-template-columns: minmax(0, 1fr) 80px 48px; } .gd-rank-row small { display: none; }
+  
   .gd-step b { font-size: 30px; }
 }
 @media (max-width: 760px) {
