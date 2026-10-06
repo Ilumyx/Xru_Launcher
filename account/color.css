@@ -1,0 +1,16 @@
+/* Một bảng màu đơn sắc. Mỗi màn sở hữu bản chép của file này. */
+:root {
+  --m-0:#060605; --m-1:#0a0a09; --m-2:#10100f; --m-3:#161615;
+  --m-4:#1d1d1c; --m-5:#242423; --m-6:#2d2d2b; --m-7:#383836;
+  --m-8:#484845; --m-9:#5e5e5b; --m-10:#767673; --m-11:#92928f;
+  --m-12:#aeaea9; --m-13:#cbcbc5; --m-14:#e7e7e2; --m-15:#fbfbf7;
+  --bg:var(--m-1); --panel:var(--m-3); --surface:var(--m-2); --sunken:var(--m-2);
+  --raised:var(--m-7); --active:var(--m-8); --panel-hover:var(--m-4);
+  --fg-strong:var(--m-15); --fg:var(--m-13); --fg-dim:var(--m-12);
+  --fg-faint:var(--m-11); --fg-ghost:var(--m-9);
+  --hairline-rgb:255,255,255; --accent-rgb:231,231,226;
+  --hairline:rgba(var(--hairline-rgb),.07); --hairline-hi:rgba(var(--hairline-rgb),.16);
+  --line:var(--hairline); --line-hi:var(--hairline-hi);
+  --accent:var(--m-14); --on-accent:var(--m-0);
+  --accept:var(--m-14); --detain:var(--m-12); --warn:var(--m-14); --hold:var(--m-12);
+}
