@@ -6,7 +6,8 @@
   const items = [...document.querySelectorAll('.side-item')];
   const empty = document.createElement('div');
   empty.className = 'side-empty';
-  empty.textContent = 'Không có mục khớp.';
+  empty.textContent = window.XRU_I18N ? window.XRU_I18N.t('no_match') : 'Không có mục khớp.';
+  empty.setAttribute('data-i18n', 'no_match');
   empty.hidden = true;
   document.querySelector('.side-items').appendChild(empty);
   input.addEventListener('input', () => {

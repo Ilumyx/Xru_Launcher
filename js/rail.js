@@ -19,34 +19,38 @@
     stats:    '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
   };
 
+  const t = (k, fallback) => (window.XRU_I18N ? window.XRU_I18N.t(k) : fallback);
+
   // Mỗi khu: logo về đâu, rồi các nhóm mục (giữa hai nhóm có vạch ngắn).
-  const RAILS = {
-    launcher: {
-      label: 'Lục địa Liên Bang', home: 'launcher_mockup.html?continent=xru', homeTip: 'XRU FEDERAL // Bản đồ Toàn Cảnh Liên Bang',
-      groups: [[{ key: 'array', href: 'array_search.html', icon: 'search', tip: 'Array (/ hoặc Ctrl+K)' }]],
-    },
-    array: {
-      label: 'Lục địa Liên Bang', home: 'launcher_mockup.html?continent=xru', homeTip: 'Về Launcher (ESC)',
-      groups: [[{ key: 'array', href: 'array_search.html', icon: 'search', tip: 'Array — blind test (/)' }]],
-    },
-    crawler: {
-      label: 'Điều hướng Crawler', home: 'launcher_mockup.html?continent=eurasia', homeTip: 'Về Launcher (ESC)',
-      groups: [
-        [{ key: 'dash', href: 'crawler_dash.html', icon: 'bars', tip: 'Dashboard' }],
-        [{ key: 'sources', href: 'crawler_sources.html', icon: 'table', tip: 'Nguồn đã thêm' },
-         { key: 'activity', href: 'crawler_dash_activity.html', icon: 'feed', tip: 'Dòng hoạt động' }],
-      ],
-    },
-    gate: {
-      label: 'Điều hướng Gate', home: 'launcher_mockup.html', homeTip: 'Về Launcher (ESC)',
-      groups: [
-        [{ key: 'image', href: 'gate_image.html', icon: 'image', tip: 'Gate Image' },
-         { key: 'video', href: 'gate_video.html', icon: 'video', tip: 'Gate Video' },
-         { key: 'watch', href: 'gate_video_watch.html', icon: 'watch', tip: 'Gate Video — Xem to (thử)' },
-         { key: 'dash', href: 'gate_dash.html', icon: 'stats', tip: 'Gate Dash' }],
-      ],
-    },
-  };
+  function getRails() {
+    return {
+      launcher: {
+        label: t('rail_fed_continents', 'Lục địa Liên Bang'), home: 'launcher_mockup.html?continent=xru', homeTip: t('rail_overview_tip', 'XRU FEDERAL // Bản đồ Toàn Cảnh Liên Bang'),
+        groups: [[{ key: 'array', href: 'array_search.html', icon: 'search', tip: 'Array (/ hoặc Ctrl+K)' }]],
+      },
+      array: {
+        label: t('rail_fed_continents', 'Lục địa Liên Bang'), home: 'launcher_mockup.html?continent=xru', homeTip: t('rail_esc_launcher', 'Về Launcher (ESC)'),
+        groups: [[{ key: 'array', href: 'array_search.html', icon: 'search', tip: 'Array — blind test (/)' }]],
+      },
+      crawler: {
+        label: t('rail_crawler_nav', 'Điều hướng Crawler'), home: 'launcher_mockup.html?continent=eurasia', homeTip: t('rail_esc_launcher', 'Về Launcher (ESC)'),
+        groups: [
+          [{ key: 'dash', href: 'crawler_dash.html', icon: 'bars', tip: 'Dashboard' }],
+          [{ key: 'sources', href: 'crawler_sources.html', icon: 'table', tip: t('rail_added_sources', 'Nguồn đã thêm') },
+           { key: 'activity', href: 'crawler_dash_activity.html', icon: 'feed', tip: t('rail_activity_feed', 'Dòng hoạt động') }],
+        ],
+      },
+      gate: {
+        label: t('rail_gate_nav', 'Điều hướng Gate'), home: 'launcher_mockup.html', homeTip: t('rail_esc_launcher', 'Về Launcher (ESC)'),
+        groups: [
+          [{ key: 'image', href: 'gate_image.html', icon: 'image', tip: t('gate_img', 'Gate Image') },
+           { key: 'video', href: 'gate_video.html', icon: 'video', tip: t('gate_vid', 'Gate Video') },
+           { key: 'watch', href: 'gate_video_watch.html', icon: 'watch', tip: t('rail_video_watch', 'Gate Video — Xem to (thử)') },
+           { key: 'dash', href: 'gate_dash.html', icon: 'stats', tip: t('gate_dash', 'Gate Dash') }],
+        ],
+      },
+    };
+  }
 
   const LOGO = `<svg viewBox="140 60 520 520" fill="currentColor">
     <mask id="xru-emblem-mask"><rect x="100" y="0" width="600" height="600" fill="#fff"/><rect x="140" y="305" width="80" height="30" fill="#000"/><rect x="580" y="305" width="80" height="30" fill="#000"/></mask>
@@ -57,27 +61,36 @@
 
   const svg = (name) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">${ICONS[name]}</svg>`;
 
-  const nav = document.currentScript.previousElementSibling;
-  const kind = nav.dataset.rail, active = nav.dataset.active;
-  const rail = RAILS[kind];
-  if (!rail) throw new Error(`rail.js: không có khu "${kind}"`);
+  const nav = document.currentScript ? document.currentScript.previousElementSibling : document.querySelector('.rail');
+  if (!nav) return;
 
-  const item = (m) => m.key === active
-    ? `<a href="${m.href}" class="rail-icon-btn is-active" data-tooltip="${m.tip}" aria-label="${m.tip}" aria-current="page">${svg(m.icon)}</a>`
-    : `<a href="${m.href}" class="rail-icon-btn" data-tooltip="${m.tip}" aria-label="${m.tip}">${svg(m.icon)}</a>`;
+  function renderRail() {
+    const kind = nav.dataset.rail, active = nav.dataset.active;
+    const rails = getRails();
+    const rail = rails[kind];
+    if (!rail) return;
 
-  const groups = rail.groups.map((g) => `<div class="rail-nav">${g.map(item).join('')}</div>`);
-  if ('panel' in nav.dataset) {
-    groups.unshift(`<div class="rail-nav"><button class="rail-icon-btn" data-tooltip="Đóng / mở danh sách" aria-label="Đóng / mở danh sách" onclick="toggleGatePanel()">${svg('panel')}</button></div>`);
+    const item = (m) => m.key === active
+      ? `<a href="${m.href}" class="rail-icon-btn is-active" data-tooltip="${m.tip}" aria-label="${m.tip}" aria-current="page">${svg(m.icon)}</a>`
+      : `<a href="${m.href}" class="rail-icon-btn" data-tooltip="${m.tip}" aria-label="${m.tip}">${svg(m.icon)}</a>`;
+
+    const groups = rail.groups.map((g) => `<div class="rail-nav">${g.map(item).join('')}</div>`);
+    if ('panel' in nav.dataset) {
+      const toggleTip = t('toggle_list', 'Đóng / mở danh sách');
+      groups.unshift(`<div class="rail-nav"><button class="rail-icon-btn" data-tooltip="${toggleTip}" aria-label="${toggleTip}" onclick="toggleGatePanel()">${svg('panel')}</button></div>`);
+    }
+    // Launcher: logo cũng là một "lục địa" (xru) để launcher.js bật/tắt sáng nó.
+    const logoData = kind === 'launcher' ? ' data-continent="xru"' : '';
+
+    nav.setAttribute('aria-label', rail.label);
+    nav.innerHTML = `
+      <div class="rail-top">
+        <a href="${rail.home}" class="rail-logo"${logoData}${kind === 'launcher' ? ` onclick="switchContinent('xru'); return false;"` : ''} data-tooltip="${rail.homeTip}" aria-label="${rail.homeTip}">${LOGO}${kind === 'launcher' ? '<span class="rail-indicator" title="Federal Live"></span>' : ''}</a>
+        ${groups.join('<div class="rail-divider"></div>')}
+      </div>
+      <div class="rail-bottom"><div class="user-avatar" title="Ilumyx (PO)">IL</div></div>`;
   }
-  // Launcher: logo cũng là một "lục địa" (xru) để launcher.js bật/tắt sáng nó.
-  const logoData = kind === 'launcher' ? ' data-continent="xru"' : '';
 
-  nav.setAttribute('aria-label', rail.label);
-  nav.innerHTML = `
-    <div class="rail-top">
-      <a href="${rail.home}" class="rail-logo"${logoData}${kind === 'launcher' ? ` onclick="switchContinent('xru'); return false;"` : ''} data-tooltip="${rail.homeTip}" aria-label="${rail.homeTip}">${LOGO}${kind === 'launcher' ? '<span class="rail-indicator" title="Federal Live"></span>' : ''}</a>
-      ${groups.join('<div class="rail-divider"></div>')}
-    </div>
-    <div class="rail-bottom"><div class="user-avatar" title="Ilumyx (PO)">IL</div></div>`;
+  renderRail();
+  window.addEventListener('xru-lang-applied', renderRail);
 })();

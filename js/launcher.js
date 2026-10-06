@@ -294,7 +294,7 @@ function renderStage() {
       </div>
       <div class="hud-stats">
         <div class="stat-block">
-          <span class="stat-label">Hệ Thống</span>
+          <span class="stat-label" data-i18n="system_lbl">Hệ Thống</span>
           <span class="stat-value federal-online">ONLINE</span>
         </div>
       </div>
@@ -319,6 +319,9 @@ function renderStage() {
   `;
 
   stage.innerHTML = headerHtml + contentHtml + footerHtml;
+  if (window.XRU_I18N && typeof window.XRU_I18N.apply === 'function') {
+    window.XRU_I18N.apply();
+  }
 
   disposeGlobe = LauncherGlobe.mount(stage.querySelector('.federal-map'), (selectedId) => {
     currentContinent = selectedId;
@@ -346,6 +349,13 @@ window.addEventListener('keydown', (e) => {
 // Khởi chạy mặc định lúc nạp trang
 document.addEventListener('DOMContentLoaded', () => {
   switchContinent('eurasia');
+});
+
+// Lắng nghe sự kiện đổi ngôn ngữ để cập nhật lại giao diện
+window.addEventListener('xru-lang-applied', () => {
+  if (window.XRU_I18N && typeof window.XRU_I18N.apply === 'function') {
+    window.XRU_I18N.apply();
+  }
 });
 
 // Mở thẳng một lục địa từ link ở trang khác, vd. launcher_mockup.html?continent=euruska

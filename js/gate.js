@@ -81,7 +81,8 @@ window.addEventListener('keydown', (e) => {
 
   const grip = document.createElement('div');
   grip.className = 'insp-grip';
-  grip.title = 'Kéo để giãn cột phải · bấm đúp để về mặc định';
+  grip.title = window.XRU_I18N ? window.XRU_I18N.t('grip_tip') : 'Kéo để giãn cột phải · bấm đúp để về mặc định';
+  grip.setAttribute('data-i18n-attr', 'title:grip_tip');
   grip.innerHTML = '<span class="insp-grip-tip"></span>';
   ws.appendChild(grip);
   const tip = grip.firstChild;
@@ -96,7 +97,8 @@ window.addEventListener('keydown', (e) => {
   function apply() {
     ws.style.setProperty('--insp-w', Math.floor(BASE_W + step * (colWidth() + GAP)) + 'px');
     gallery.style.setProperty('--g-cols', BASE_COLS - step);
-    tip.textContent = `${BASE_COLS - step} cột ảnh`;
+    const colWord = window.XRU_I18N && window.XRU_I18N.getActiveLang() === 'en' ? 'cols' : 'cột';
+    tip.textContent = `${BASE_COLS - step} ${colWord}`;
   }
   function setStep(n) {
     n = Math.max(0, Math.min(MAX_STEP, n));

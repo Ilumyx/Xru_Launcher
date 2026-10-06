@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="css/sidebar.css">
   <link rel="stylesheet" href="css/gate.css">
   <link rel="stylesheet" href="css/account.css?v=2">
+  <script src="js/i18n.js"></script>
   <script src="js/account.js?v=2"></script>
 </head>
 <body>
@@ -25,14 +26,14 @@
       <aside class="side">
         <div class="side-head">
           <div class="side-count"><b>548</b><span>WAITING_PO</span></div>
-          <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" placeholder="Tìm tiêu đề, nguồn…" aria-label="Tìm trong danh sách"></label>
+          <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" placeholder="Tìm tiêu đề, nguồn…" aria-label="Tìm trong danh sách" data-i18n-attr="placeholder:search_title_src,aria-label:search_in_list"></label>
           <div class="side-field">
-            <label>Nguồn</label>
-            <select><option>Mọi nguồn (548)</option><option>War Album</option><option>MIKN</option><option>1st Slaughterhouse</option></select>
+            <label data-i18n="source_lbl">Nguồn</label>
+            <select><option data-i18n="all_sources">Mọi nguồn (548)</option><option>War Album</option><option>MIKN</option><option>1st Slaughterhouse</option></select>
           </div>
           <div class="side-field">
-            <label>Sắp xếp</label>
-            <select><option>Cũ nhất trước</option><option>Mới nhất trước</option></select>
+            <label data-i18n="sort_lbl">Sắp xếp</label>
+            <select><option data-i18n="sort_oldest">Cũ nhất trước</option><option data-i18n="sort_newest">Mới nhất trước</option></select>
           </div>
         </div>
         <div class="side-items">
@@ -109,7 +110,7 @@
             <div><div class="t">Расчет пулемета «Максим»</div><div class="s">1st Slaughterhouse · 4056×2738</div></div>
           </div>
         </div>
-        <div class="side-pager"><span>← Trước</span><b>1–100 / 548</b><span>Sau →</span></div>
+        <div class="side-pager"><span data-i18n="pager_prev">← Trước</span><b>1–100 / 548</b><span data-i18n="pager_next">Sau →</span></div>
       </aside>
 
       <!-- CỘT GIỮA: Tiêu đề + lane + gallery -->
@@ -223,7 +224,7 @@
             <span><span class="key">1</span> Image</span>
             <span><span class="key">2</span> Video</span>
             <span><span class="key">3</span> Dash</span>
-            <span><span class="key">ESC</span> Về Launcher</span>
+            <span><span class="key">ESC</span> <span data-i18n="esc_launcher">Về Launcher</span></span>
           </div>
           <div>XRU GATE // 2026</div>
         </footer>
@@ -235,20 +236,20 @@
         <div class="insp-img"><div id="insp-img" class="ph ph-1" data-label="HCTP"></div></div>
         <div class="insp-title" id="insp-title">Танки КВ-1 на марше</div>
         <div>
-          <div class="insp-label">Chú thích</div>
+          <div class="insp-label" data-i18n="caption_lbl">Chú thích</div>
           <p class="insp-cap" id="insp-cap">Xe tăng hạng nặng KV-1 của trung đoàn đột phá cận vệ số 5 đang hành quân. Xe đầu mang pháo L-11, xe sau mang pháo ZIS-5.</p>
         </div>
         <dl class="insp-meta">
-          <dt>Khổ</dt><dd id="insp-res">4195×2796</dd>
-          <dt>Nguồn</dt><dd id="insp-src">War Album</dd>
+          <dt data-i18n="res_lbl">Khổ</dt><dd id="insp-res">4195×2796</dd>
+          <dt data-i18n="source_lbl">Nguồn</dt><dd id="insp-src">War Album</dd>
           <dt>Lane</dt><dd>WAITING_PO</dd>
         </dl>
         <div class="insp-bottom">
-          <textarea class="insp-note" placeholder="Ghi chú (tùy chọn)..."></textarea>
+          <textarea class="insp-note" placeholder="Ghi chú (tùy chọn)..." data-i18n-attr="placeholder:note_ph"></textarea>
           <div class="insp-acts">
-            <button class="card-act-btn approve">Duyệt<kbd>A</kbd></button>
-            <button class="card-act-btn detain">Giữ<kbd>D</kbd></button>
-            <button class="card-act-btn purge">Hủy<kbd>P</kbd></button>
+            <button class="card-act-btn approve"><span data-i18n="btn_approve">Duyệt</span><kbd>A</kbd></button>
+            <button class="card-act-btn detain"><span data-i18n="btn_detain">Giữ</span><kbd>D</kbd></button>
+            <button class="card-act-btn purge"><span data-i18n="btn_purge">Hủy</span><kbd>P</kbd></button>
           </div>
         </div>
       </aside>
