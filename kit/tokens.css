@@ -1,0 +1,103 @@
+/* ==========================================================================
+   XRU SWISS DESIGN TOKENS
+   Màu nằm ở profiles/*.css. File này: màu nào dùng vào việc gì, cỡ chữ, khoảng cách.
+   ========================================================================== */
+@import url("profiles/graphite.css");
+@import url("profiles/cyan.css");
+
+:root {
+  /* Cỡ toàn bộ giao diện: 1 = 100%, 1.15 = 115%. Đổi số này là to/nhỏ cả trang */
+  --ui-zoom: 1.15;
+
+  /* Màu: lấy từ profile đang chọn (profiles/*.css). File này chỉ nói màu nào dùng vào việc gì. */
+  --bg:          var(--m-1);
+  --panel:       var(--m-3);
+  --panel-hover: var(--m-4);
+  --surface:     var(--m-2);
+
+  /* Vạch kẻ mảnh (không viền hộp dày) */
+  --hairline:    rgba(var(--hairline-rgb), 0.07);
+  --hairline-hi: rgba(var(--hairline-rgb), 0.16);
+  --line:        var(--hairline);
+
+  /* Chữ */
+  --fg-strong:   var(--m-15);
+  --fg:          var(--m-13);
+  --fg-dim:      var(--m-10);
+  --fg-faint:    var(--m-8);
+
+  /* Màu mang nghĩa */
+  --accent:      rgb(var(--accent-rgb));         /* nhấn: đang chạy, đang chọn, nút chính */
+  --accent-soft: rgba(var(--accent-rgb), 0.2);   /* nền nhạt của màu nhấn */
+  --accent-line: rgba(var(--accent-rgb), 0.35);  /* viền nhạt của màu nhấn */
+  --warn:        rgb(var(--warn-rgb));           /* cảnh báo, chờ duyệt */
+  --hold:        rgb(var(--hold-rgb));           /* tạm giữ, quá hạn */
+  --idle:        var(--m-7);                     /* không hoạt động */
+
+  /* Khoảng cách & cỡ chữ (launcher.css dùng) */
+  --space-1: 4px;
+  --space-3: 12px;
+  --space-4: 20px;
+  --space-8: 40px;
+  --fs-title: 22px;
+  --fs-small: 13px;
+  --fs-label: 11px;
+  --fs-num:   24px;
+
+  /* Font Stacks */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+
+html { zoom: var(--ui-zoom); }
+
+/* Global Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: calc(100vh / var(--ui-zoom));
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Shell Layout: Rail 64px + Stage linh hoạt */
+.shell {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Chấm trạng thái chung (Status Dots) */
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+  flex-shrink: 0;
+}
+.status-dot.stale {
+  background: var(--hold);
+}
+.status-dot.idle {
+  background: var(--idle);
+}
+
+/* Chuyển trang (Launcher ↔ Gate, Image ↔ Video): giữ trang cũ trên màn tới khi trang mới vẽ xong
+   rồi đổi một phát — không chớp trắng, không hiệu ứng mờ dần. Chỉ Chrome/Edge mới hỗ trợ; trình duyệt khác bỏ qua. */
+@view-transition { navigation: auto; }
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; }

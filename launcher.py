@@ -39,12 +39,12 @@ APPS = {
 }
 
 # Land → module trên rail: (đường dẫn, khóa chữ trong js/i18n.js, icon trong js/rail.js, nguồn).
-# Nguồn = khóa trong APPS (app của land), hoặc "/trang.html" (trang của Launcher, ví dụ Gate Dash đọc số chụp).
+# Nguồn = khóa trong APPS (app của land), hoặc "/đường/trang.html" (trang của Launcher, ví dụ Gate Dash đọc số chụp).
 LANDS = {
     "gate": ("Gate", (
         ("image", "gate_img", "image", "gate-image"),
         ("video", "gate_vid", "video", "gate-video"),
-        ("dash", "gate_dash", "stats", "/gate_dash.html"),
+        ("dash", "gate_dash", "stats", "/mockups/gate_dash.html"),
     )),
     "label": ("Label", (
         ("video", "label_video", "video", "label-video"),
@@ -112,12 +112,12 @@ def shell_page(land: str, mod: str) -> str | None:
 <title>{html.escape(name)} — XRU</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/tokens.css"><link rel="stylesheet" href="/css/rail.css"><link rel="stylesheet" href="/css/shell.css">
-<link rel="stylesheet" href="/css/account.css"><script src="/js/i18n.js"></script><script src="/js/account.js"></script>
+<link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/shell/shell.css">
+<link rel="stylesheet" href="/kit/account/account.css"><script src="/kit/i18n/i18n.js"></script><script src="/kit/account/account.js"></script>
 </head><body>
 <div class="shell">
-  <script>window.XRU_RAIL = {json.dumps(rail)}; window.XRU_VIEW = {json.dumps(view)};</script>
-  <nav class="rail" data-rail="live" data-active="{html.escape(current[0])}"></nav><script src="/js/rail.js"></script>
+  <script>window.XRU_RAILS = {{"live": {json.dumps(rail)}}}; window.XRU_VIEW = {json.dumps(view)};</script>
+  <nav class="rail" data-rail="live" data-active="{html.escape(current[0])}"></nav><script src="/kit/rail/rail.js"></script>
   <main class="sh-stage">
     <iframe id="sh-frame" title="{html.escape(name)}" allow="fullscreen; autoplay" hidden></iframe>
     <section class="sh-down" id="sh-down" hidden>
@@ -129,7 +129,7 @@ def shell_page(land: str, mod: str) -> str | None:
     </section>
   </main>
 </div>
-<script src="/js/shell.js"></script>
+<script src="/shell/shell.js"></script>
 </body></html>"""
 
 
@@ -151,6 +151,19 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def _sector_image(self, land: str, data: bytes) -> None:
+        """Lưu (hoặc xoá, nếu rỗng) ảnh card sector do trang chủ gửi lên. Chỉ nhận JPEG."""
+        path = sector_file(land)
+        if path is None or (data and not data.startswith(b"\xff\xd8")):
+            return self._send(400, "")
+        SECTORS.mkdir(parents=True, exist_ok=True)
+        if data:
+            path.write_bytes(data)
+        else:
+            path.unlink(missing_ok=True)
+        self.send_response(204)
+        self.end_headers()
+
     def do_GET(self) -> None:
         path = urlparse(self.path).path
         if path == "/status":
@@ -162,13 +175,25 @@ class Handler(SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self) -> None:
-        if urlparse(self.path).path != "/start":
-            return self._send(404, "")
+        url = urlparse(self.path)
         length = int(self.headers.get("Content-Length") or 0)
+        if url.path == "/sector-image":
+            return self._sector_image(parse_qs(url.query).get("land", [""])[0], self.rfile.read(length))
+        if url.path != "/start":
+            return self._send(404, "")
         key = parse_qs(self.rfile.read(length).decode()).get("app", [""])[0]
         start(key)
         self.send_response(204)
         self.end_headers()
+
+
+SECTORS = HERE / "assets" / "sectors"
+
+
+def sector_file(land: str) -> Path | None:
+    """Ảnh card sector trên trang chủ: assets/sectors/<tên>.jpg. Tên lạ thì từ chối."""
+    name = land.strip().lower()
+    return SECTORS / f"{name}.jpg" if name and all(c.isalnum() or c in "-_ " for c in name) else None
 
 
 def main() -> None:

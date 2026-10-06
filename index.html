@@ -11,21 +11,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
   
   <!-- Modular CSS -->
-  <link rel="stylesheet" href="css/tokens.css">
-  <link rel="stylesheet" href="css/rail.css">
-  <link rel="stylesheet" href="css/page.css">
-  <link rel="stylesheet" href="css/launcher.css">
-  <link rel="stylesheet" href="launcher_globe/globe.css">
-  <link rel="stylesheet" href="css/account.css?v=2">
-  <script src="js/i18n.js"></script>
-  <script src="js/account.js?v=2"></script>
+  <link rel="stylesheet" href="kit/tokens.css">
+  <link rel="stylesheet" href="kit/rail/rail.css">
+  <link rel="stylesheet" href="kit/page/page.css">
+  <link rel="stylesheet" href="home/launcher.css">
+  <link rel="stylesheet" href="home/globe/globe.css">
+  <link rel="stylesheet" href="kit/account/account.css?v=2">
+  <script src="kit/i18n/i18n.js"></script>
+  <script src="home/rail_menu.js"></script>
+  <script src="kit/account/account.js?v=2"></script>
 </head>
 <body>
 
   <div class="shell">
     
     <!-- Rail dọc mỏng kiểu Codex (64px) — Bản đồ Lục Địa XRU FEDERAL -->
-    <nav class="rail" data-rail="launcher"></nav><script src="js/rail.js"></script>
+    <nav class="rail" data-rail="launcher"></nav><script src="kit/rail/rail.js"></script>
 
     <!-- Vùng sân khấu chính -->
     <main class="stage">
@@ -90,10 +91,10 @@
           </div>
 
           <div class="sector-actions">
-            <a href="gate_image.html" class="action-btn primary" target="_blank">
+            <a href="mockups/gate_image.html" class="action-btn primary" target="_blank">
               Duyệt ảnh <span class="action-badge">548 chờ</span>
             </a>
-            <a href="gate_video.html" class="action-btn" target="_blank">Duyệt video</a>
+            <a href="mockups/gate_video.html" class="action-btn" target="_blank">Duyệt video</a>
             <a href="/p/loadout?land=Gate" class="action-btn">Loadout</a>
           </div>
         </article>
@@ -130,8 +131,8 @@
           </div>
 
           <div class="sector-actions">
-            <a href="crawler_dash.html" class="action-btn">Dashboard</a>
-            <a href="crawler_sources.html" class="action-btn">Nguồn đã thêm</a>
+            <a href="mockups/crawler_dash.html" class="action-btn">Dashboard</a>
+            <a href="mockups/crawler_sources.html" class="action-btn">Nguồn đã thêm</a>
             <a href="/p/loadout?land=Crawler" class="action-btn">Loadout</a>
           </div>
         </article>
@@ -223,8 +224,8 @@
             <b>Crawler</b>
           </div>
           <div class="itin-mods">
-            <a href="crawler_dash.html" class="itin-mod-pill">Dashboard</a>
-            <a href="crawler_sources.html" class="itin-mod-pill">Nguồn đã thêm</a>
+            <a href="mockups/crawler_dash.html" class="itin-mod-pill">Dashboard</a>
+            <a href="mockups/crawler_sources.html" class="itin-mod-pill">Nguồn đã thêm</a>
             <a href="/p/loadout?land=Crawler" class="itin-mod-pill">Loadout</a>
           </div>
           <div class="itin-ago">1 ngày trước</div>
@@ -236,11 +237,11 @@
           <span class="itin-code">SECTOR-2</span>
           <div class="itin-name">
             <span class="status-dot"></span>
-            <a href="gate_image.html" style="color:inherit; text-decoration:none;" title="Vào bàn làm việc Gate"><b>Gate</b> ↗</a>
+            <a href="mockups/gate_image.html" style="color:inherit; text-decoration:none;" title="Vào bàn làm việc Gate"><b>Gate</b> ↗</a>
           </div>
           <div class="itin-mods">
-            <a href="gate_image.html" class="itin-mod-pill alert" target="_blank">Duyệt ảnh (548 chờ)</a>
-            <a href="gate_video.html" class="itin-mod-pill" target="_blank">Duyệt video</a>
+            <a href="mockups/gate_image.html" class="itin-mod-pill alert" target="_blank">Duyệt ảnh (548 chờ)</a>
+            <a href="mockups/gate_video.html" class="itin-mod-pill" target="_blank">Duyệt video</a>
             <a href="/p/loadout?land=Gate" class="itin-mod-pill">Loadout</a>
           </div>
           <div class="itin-ago">Vừa xong</div>
@@ -294,8 +295,8 @@
   </div>
 
   <!-- Modular Scripts -->
-  <script src="js/search.js?v=4"></script>
-  <script src="launcher_globe/globe.js"></script>
-  <script src="js/launcher.js?v=4"></script>
+  <script src="home/search.js?v=4"></script>
+  <script src="home/globe/globe.js"></script>
+  <script src="home/launcher.js?v=4"></script>
 </body>
 </html>

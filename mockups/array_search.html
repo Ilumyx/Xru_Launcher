@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XRU Array — Blind test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../kit/tokens.css">
+  <link rel="stylesheet" href="../kit/rail/rail.css">
+  <link rel="stylesheet" href="css/array.css">
+  <link rel="stylesheet" href="../kit/account/account.css?v=2">
+  <script src="../kit/i18n/i18n.js"></script>
+  <script src="js/rail_menus.js"></script>
+  <script src="../kit/account/account.js?v=2"></script>
+</head>
+<body>
+  <div class="shell">
+    <!-- Rail giống Launcher: logo → search (đang ở đây) → vạch → 4 lục địa -->
+    <nav class="rail" data-rail="array" data-active="array"></nav><script src="../kit/rail/rail.js"></script>
+
+    <!-- Hai màn kiểu Google trên cùng một DOM:
+         data-view="home"    → chữ ARRAY + ô tra nằm giữa màn
+         data-view="results" → chính chữ + ô đó dạt lên thanh trên, bên dưới là tab + kết quả -->
+    <div class="ax" id="ax" data-view="home">
+      <main class="ax-main" id="ax-main">
+        <header class="ax-top">
+          <a class="ax-mark" id="ax-mark" href="array_search.html" title="Về trang đầu Array" data-i18n-attr="title:ax_home_tip">
+            <span class="ax-mark-word">ARRAY</span><small>XRU · Atlas</small>
+          </a>
+          <div class="ax-boxwrap" id="ax-boxwrap">
+            <form class="ax-box" id="ax-form" autocomplete="off" role="search">
+              <svg class="ax-box-ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-linecap="round" stroke-width="1.8" d="M21 21l-4.35-4.35"/></svg>
+              <input id="ax-q" placeholder="tank + ussr  ·  Leopard 2  ·  tank !Russia" spellcheck="false" aria-label="Câu tra Array">
+              <button type="button" class="ax-box-clear" id="ax-clear" title="Xoá câu" hidden data-i18n-attr="title:ax_clear_tip">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="1.8" d="M6 6l12 12M18 6L6 18"/></svg>
+              </button>
+              <kbd class="ax-box-kbd">/</kbd>
+            </form>
+            <ul class="ax-sug" id="ax-sug" role="listbox" hidden></ul>
+          </div>
+          <div class="ax-home-btns">
+            <button type="submit" form="ax-form">Tra Array</button>
+            <button type="button" id="ax-lucky" data-i18n="ax_try_sample">Thử một câu mẫu</button>
+          </div>
+          <p class="ax-home-hint"><span data-i18n="ax_captured">Câu đã chụp:</span> <span id="ax-hint-qs"></span></p>
+        </header>
+
+        <!-- Một ô gõ, mỗi tab một kho. Hôm nay chỉ Kiến thức (Atlas) có ruột -->
+        <nav class="ax-tabs" id="ax-tabs" aria-label="Kho tìm">
+          <button data-tab="all" class="is-active" data-i18n="ax_tab_all">Tất cả</button>
+          <button data-tab="know" data-i18n="ax_tab_knowledge">Kiến thức</button>
+          <button data-tab="img" class="is-soon" data-i18n="kind_image">Ảnh</button>
+          <button data-tab="vid" class="is-soon">Video</button>
+          <button data-tab="evt" class="is-soon" data-i18n="ax_tab_events">Sự kiện</button>
+          <button data-tab="ai" class="is-soon" data-i18n="ax_tab_ai">Chế độ AI</button>
+          <span class="ax-tabs-gen" id="ax-gen" title="Thế hệ kho Array lúc chụp" data-i18n-attr="title:ax_gen_tip"></span>
+        </nav>
+
+        <div class="ax-body">
+          <div class="ax-col" id="ax-col">
+            <div class="ax-under" id="ax-under"></div>
+            <div class="ax-results" id="ax-results"></div>
+            <section class="ax-related" id="ax-related" hidden></section>
+          </div>
+          <!-- Thẻ kiến thức của entry đang chọn (khung bên phải của Google) -->
+          <aside class="ax-panel" id="ax-panel"></aside>
+        </div>
+
+        <footer class="ax-foot">
+          <span class="ax-foot-l" id="ax-foot-l"></span>
+          <span class="ax-foot-keys"><span><kbd>/</kbd> <span data-i18n="ax_k_type">gõ câu</span></span><span><kbd>↑</kbd><kbd>↓</kbd> <span data-i18n="ax_k_pick">chọn</span></span><span><kbd>ESC</kbd> <span data-i18n="ax_k_back">lùi một màn</span></span></span>
+          <span class="ax-foot-r" data-i18n="ax_foot">Mockup · chụp thật từ Array · chỉ đọc</span>
+        </footer>
+      </main>
+    </div>
+  </div>
+  <div class="ax-toast" id="ax-toast"></div>
+
+  <script src="../data/array_snapshot.js"></script>
+  <script src="js/array.js"></script>
+</body>
+</html>
