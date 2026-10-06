@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/tokens.css">
-  <link rel="stylesheet" href="css/rail.css"><link rel="stylesheet" href="css/page.css">
-  <link rel="stylesheet" href="css/gate_dash.css?v=4">
+  <link rel="stylesheet" href="css/rail.css"><link rel="stylesheet" href="css/page.css"><link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/gate_dash.css?v=5">
   <link rel="stylesheet" href="css/account.css?v=2">
   <script src="js/account.js?v=2"></script>
 </head>
@@ -17,45 +17,34 @@
   <div class="shell">
     <nav class="rail" data-rail="gate" data-active="dash"></nav><script src="js/rail.js"></script>
 
-    <main class="gd-stage">
-<header class="page-head"><div class="page-title"><a href="launcher_mockup.html">EURASIA</a><span>/</span><h1>GATE</h1></div>
-  <div class="gd-kind" role="tablist" aria-label="Loại hồ sơ"><button data-kind="video" aria-pressed="true">Video</button><button data-kind="image" aria-pressed="false">Ảnh</button></div></header>
+    <div class="gd-shell">
+      <aside class="side">
+        <div class="side-head">
+          <div class="side-count"><b id="gd-count">—</b><span id="gd-count-label">HỒ SƠ</span></div>
+          <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" id="gd-q" placeholder="Tìm kênh…" aria-label="Tìm kênh"></label>
+          <div class="side-field">
+            <label for="gd-sort">Sắp xếp</label>
+            <select id="gd-sort"><option value="wait">Chờ nhiều nhất</option><option value="total">Nhiều hồ sơ nhất</option><option value="name">Tên A → Z</option></select>
+          </div>
+        </div>
+        <div class="side-items" id="gd-tree"></div>
+        <div class="side-pager"><span id="gd-taken">—</span></div>
+      </aside>
 
-<!-- 1. PHỄU: hồ sơ đang nằm ở cửa nào -->
+    <main class="gd-stage">
+<header class="page-head"><div class="page-title"><a href="launcher_mockup.html">EURASIA</a><span>/</span><a href="gate_dash.html">GATE</a><span>/</span><h1 id="gd-scope">TẤT CẢ NGUỒN</h1></div>
+  <div class="gd-kind" aria-label="Loại hồ sơ"><button data-kind="video" aria-pressed="true">Video</button><button data-kind="image" aria-pressed="false">Ảnh</button></div></header>
+
+<!-- 1. PHỄU: hồ sơ của phần đang chọn nằm ở cửa nào -->
 <section class="gd-funnel" aria-label="Phễu Gate">
   <div class="gd-funnel-cols" id="gd-funnel"></div>
   <div class="gd-flow" id="gd-flow" aria-hidden="true"></div>
 </section>
 
-<!-- 2. BẢNG CHẤM ĐIỂM MÁY: mỗi loại cờ máy bắt đúng/lộn/hụt bao nhiêu -->
-<section class="gd-block">
-  <div class="gd-section-head"><h2>Máy chấm điểm</h2><span class="gd-label">CHỈ TÍNH HỒ SƠ PO ĐÃ QUYẾT</span></div>
-  <table class="gd-score">
-    <thead><tr>
-      <th>LOẠI CỜ</th><th>MÁY BẮT</th><th>PO ĐÃ XEM</th><th>ĐÚNG</th><th>BẮT LỘN</th><th>HỤT</th>
-      <th title="Trong số máy bắt, bao nhiêu là lỗi thật (precision)">BẮT TRÚNG</th>
-      <th title="Trong số lỗi thật, máy bắt được bao nhiêu (recall)">BẮT ĐỦ</th>
-    </tr></thead>
-    <tbody id="gd-score"></tbody>
-  </table>
-  <p class="gd-note"><b>Bắt trúng</b> = máy cắm cờ thì đúng mấy phần (precision). <b>Bắt đủ</b> = lỗi thật thì máy thấy mấy phần (recall).
-  <b>Hụt</b> chỉ biết được khi PO giữ một hồ sơ máy đã cho qua. Số đỏ = chỗ máy yếu nhất.</p>
-</section>
+<!-- 2. MÁY: máy bắt gì, PO quyết gì; đúng/lộn/hụt chờ lõi -->
+<section class="gd-block" id="gd-machine"></section>
 
-<!-- 3. CA SAI: hồ sơ máy và PO không cùng ý, để soi lại và chỉnh máy -->
-<section class="gd-block gd-wrong">
-  <div class="gd-section-head"><h2>Ca sai để xem lại</h2>
-    <div class="gd-tabs" id="gd-wrong-tabs"><button data-wrong="fp" aria-pressed="true">Bắt lộn</button><button data-wrong="fn" aria-pressed="false">Hụt</button></div></div>
-  <div class="gd-wrong-grid">
-    <div><div class="gd-filter" id="gd-filter"></div><div class="gd-cases" id="gd-cases"></div></div>
-    <div id="gd-case"></div>
-  </div>
-</section>
-
-<div class="gd-bottom">
-  <section class="gd-sources"><div class="gd-section-head"><h2>Gate theo nguồn</h2><span class="gd-label">ĐANG NẰM Ở CỬA NÀO</span></div>
-    <div class="gd-table-wrap"><table><thead><tr><th>NGUỒN</th><th>WAIT</th><th>FLAG</th><th>DETAIN</th><th>ACCEPT</th><th>PURGE</th><th>CHỜ LÂU NHẤT</th></tr></thead><tbody id="gd-source-rows"></tbody></table></div></section>
-  <aside class="gd-quality"><div class="gd-section-head"><h2>Hồ sơ đầu vào</h2></div><div id="gd-quality"></div></aside>
-</div>
-<footer class="page-foot"><div class="key-hints"><span><span class="key">1</span> Ảnh</span><span><span class="key">2</span> Video</span><span><span class="key">3</span> Dashboard</span><span><span class="key">V</span> Video / Ảnh</span><span><span class="key">ESC</span> Launcher</span></div><div>MOCKUP · TOÀN BỘ SỐ LIỆU VÀ HỒ SƠ MINH HOẠ</div></footer>
-</main></div><script src="js/gate.js"></script><script src="js/gate_dash.js?v=4"></script></body></html>
+<footer class="page-foot"><div class="key-hints"><span><span class="key">1</span> Ảnh</span><span><span class="key">2</span> Video</span><span><span class="key">3</span> Dashboard</span><span><span class="key">V</span> Video / Ảnh</span><span><span class="key">ESC</span> Launcher</span></div><div id="gd-foot">SỐ THẬT · CHỈ ĐỌC</div></footer>
+    </main>
+    </div>
+</div><script src="data/gate_snapshot.js"></script><script src="js/gate.js"></script><script src="js/gate_dash.js?v=5"></script></body></html>

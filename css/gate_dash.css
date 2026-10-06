@@ -1,8 +1,10 @@
 /* ==========================================================================
-   GATE DASH — 3 câu hỏi: hồ sơ đang ở cửa nào · máy chấm điểm ra sao · ca nào sai.
+   GATE DASH — số thật. Sidebar chọn phạm vi nguồn · phễu: hồ sơ đang ở cửa nào · máy chấm điểm.
    Màu: xám là mặc định. Đỏ (--warn) chỉ cho hàng chờ và chỗ máy yếu nhất.
    ========================================================================== */
-.gd-stage { width: 100%; max-width: 1600px; padding: 28px 36px; margin: auto; min-width: 0; }
+/* Khung: sidebar nguồn (css/sidebar.css) + vùng số liệu cuộn riêng */
+.gd-shell { display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); height: calc(100vh / var(--ui-zoom)); min-width: 0; }
+.gd-stage { min-width: 0; overflow-y: auto; padding: 28px 36px; scrollbar-width: thin; scrollbar-color: var(--m-6) transparent; }
 .gd-stage a { text-decoration: none; color: var(--fg-dim); }
 .gd-stage a:hover { color: var(--fg-strong); }
 .gd-label { font: 11px var(--font-mono); letter-spacing: .08em; color: var(--fg-dim); }
@@ -17,7 +19,7 @@
 
 /* 1. Phễu */
 .gd-funnel { padding: 26px 0 0; }
-.gd-funnel-cols { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.gd-funnel-cols { display: grid; grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr)); }
 .gd-step { padding: 0 24px; }
 .gd-step:first-child { padding-left: 0; }
 .gd-step + .gd-step { border-left: 1px solid var(--hairline); }
@@ -28,11 +30,11 @@
 .gd-flow { margin-top: 26px; }
 .gd-flow > div { display: flex; gap: 2px; height: 6px; margin-top: 10px; }
 .gd-flow i { display: block; min-width: 2px; }
-.f-wait { background: var(--warn); }
-.f-flag { background: var(--m-13); }
-.f-detain { background: var(--m-10); }
-.f-accept { background: var(--m-14); }
-.f-purge { background: var(--m-7); }
+.f-WAITING_PO { background: var(--warn); }
+.f-MACHINE_FLAGGED { background: var(--m-13); }
+.f-DETAINED { background: var(--m-10); }
+.f-ACCEPT_APPROVED { background: var(--m-14); }
+.f-PURGE_APPROVED { background: var(--m-7); }
 
 /* 2. Máy chấm điểm */
 .gd-score { width: 100%; border-collapse: collapse; white-space: nowrap; }
@@ -55,60 +57,20 @@
 .gd-note { margin-top: 14px; max-width: 900px; font-size: 13px; line-height: 1.6; color: var(--fg-dim); }
 .gd-note b { color: var(--fg); font-weight: 500; }
 
-/* 3. Ca sai */
-.gd-wrong-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 32px; }
-.gd-filter { margin-bottom: 10px; font-size: 13px; color: var(--fg-dim); }
-.gd-filter b { color: var(--fg-strong); font-weight: 500; }
-.gd-filter button { margin-left: 8px; border: 0; background: none; color: var(--fg-dim); font: 12px var(--font-mono); cursor: pointer; }
-.gd-filter button:hover { color: var(--fg-strong); }
-.gd-case-row { display: grid; grid-template-columns: 86px minmax(0, 1fr) auto; grid-template-rows: auto auto; column-gap: 14px; width: 100%; padding: 12px 12px; border: 0; border-bottom: 1px solid var(--hairline); background: none; text-align: left; cursor: pointer; color: var(--fg); }
-.gd-case-row:hover { background: var(--m-2); }
-.gd-case-row.is-on { background: var(--m-3); }
-.gd-case-type { grid-row: 1 / 3; align-self: center; font: 11px var(--font-mono); color: var(--fg-dim); }
-.gd-case-title { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gd-case-src { grid-column: 2; font: 11px var(--font-mono); color: var(--fg-dim); margin-top: 3px; }
-.gd-case-row time { grid-column: 3; grid-row: 1 / 3; align-self: center; font: 12px var(--font-mono); color: var(--fg-faint); }
-.gd-empty { padding: 16px 0; font: 12px var(--font-mono); color: var(--fg-faint); }
-
-#gd-case { background: var(--m-2); padding: 22px; align-self: start; }
-.gd-case-head { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; }
-.gd-case-head h3 { font-size: 20px; font-weight: 500; margin: 8px 0; color: var(--fg-strong); }
-.gd-case-head p { font: 12px var(--font-mono); color: var(--fg-dim); }
-.gd-case-head a { font-size: 14px; white-space: nowrap; }
-.gd-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
-.gd-frame { height: 164px; background: var(--m-4); position: relative; overflow: hidden; }
-.gd-frame > span { position: absolute; top: 12px; left: 12px; font: 11px var(--font-mono); color: var(--m-12); z-index: 1; }
-.frame-1 { background: var(--m-3); }
-.frame-1 em { position: absolute; right: 14px; bottom: 14px; padding: 6px 8px; outline: 1px solid var(--fg-dim); font: normal 13px var(--font-mono); color: var(--fg); }
-.gd-scene { position: absolute; inset: 35% 15% 10%; border-bottom: 2px solid var(--m-8); opacity: .7; }
-.gd-scene i:first-child { position: absolute; width: 70%; height: 26%; bottom: 0; background: var(--m-8); transform: skew(-20deg); }
-.gd-scene i:nth-child(2) { position: absolute; width: 36%; height: 22%; bottom: 26%; left: 25%; background: var(--m-9); }
-.gd-scene i:nth-child(3) { position: absolute; width: 60%; height: 3px; bottom: 38%; left: 45%; background: var(--m-10); }
-.gd-verdict { display: grid; grid-template-columns: 80px 1fr; gap: 10px 16px; padding-top: 14px; border-top: 1px solid var(--hairline); font-size: 14px; line-height: 1.5; }
-.gd-verdict dt { font: 11px var(--font-mono); letter-spacing: .06em; color: var(--fg-dim); padding-top: 3px; }
-.gd-verdict dd { color: var(--fg); }
-
-/* Dưới cùng: theo nguồn + hồ sơ đầu vào */
-.gd-bottom { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(260px, 1fr); gap: 40px; border-top: 1px solid var(--hairline); padding-top: 26px; margin-top: 34px; }
-.gd-table-wrap { overflow: auto; }
-.gd-sources table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-.gd-sources th { text-align: right; font: 11px var(--font-mono); letter-spacing: .06em; color: var(--fg-dim); padding: 0 14px 12px; border-bottom: 1px solid var(--hairline-hi); }
-.gd-sources td { padding: 14px; border-bottom: 1px solid var(--hairline); text-align: right; font: 14px var(--font-mono); color: var(--fg); }
-.gd-sources td:first-child, .gd-sources th:first-child { text-align: left; padding-left: 0; }
-.gd-sources td:first-child { font: 14px var(--font-sans); color: var(--fg-strong); }
-.gd-sources td.is-old { color: var(--warn); }
-.gd-sources tr:hover td { background: var(--m-2); }
-.gd-quality-main { display: block; font: 500 30px var(--font-mono); margin: 14px 0 20px; color: var(--fg-strong); }
-.gd-distribution { margin-bottom: 20px; }
-.gd-distribution > div { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 8px 0; font-size: 14px; }
-.gd-distribution b, .gd-fact b { font: 14px var(--font-mono); font-weight: 400; }
-.gd-meter { grid-column: 1 / -1; height: 4px; background: var(--m-4); }
-.gd-meter i { display: block; height: 100%; background: var(--m-11); }
-.gd-fact { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--hairline); font-size: 14px; }
-.gd-fact span { color: var(--fg-dim); }
+/* Máy: hai dải số (máy kết luận / PO quyết) */
+.gd-two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 18px; }
+.gd-sub { font: 500 13px var(--font-sans); color: var(--fg-dim); margin-bottom: 12px; }
+.gd-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.gd-strip > div { padding: 0 16px; }
+.gd-strip > div:first-child { padding-left: 0; }
+.gd-strip > div + div { border-left: 1px solid var(--hairline); }
+.gd-strip b { display: block; margin-top: 8px; font: 500 26px/1 var(--font-mono); letter-spacing: -.04em; color: var(--fg-strong); }
+.gd-marks { margin-bottom: 26px; font-size: 13px; color: var(--fg-dim); }
+.gd-marks b { font: 500 13px var(--font-mono); color: var(--fg); }
+.gd-score td.is-pending { color: var(--fg-ghost, var(--m-7)); }
 
 @media (max-width: 1100px) {
-  .gd-wrong-grid, .gd-bottom { grid-template-columns: 1fr; }
+  .gd-two { grid-template-columns: 1fr; gap: 24px; }
   .gd-step b { font-size: 30px; }
 }
 @media (max-width: 760px) {

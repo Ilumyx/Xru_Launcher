@@ -96,3 +96,12 @@
   color: var(--fg-dim);
 }
 .side-pager b { color: var(--fg); font-weight: 500; }
+
+/* Danh sách dạng cây (Gate Dash: tất cả → nền tảng → kênh) */
+.side-item.is-all .t, .side-item.is-group .t { color: var(--fg-strong); font-weight: 500; }
+.side-item.is-group .n { cursor: pointer; color: var(--fg-dim); }
+.side-item.is-group .n:hover { color: var(--fg-strong); }
+.side-item.is-child { padding-left: 34px; }
+.side-item.is-child .n { display: none; }
+.side-item.is-child { grid-template-columns: minmax(0, 1fr); }
+.side-item.is-all.is-active::before, .side-item.is-group.is-active::before { top: 15px; }

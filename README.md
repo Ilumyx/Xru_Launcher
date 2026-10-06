@@ -20,7 +20,7 @@ Entry: `launcher_mockup.html`.
 | `gate_image.html` | Gate image review: list · gallery · inspector, notched inspector resize |
 | `gate_video.html` | Gate video review, grid variant |
 | `gate_video_watch.html` | Gate video review, big-player variant (trial, keep one of the two) |
-| `gate_dash.html` | Gate stats (old simple layout) |
+| `gate_dash.html` | Gate Dash, **số thật** (`data/gate_snapshot.js`): sidebar nguồn (tất cả → nền tảng → kênh), phễu theo phạm vi, máy chấm điểm |
 | `array_search.html` | Array, Google-style: home box → results with tabs, knowledge panel |
 | `crawler_dash.html` | Crawler mockup: overview, illustrative numbers |
 | `crawler_dash_activity.html` | Crawler dashboard sketch: recent activity |
@@ -36,6 +36,14 @@ Regenerate (PC Array must be up; key is read from `XRU_Data/federal_keys/ai/xru_
 
 ```bash
 python3 tools/array_snapshot.py
+```
+
+## Gate snapshot
+
+`data/gate_snapshot.js` = số thật của Gate, chụp bằng lệnh đọc `stats` của Gate (gọi CLI, không import code Gate):
+
+```bash
+python3 tools/gate_snapshot.py
 ```
 
 ## Rules
