@@ -306,7 +306,7 @@ function renderStage() {
 
   // Footer HUD
   const footerHtml = `
-    <footer class="hud-footer">
+    <footer class="page-foot">
       <div class="key-hints">
         <span><span class="key">1</span> Euramerika</span>
         <span><span class="key">2</span> Eurasia</span>

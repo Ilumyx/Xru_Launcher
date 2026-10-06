@@ -32,7 +32,7 @@
 
 .stage:has(> .federal-map) .hud-header { flex: none; }
 
-.stage:has(> .federal-map) .hud-footer {
+.stage:has(> .federal-map) .page-foot {
   flex: none;
   margin-top: 16px;
 }

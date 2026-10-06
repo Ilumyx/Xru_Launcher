@@ -3,9 +3,6 @@ a.rail-icon-btn { text-decoration: none; }
 .cr-stage { --fg-dim: var(--m-11); --fg-faint: var(--m-9); width: 100%; max-width: 1480px; margin: 0 auto; padding: 28px 36px; min-width: 0; }
 .cr-stage a { color: inherit; text-decoration: none; }
 .cr-stage a:hover { color: var(--fg-strong); }
-.cr-head { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-bottom: 22px; border-bottom: 1px solid var(--hairline); }
-.cr-title { display: flex; align-items: baseline; gap: 10px; font: 14px var(--font-mono); letter-spacing: .05em; color: var(--fg-dim); }
-.cr-title h1 { color: var(--fg-strong); font: 600 24px var(--font-sans); letter-spacing: -.02em; }
 .cr-filters { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .cr-filters button { padding: 8px 14px; color: var(--fg-dim); background: transparent; border: 0; cursor: pointer; font: 16px var(--font-sans); }
 .cr-filters button[aria-pressed="true"] { background: var(--m-5); color: var(--fg-strong); }
@@ -81,7 +78,6 @@ a.rail-icon-btn { text-decoration: none; }
 .cr-event p { color: var(--fg-dim); font-size: 16px; margin-top: 6px; }
 .cr-event .cr-batch { margin-top: 12px; padding: 14px 18px; background: var(--m-2); font: 14px var(--font-mono); color: var(--fg); }
 .cr-batch span { color: var(--fg-dim); margin-left: 18px; }
-.cr-footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--hairline); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; color: var(--fg-faint); font: 13px var(--font-mono); }
 .cr-toolbar { margin-top: 22px; display: flex; justify-content: space-between; gap: 24px; align-items: center; margin-bottom: 14px; }
 .cr-search { background: var(--m-2); border: 0; border-bottom: 1px solid var(--hairline-hi); padding: 10px 12px; color: var(--fg); font: 16px var(--font-sans); width: 260px; }
 .cr-search::placeholder { color: var(--fg-dim); }
@@ -99,11 +95,10 @@ a.rail-icon-btn { text-decoration: none; }
 @media (max-width: 1050px) {
   .cr-stage { padding: 24px; }
   .cr-columns { grid-template-columns: 1fr; gap: 32px; }
-  .cr-head, .cr-toolbar { flex-wrap: wrap; }
+  .cr-toolbar { flex-wrap: wrap; }
   .cr-metric b { font-size: 32px; }
 }
 @media (max-width: 650px) {
-  .cr-title { flex-wrap: wrap; }
   .cr-metrics { grid-template-columns: 1fr 1fr; }
   .cr-metric + .cr-metric { padding-left: 0; border: 0; }
   .cr-subtotal { flex-wrap: wrap; gap: 14px; }

@@ -27,7 +27,7 @@ Entry: `launcher_mockup.html`.
 | `crawler_sources.html` | Crawler mockup sources: image + video, filters and source details |
 | `gate_mockup.html` | Redirect stub to the gate pages |
 
-Shared: `profiles/*.css` (màu từng profile), `css/tokens.css` (màu dùng vào việc gì, zoom, page-swap), `css/rail.css` + `js/rail.js` (rail: một bản cho mọi trang, sửa menu ở `RAILS` trong `js/rail.js`), `css/account.css` + `js/account.js` (font/accent/zoom settings).
+Shared: `profiles/*.css` (màu từng profile), `css/tokens.css` (màu dùng vào việc gì, zoom, page-swap), `css/page.css` (đầu trang `.page-head` + chân trang `.page-foot`, một kiểu cho mọi màn), `css/rail.css` + `js/rail.js` (rail: một bản cho mọi trang, sửa menu ở `RAILS` trong `js/rail.js`), `css/account.css` + `js/account.js` (font/accent/zoom settings).
 
 ## Array snapshot
 
