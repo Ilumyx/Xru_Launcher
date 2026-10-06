@@ -75,7 +75,6 @@ window.LauncherGlobe = (() => {
 
     const editTip = window.XRU_I18N ? window.XRU_I18N.t('edit_img_tip') : 'Đổi ảnh';
     const lands = data.lands || [];
-    const fallbackImg = 'data/placeholder.svg';
     panel.innerHTML = `
       <div class="lands-panel-head">${continentId.toUpperCase()}</div>
       <div class="lands-list">
@@ -91,7 +90,7 @@ window.LauncherGlobe = (() => {
           const attrs = href ? ` href="${href}"${external}` : '';
           return `
             <${tag} class="land-card${href ? '' : ' is-idle'}${isPlaceholder ? ' is-empty' : ''}" data-land="${land.name}"${attrs}>
-              <img src="${imgSrc}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImg}';this.closest('.land-card').classList.add('is-empty')" />
+              <img src="${imgSrc}" alt="" loading="lazy" onerror="this.closest('.land-card').classList.add('is-empty');this.remove()" />
               <span class="land-code">${land.code}</span>
               <span class="land-edit" role="button" title="${editTip}" data-i18n-attr="title:edit_img_tip" onclick="event.preventDefault();event.stopPropagation();LauncherGlobe.changeLandImage('${land.name}')">✎</span>
               <span class="land-caption">
