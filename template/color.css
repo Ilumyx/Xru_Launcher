@@ -1,5 +1,9 @@
-/* Một bảng màu đơn sắc. Mỗi màn sở hữu bản chép của file này. */
+/* Màu/phông chung: server của mỗi màn đọc file này từ ổ đĩa. */
 :root {
+      --font-sans:Arial,system-ui,sans-serif; --font-mono:ui-monospace,monospace;
+      --fs-label:12px; --fs-small:13px; --fs-body:14px; --fs-lead:16px;
+      --fs-title:22px; --fs-num:32px; --fs-hero:56px;
+
   --m-0:#060605; --m-1:#0a0a09; --m-2:#10100f; --m-3:#161615;
   --m-4:#1d1d1c; --m-5:#242423; --m-6:#2d2d2b; --m-7:#383836;
   --m-8:#484845; --m-9:#5e5e5b; --m-10:#767673; --m-11:#92928f;
