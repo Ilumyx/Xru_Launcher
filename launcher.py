@@ -39,19 +39,21 @@ APPS = {
     "label-video": ("Xru_Label", ["python", "-m", "label_division_video.video_po_review_ui.video_review_web_app"], 5057),
 }
 
-# Land → module trên rail: (đường dẫn, khóa chữ trong js/i18n.js, icon trong js/rail.js, nguồn).
-# Nguồn = khóa trong APPS (app của land), hoặc "/đường/trang.html" (trang của Launcher, ví dụ Gate Dash đọc số chụp).
+# Land → các nhóm module trên rail (giữa hai nhóm có vạch ngăn): (đường dẫn, khóa chữ, icon, nguồn).
+# Nguồn = khóa trong APPS (app của land), "khóa/trang.html" (trang khác của app đó),
+# hoặc "/đường/trang.html" (trang của Launcher, ví dụ Gate Dash đọc số chụp).
 LANDS = {
     "crawler": ("Crawler", (
-        ("sources", "rail_added_sources", "table", "crawler-sources"),
+        (("dash", "Dashboard", "bars", "crawler-sources/dash.html"),),
+        (("sources", "rail_added_sources", "table", "crawler-sources"),),
     )),
     "gate": ("Gate", (
-        ("image", "gate_img", "image", "gate-image"),
-        ("video", "gate_vid", "video", "gate-video"),
-        ("dash", "gate_dash", "stats", "/mockups/gate_dash.html"),
+        (("image", "gate_img", "image", "gate-image"),
+         ("video", "gate_vid", "video", "gate-video"),
+         ("dash", "gate_dash", "stats", "/mockups/gate_dash.html")),
     )),
     "label": ("Label", (
-        ("video", "label_video", "video", "label-video"),
+        (("video", "label_video", "video", "label-video"),),
     )),
 }
 
@@ -95,21 +97,28 @@ def stop_all() -> None:
         pid.unlink(missing_ok=True)
 
 
+def app_key(source: str) -> str | None:
+    key = source.partition("/")[0]
+    return key if key in APPS else None
+
+
 def module_url(source: str) -> str:
-    return f"http://127.0.0.1:{APPS[source][2]}/" if source in APPS else source
+    key = app_key(source)
+    return f"http://127.0.0.1:{APPS[key][2]}/{source.partition('/')[2]}" if key else source
 
 
 def shell_page(land: str, mod: str) -> str | None:
     """Vỏ: rail (js/rail.js, menu lấy từ LANDS) + ô giữa nhúng module."""
     if land not in LANDS:
         return None
-    name, mods = LANDS[land]
+    name, groups = LANDS[land]
+    mods = [m for g in groups for m in g]
     current = next((m for m in mods if m[0] == mod), mods[0])
     rail = {
         "label": name, "home": f"/?continent=eurasia", "homeTip": "rail_esc_launcher",
-        "groups": [[{"key": m[0], "href": f"/{land}/{m[0]}", "icon": m[2], "tip": m[1]} for m in mods]],
+        "groups": [[{"key": m[0], "href": f"/{land}/{m[0]}", "icon": m[2], "tip": m[1]} for m in g] for g in groups],
     }
-    view = {"land": land, "mod": current[0], "key": current[3] if current[3] in APPS else None,
+    view = {"land": land, "mod": current[0], "key": app_key(current[3]),
             "url": module_url(current[3]), "title": current[1]}
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
