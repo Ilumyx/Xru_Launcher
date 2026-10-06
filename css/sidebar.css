@@ -108,3 +108,4 @@ body.panel-collapsed .side { visibility: hidden; border-right: 0; }
 .side-item.is-child .n { display: none; }
 .side-item.is-child { grid-template-columns: minmax(0, 1fr); }
 .side-item.is-all.is-active::before, .side-item.is-group.is-active::before { top: 15px; }
+

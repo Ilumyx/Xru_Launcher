@@ -347,7 +347,7 @@ $('ax-results').addEventListener('click', (e) => { const r = e.target.closest('.
 $('ax-related').addEventListener('click', (e) => {
   const b = e.target.closest('button[data-q]');
   if (!b) return;
-  findQuery(b.dataset.q) ? navigate(b.dataset.q) : toast(`Bản chụp chưa có câu “${b.dataset.q}”. Nối backend rồi bấm là chạy.`);
+  findQuery(b.dataset.q) ? navigate(b.dataset.q) : toast((window.XRU_I18N ? window.XRU_I18N.t('ax_not_captured') : 'Bản chụp chưa có câu “{q}”. Nối backend rồi bấm là chạy.').replace('{q}', b.dataset.q));
 });
 $('ax-panel').addEventListener('click', (e) => {
   const id = e.target.closest('[data-copy]');

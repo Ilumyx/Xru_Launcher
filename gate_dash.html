@@ -25,7 +25,7 @@
           <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" id="gd-q" placeholder="Tìm kênh…" aria-label="Tìm kênh" data-i18n-attr="placeholder:search_channels,aria-label:search_channels"></label>
           <div class="side-field">
             <label for="gd-sort" data-i18n="sort_lbl">Sắp xếp</label>
-            <select id="gd-sort"><option value="wait" data-i18n="sort_wait">Chờ nhiều nhất</option><option value="total" data-i18n="sort_total">Nhiều hồ sơ nhất</option><option value="name" data-i18n="sort_alpha">Tên A → Z</option></select>
+            <select id="gd-sort"><option value="clean_low" data-i18n="sort_clean_low">Kém sạch nhất</option><option value="clean_high" data-i18n="sort_clean_high">Sạch nhất</option><option value="wait" data-i18n="sort_wait">Chờ nhiều nhất</option><option value="total" data-i18n="sort_total">Nhiều hồ sơ nhất</option><option value="name" data-i18n="sort_alpha">Tên A → Z</option></select>
           </div>
         </div>
         <div class="side-items" id="gd-tree"></div>
@@ -42,7 +42,10 @@
   <div class="gd-flow" id="gd-flow" aria-hidden="true"></div>
 </section>
 
-<!-- 2. MÁY: máy bắt gì, PO quyết gì; đúng/lộn/hụt chờ lõi -->
+<!-- 2. ĐỘ SẠCH: nguồn nào mang về đồ dùng được -->
+<section class="gd-block" id="gd-clean"></section>
+
+<!-- 3. MÁY: soi bao nhiêu, thấy gì -->
 <section class="gd-block" id="gd-machine"></section>
 
 <footer class="page-foot"><div class="key-hints"><span><span class="key">1</span> <span data-i18n="kind_image">Ảnh</span></span><span><span class="key">2</span> Video</span><span><span class="key">3</span> Dashboard</span><span><span class="key">V</span> <span data-i18n="gd_k_kind">Video / Ảnh</span></span><span><span class="key">ESC</span> Launcher</span></div><div id="gd-foot" data-i18n="real_read_only">SỐ THẬT · CHỈ ĐỌC</div></footer>
