@@ -158,3 +158,6 @@
   color: var(--fg-strong);
   border-color: var(--fg-dim);
 }
+
+/* Trang nằm trong ô giữa của vỏ: rail.js đã bỏ rail của trang → khung chỉ còn một cột */
+html.is-framed .shell { grid-template-columns: minmax(0, 1fr); }

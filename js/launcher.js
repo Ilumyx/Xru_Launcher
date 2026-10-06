@@ -127,8 +127,9 @@ const CONTINENTAL_DATA = {
         tagline: 'Kiểm định đầu vào & Cửa khẩu thông quan',
         image: '',
         mods: [
-          { label: 'Duyệt ảnh (548 chờ)', url: 'gate_image.html', isAlert: true },
-          { label: 'Duyệt video', url: 'gate_video.html' }
+          { label: 'Duyệt ảnh', url: '/gate/image' },
+          { label: 'Duyệt video', url: '/gate/video' },
+          { label: 'Gate Dash', url: '/gate/dash' }
         ],
         ago: 'Vừa xong',
         status: '● SẴN SÀNG',
@@ -153,7 +154,7 @@ const CONTINENTAL_DATA = {
         tagline: 'Bầy AI gán nhãn & Định danh thực thể (Labeling platoon)',
         image: '',
         mods: [
-          { label: 'Trực chiến (:5057)', url: 'http://127.0.0.1:5057' }
+          { label: 'Gán nhãn video', url: '/label/video' }
         ],
         ago: '3 ngày trước',
         status: '● SẴN SÀNG',
@@ -358,7 +359,7 @@ window.addEventListener('xru-lang-applied', () => {
   }
 });
 
-// Mở thẳng một lục địa từ link ở trang khác, vd. launcher_mockup.html?continent=euruska
+// Mở thẳng một lục địa từ link ở trang khác, vd. index.html?continent=euruska
 (() => {
   const c = new URLSearchParams(location.search).get('continent');
   if (c && typeof switchContinent === 'function') switchContinent(c);

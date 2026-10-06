@@ -4,3 +4,4 @@ __pycache__/
 *.zip
 .env*
 data/crawler_thumbs/
+logs/

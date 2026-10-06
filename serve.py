@@ -36,7 +36,7 @@ if __name__ == '__main__':
     local_only = '--local' in sys.argv
     host = '127.0.0.1' if local_only else '0.0.0.0'
     root = Path(__file__).resolve().parent
-    print(f'UI Mockup (máy này): http://localhost:{PORT}/launcher_mockup.html', flush=True)
+    print(f'UI Mockup (máy này): http://localhost:{PORT}/index.html', flush=True)
     if not local_only:
-        print(f'UI Mockup (mạng LAN): http://{lan_ip()}:{PORT}/launcher_mockup.html', flush=True)
+        print(f'UI Mockup (mạng LAN): http://{lan_ip()}:{PORT}/index.html', flush=True)
     ThreadingHTTPServer((host, PORT), partial(NoCacheHandler, directory=str(root))).serve_forever()

@@ -366,7 +366,7 @@ window.addEventListener('keydown', (e) => {
     if (typing) { $('ax-sug').hidden ? input.blur() : closeSug(); return; }
     // Lùi một màn: kết quả → trang đầu Array → Launcher
     if (ax.dataset.view === 'results') navigate('');
-    else location.href = 'launcher_mockup.html';
+    else location.href = 'index.html';
     return;
   }
   if (typing || ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;

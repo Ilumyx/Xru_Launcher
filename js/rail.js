@@ -1,7 +1,9 @@
 // ==========================================================================
 // XRU RAIL — thanh dọc bên trái, một bản cho mọi trang.
 // Trang chỉ đặt:  <nav class="rail" data-rail="gate" data-active="image"></nav><script src="js/rail.js"></script>
-//   data-rail   : khu nào (launcher, array, crawler, gate) → lấy menu trong RAILS bên dưới
+//   data-rail   : khu nào (launcher, array, crawler, gate) → lấy menu trong RAILS bên dưới;
+//                 "live" = menu do vỏ launcher.py đưa vào window.XRU_RAIL
+//   Trang nằm trong iframe của vỏ thì tự bỏ rail (vỏ đã có rail).
 //   data-active : mục đang mở (khóa trong menu)
 //   data-panel  : có thì thêm nút đóng/mở cột danh sách (trang Gate có cột danh sách)
 // Thêm/sửa mục rail: sửa RAILS ở file này, mọi trang đổi theo.
@@ -25,15 +27,15 @@
   function getRails() {
     return {
       launcher: {
-        label: t('rail_fed_continents', 'Lục địa Liên Bang'), home: 'launcher_mockup.html?continent=xru', homeTip: t('rail_overview_tip', 'XRU FEDERAL // Bản đồ Toàn Cảnh Liên Bang'),
+        label: t('rail_fed_continents', 'Lục địa Liên Bang'), home: 'index.html?continent=xru', homeTip: t('rail_overview_tip', 'XRU FEDERAL // Bản đồ Toàn Cảnh Liên Bang'),
         groups: [[{ key: 'array', href: 'array_search.html', icon: 'search', tip: t('rail_array_tip', 'Array (/ hoặc Ctrl+K)') }]],
       },
       array: {
-        label: t('rail_fed_continents', 'Lục địa Liên Bang'), home: 'launcher_mockup.html?continent=xru', homeTip: t('rail_esc_launcher', 'Về Launcher (ESC)'),
+        label: t('rail_fed_continents', 'Lục địa Liên Bang'), home: 'index.html?continent=xru', homeTip: t('rail_esc_launcher', 'Về Launcher (ESC)'),
         groups: [[{ key: 'array', href: 'array_search.html', icon: 'search', tip: 'Array — blind test (/)' }]],
       },
       crawler: {
-        label: t('rail_crawler_nav', 'Điều hướng Crawler'), home: 'launcher_mockup.html?continent=eurasia', homeTip: t('rail_esc_launcher', 'Về Launcher (ESC)'),
+        label: t('rail_crawler_nav', 'Điều hướng Crawler'), home: 'index.html?continent=eurasia', homeTip: t('rail_esc_launcher', 'Về Launcher (ESC)'),
         groups: [
           [{ key: 'dash', href: 'crawler_dash.html', icon: 'bars', tip: 'Dashboard' }],
           [{ key: 'sources', href: 'crawler_sources.html', icon: 'table', tip: t('rail_added_sources', 'Nguồn đã thêm') },
@@ -41,7 +43,7 @@
         ],
       },
       gate: {
-        label: t('rail_gate_nav', 'Điều hướng Gate'), home: 'launcher_mockup.html', homeTip: t('rail_esc_launcher', 'Về Launcher (ESC)'),
+        label: t('rail_gate_nav', 'Điều hướng Gate'), home: 'index.html', homeTip: t('rail_esc_launcher', 'Về Launcher (ESC)'),
         groups: [
           [{ key: 'image', href: 'gate_image.html', icon: 'image', tip: t('gate_img', 'Gate Image') },
            { key: 'video', href: 'gate_video.html', icon: 'video', tip: t('gate_vid', 'Gate Video') },
@@ -63,11 +65,24 @@
 
   const nav = document.currentScript ? document.currentScript.previousElementSibling : document.querySelector('.rail');
   if (!nav) return;
+  // Trang đang nằm trong ô giữa của vỏ (launcher.py): vỏ đã có rail → bỏ rail của trang, không ra hai rail.
+  if (window.self !== window.top) {
+    document.documentElement.classList.add('is-framed');
+    nav.remove();
+    return;
+  }
+
+  // data-rail="live": menu do vỏ (launcher.py) đưa vào window.XRU_RAIL; tip là khóa chữ trong js/i18n.js.
+  function liveRail() {
+    const r = window.XRU_RAIL;
+    if (!r) return null;
+    return { ...r, homeTip: t(r.homeTip, r.homeTip),
+      groups: r.groups.map((g) => g.map((m) => ({ ...m, tip: t(m.tip, m.tip) }))) };
+  }
 
   function renderRail() {
     const kind = nav.dataset.rail, active = nav.dataset.active;
-    const rails = getRails();
-    const rail = rails[kind];
+    const rail = kind === 'live' ? liveRail() : getRails()[kind];
     if (!rail) return;
 
     const item = (m) => m.key === active

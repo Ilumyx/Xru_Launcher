@@ -46,7 +46,7 @@
   }
   window.addEventListener('keydown', event => {
     if (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(document.activeElement.tagName) || document.querySelector('dialog[open]')) return;
-    if (event.key === 'Escape') location.href = 'launcher_mockup.html?continent=eurasia';
+    if (event.key === 'Escape') location.href = 'index.html?continent=eurasia';
     if (event.key === '1') location.href = 'crawler_dash.html';
     if (event.key === '2') location.href = 'crawler_sources.html';
     if (event.key === '3') location.href = 'crawler_dash_activity.html';

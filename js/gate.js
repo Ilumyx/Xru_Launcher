@@ -61,7 +61,7 @@ window.addEventListener('keydown', (e) => {
     if (k === 'd') return judge('detain');
     if (k === 's') return judge('skip');
   }
-  if (e.key === 'Escape') window.location.href = 'launcher_mockup.html';
+  if (e.key === 'Escape') window.location.href = 'index.html';
   if (e.key === '1') window.location.href = 'gate_image.html';
   if (e.key === '2') window.location.href = 'gate_video.html';
   if (e.key === '3') window.location.href = 'gate_dash.html';

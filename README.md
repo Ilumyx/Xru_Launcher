@@ -7,17 +7,19 @@ Các trang Gate/Crawler/Array trong đây hiện vẫn là mockup (trừ Gate Da
 ## Run
 
 ```bash
-python3 serve.py            # http://0.0.0.0:5051  (LAN visible, no-cache)
-python3 serve.py --local    # localhost only
+python3 launcher.py          # http://127.0.0.1:5050   (--lan: mở cho cả mạng LAN, xem trên điện thoại)
+python3 launcher.py stop     # tắt vỏ + mọi app land do vỏ bật
 ```
 
-Entry: `launcher_mockup.html`.
+- `/` trang chủ (index.html). `/<land>/<module>` = vỏ: rail + ô giữa nhúng app của land (Gate :5059/:5058, Label :5057).
+  App đang tắt thì ô giữa có nút Start (gọi lệnh của land qua `uv run`, nhật ký ở `logs/`).
+- Thêm module: sửa `APPS` / `LANDS` trong `launcher.py`. Vỏ không import code land nào.
 
 ## Pages
 
 | Page | What |
 |---|---|
-| `launcher_mockup.html` | Federal launcher, globe chọn 4 lục địa, `/` or `Ctrl+K` → Array |
+| `index.html` | Federal launcher, globe chọn 4 lục địa, `/` or `Ctrl+K` → Array |
 | `gate_image.html` | Gate image review: list · gallery · inspector, notched inspector resize |
 | `gate_video.html` | Gate video review, grid variant |
 | `gate_video_watch.html` | Gate video review, big-player variant (trial, keep one of the two) |
@@ -46,6 +48,11 @@ python3 tools/array_snapshot.py
 ```bash
 python3 tools/gate_snapshot.py
 ```
+
+## Cần từ lõi
+
+- **Gate** (`stats`): `by_source[].machine.by_outcome` + `findings`; `machine_vs_po` theo loại cờ và theo nguồn (`right`, `false_flag`, `miss`); ngày thêm nguồn.
+- **Crawler** (`source_stats`): lỗi cuối, số kiện theo ngày (7 ngày), số đã đẩy sang Gate.
 
 ## Rules
 
