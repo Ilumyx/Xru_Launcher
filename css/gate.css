@@ -289,8 +289,6 @@ a.rail-icon-btn { text-decoration: none; }
   position: relative;
   transition: grid-template-columns 0.2s ease;
 }
-body.panel-collapsed .ws { grid-template-columns: 0 minmax(0, 1fr) var(--insp-w, 360px); }
-body.panel-collapsed .side { visibility: hidden; border-right: 0; }
 
 /* --- Cột giữa: header + gallery --- */
 .ws-main { min-width: 0; overflow-y: auto; padding: 28px 32px; }

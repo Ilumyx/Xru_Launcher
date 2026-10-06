@@ -5,6 +5,9 @@
    Bề ngang chung --side-w cho mọi màn, để bấm qua lại không bị giật.
    ========================================================================== */
 :root { --side-w: 260px; }
+/* Nút đóng/mở trên rail (toggleGatePanel) thêm class panel-collapsed vào body: cột trái về 0 */
+body.panel-collapsed { --side-w: 0px; }
+body.panel-collapsed .side { visibility: hidden; border-right: 0; }
 
 .side {
   display: flex;

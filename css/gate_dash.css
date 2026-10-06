@@ -3,7 +3,7 @@
    Màu: xám là mặc định. Đỏ (--warn) chỉ cho hàng chờ và chỗ máy yếu nhất.
    ========================================================================== */
 /* Khung: sidebar nguồn (css/sidebar.css) + vùng số liệu cuộn riêng */
-.gd-shell { display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); height: calc(100vh / var(--ui-zoom)); min-width: 0; }
+.gd-shell { display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); height: calc(100vh / var(--ui-zoom)); min-width: 0; transition: grid-template-columns 0.2s ease; }
 .gd-stage { min-width: 0; overflow-y: auto; padding: 28px 36px; scrollbar-width: thin; scrollbar-color: var(--m-6) transparent; }
 .gd-stage a { text-decoration: none; color: var(--fg-dim); }
 .gd-stage a:hover { color: var(--fg-strong); }
