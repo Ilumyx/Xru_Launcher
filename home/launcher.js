@@ -114,8 +114,7 @@ const CONTINENTAL_DATA = {
         tagline: 'Vòi bạch tuộc thu thập nguyên liệu thô (Video / Image / News)',
         image: '',
         mods: [
-          { label: 'Dashboard', url: 'mockups/crawler_dash.html' },
-          { label: 'Nguồn đã thêm', url: 'mockups/crawler_sources.html' }
+          { label: 'Nguồn', url: '/crawler/sources' }
         ],
         ago: '1 ngày trước',
         status: '● HOẠT ĐỘNG',
@@ -352,12 +351,6 @@ document.addEventListener('DOMContentLoaded', () => {
   switchContinent('eurasia');
 });
 
-// Lắng nghe sự kiện đổi ngôn ngữ để cập nhật lại giao diện
-window.addEventListener('xru-lang-applied', () => {
-  if (window.XRU_I18N && typeof window.XRU_I18N.apply === 'function') {
-    window.XRU_I18N.apply();
-  }
-});
 
 // Mở thẳng một lục địa từ link ở trang khác, vd. index.html?continent=euruska
 (() => {

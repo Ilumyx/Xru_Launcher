@@ -11,7 +11,7 @@ python3 launcher.py          # http://127.0.0.1:5050   (--lan: mở cho cả m�
 python3 launcher.py stop     # tắt vỏ + mọi app land do vỏ bật
 ```
 
-- `/` trang chủ (index.html). `/<land>/<module>` = vỏ: rail + ô giữa nhúng app của land (Gate :5059/:5058, Label :5057).
+- `/` trang chủ (index.html). `/<land>/<module>` = vỏ: rail + ô giữa nhúng app của land (Crawler :5055, Gate :5059/:5058, Label :5057).
   App đang tắt thì ô giữa có nút Start (gọi lệnh của land qua `uv run`, nhật ký ở `logs/`).
 - Thêm module: sửa `APPS` / `LANDS` trong `launcher.py`. Vỏ không import code land nào.
 
@@ -24,7 +24,7 @@ python3 launcher.py stop     # tắt vỏ + mọi app land do vỏ bật
 | `home/` | Riêng trang chủ: quả cầu (`home/globe/`), dữ liệu lục địa (`launcher.js`), menu rail trang chủ |
 | `shell/` | Riêng vỏ: ô giữa nhúng app của land, nút Start |
 | `assets/` | Ảnh: `gu/` (ảnh gu của PO), `sectors/` (ảnh ô sector trang chủ, lưu qua nút ✎) |
-| `mockups/` | Bản nháp Gate / Crawler / Array. Tới lượt land nào thì chuyển về land đó. Gate Dash ở đây chạy số thật. |
+| `mockups/` | Bản nháp Gate / Array. Tới lượt land nào thì chuyển về land đó. Gate Dash ở đây chạy số thật. (Crawler đã về land: `Xru_Crawler/ui_screen/`.) |
 | `data/`, `tools/` | Số chụp (Gate, Array) + tool chụp |
 
 ## Array snapshot
@@ -47,7 +47,6 @@ python3 tools/gate_snapshot.py
 ## Cần từ lõi
 
 - **Gate** (`stats`): `by_source[].machine.by_outcome` + `findings`; `machine_vs_po` theo loại cờ và theo nguồn (`right`, `false_flag`, `miss`); ngày thêm nguồn.
-- **Crawler** (`source_stats`): lỗi cuối, số kiện theo ngày (7 ngày), số đã đẩy sang Gate.
 
 ## Rules
 

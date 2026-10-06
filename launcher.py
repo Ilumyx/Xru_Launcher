@@ -33,6 +33,7 @@ LOGS = HERE / "logs"
 
 # App của land: khóa → (thư mục land, lệnh của land, cổng). Vỏ chỉ bật bằng lệnh này, không import.
 APPS = {
+    "crawler-sources": ("Xru_Crawler", ["python", "-m", "ui_screen.source_board_app"], 5055),
     "gate-image": ("Xru_Gate", ["python", "-m", "gate_image.ui_screen.image_review_web_app"], 5059),
     "gate-video": ("Xru_Gate", ["python", "-m", "gate_video.ui_screen.video_review_web_app"], 5058),
     "label-video": ("Xru_Label", ["python", "-m", "label_division_video.video_po_review_ui.video_review_web_app"], 5057),
@@ -41,6 +42,9 @@ APPS = {
 # Land → module trên rail: (đường dẫn, khóa chữ trong js/i18n.js, icon trong js/rail.js, nguồn).
 # Nguồn = khóa trong APPS (app của land), hoặc "/đường/trang.html" (trang của Launcher, ví dụ Gate Dash đọc số chụp).
 LANDS = {
+    "crawler": ("Crawler", (
+        ("sources", "rail_added_sources", "table", "crawler-sources"),
+    )),
     "gate": ("Gate", (
         ("image", "gate_img", "image", "gate-image"),
         ("video", "gate_vid", "video", "gate-video"),

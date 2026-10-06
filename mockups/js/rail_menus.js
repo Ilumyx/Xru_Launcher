@@ -4,14 +4,6 @@ window.XRU_RAILS = {
     label: 'rail_fed_continents', home: '../index.html?continent=xru', homeTip: 'rail_esc_launcher',
     groups: [[{ key: 'array', href: 'array_search.html', icon: 'search', tip: 'Array — blind test (/)' }]],
   },
-  crawler: {
-    label: 'rail_crawler_nav', home: '../index.html?continent=eurasia', homeTip: 'rail_esc_launcher',
-    groups: [
-      [{ key: 'dash', href: 'crawler_dash.html', icon: 'bars', tip: 'Dashboard' }],
-      [{ key: 'sources', href: 'crawler_sources.html', icon: 'table', tip: 'rail_added_sources' },
-       { key: 'activity', href: 'crawler_dash_activity.html', icon: 'feed', tip: 'rail_activity_feed' }],
-    ],
-  },
   gate: {
     label: 'rail_gate_nav', home: '../index.html', homeTip: 'rail_esc_launcher',
     groups: [
