@@ -1,7 +1,6 @@
 ```text
 Xru_Launcher/
 ├── account/
-│   ├── color.css
 │   └── index.html
 ├── assets/
 │   ├── gu/
@@ -27,7 +26,6 @@ Xru_Launcher/
 │   │   ├── globe.css
 │   │   ├── globe.js
 │   │   └── world.json
-│   ├── color.css
 │   ├── launcher.css
 │   └── launcher.js
 ├── template/
@@ -39,6 +37,6 @@ Xru_Launcher/
 └── launcher.py
 ```
 
-Template chép chứ không nối dây.
+Trang template chép; màu/phông đọc từ file chung trên ổ đĩa.
 Mỗi UI nằm trong làn của nó.
 Sảnh chỉ chỉ đường.
