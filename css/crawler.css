@@ -1,6 +1,5 @@
 /* Crawler: standalone dashboard, followed by sources and activity. */
 a.rail-icon-btn { text-decoration: none; }
-.cr-rail-divider { margin: 0; }
 .cr-stage { --fg-dim: var(--m-11); --fg-faint: var(--m-9); width: 100%; max-width: 1480px; margin: 0 auto; padding: 28px 36px; min-width: 0; }
 .cr-stage a { color: inherit; text-decoration: none; }
 .cr-stage a:hover { color: var(--fg-strong); }

@@ -23,39 +23,7 @@
   <div class="shell">
     
     <!-- Rail dọc mỏng kiểu Codex (64px) — Bản đồ Lục Địa XRU FEDERAL -->
-    <nav class="rail" aria-label="Lục địa Liên Bang">
-      <div class="rail-top">
-        <!-- Logo Biểu tượng XRU (Không chữ, thuần vector cơ khí từ bản mẫu của PO) -->
-        <a href="launcher_mockup.html?continent=xru" class="rail-logo" data-continent="xru" data-tooltip="XRU FEDERAL // Bản đồ Toàn Cảnh Liên Bang" onclick="switchContinent('xru'); return false;" style="text-decoration:none;">
-          <svg viewBox="140 60 520 520" fill="currentColor">
-            <mask id="xru-emblem-mask">
-              <rect x="100" y="0" width="600" height="600" fill="#fff"/>
-              <rect x="140" y="305" width="80" height="30" fill="#000"/>
-              <rect x="580" y="305" width="80" height="30" fill="#000"/>
-            </mask>
-            <circle cx="400" cy="320" r="220" fill="none" stroke="currentColor" stroke-width="40" mask="url(#xru-emblem-mask)"/>
-            <rect x="290" y="240" width="40" height="150" fill="currentColor"/>
-            <rect x="470" y="240" width="40" height="150" fill="currentColor"/>
-            <rect x="290" y="420" width="220" height="30" fill="currentColor"/>
-            <rect x="382" y="145" width="36" height="80" fill="currentColor"/>
-            <circle cx="400" cy="320" r="35" fill="currentColor"/>
-          </svg>
-          <span class="rail-indicator" title="Federal Live"></span>
-        </a>
-
-        <div class="rail-nav">
-          <!-- Tìm kiếm (Array) ngay dưới logo -->
-          <a href="array_search.html" class="rail-icon-btn" data-tooltip="Array (/ hoặc Ctrl+K)" style="text-decoration:none;">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-4.35-4.35"/></svg>
-          </a>
-        </div>
-      </div>
-
-      <!-- Đáy rail: Mỏ neo Avatar IL của PO -->
-      <div class="rail-bottom">
-        <div class="user-avatar" title="Tài khoản: Ilumyx (PO)">IL</div>
-      </div>
-    </nav>
+    <nav class="rail" data-rail="launcher"></nav><script src="js/rail.js"></script>
 
     <!-- Vùng sân khấu chính -->
     <main class="stage">

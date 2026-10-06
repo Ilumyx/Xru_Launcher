@@ -16,31 +16,7 @@
 <body>
   <div class="shell">
     <!-- Rail giống Launcher: logo → search (đang ở đây) → vạch → 4 lục địa -->
-    <nav class="rail" aria-label="Lục địa Liên Bang">
-      <div class="rail-top">
-        <a href="launcher_mockup.html?continent=xru" class="rail-logo" data-tooltip="Về Launcher (ESC)" style="text-decoration:none;">
-          <svg viewBox="140 60 520 520" fill="currentColor">
-            <mask id="xru-emblem-mask">
-              <rect x="100" y="0" width="600" height="600" fill="#fff"/>
-              <rect x="140" y="305" width="80" height="30" fill="#000"/>
-              <rect x="580" y="305" width="80" height="30" fill="#000"/>
-            </mask>
-            <circle cx="400" cy="320" r="220" fill="none" stroke="currentColor" stroke-width="40" mask="url(#xru-emblem-mask)"/>
-            <rect x="290" y="240" width="40" height="150" fill="currentColor"/>
-            <rect x="470" y="240" width="40" height="150" fill="currentColor"/>
-            <rect x="290" y="420" width="220" height="30" fill="currentColor"/>
-            <rect x="382" y="145" width="36" height="80" fill="currentColor"/>
-            <circle cx="400" cy="320" r="35" fill="currentColor"/>
-          </svg>
-        </a>
-        <div class="rail-nav">
-          <a href="array_search.html" class="rail-icon-btn is-active" data-tooltip="Array — blind test (/)">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke-width="1.8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-4.35-4.35"/></svg>
-          </a>
-        </div>
-      </div>
-      <div class="rail-bottom"><div class="user-avatar" title="Ilumyx (PO)">IL</div></div>
-    </nav>
+    <nav class="rail" data-rail="array" data-active="array"></nav><script src="js/rail.js"></script>
 
     <!-- Hai màn kiểu Google trên cùng một DOM:
          data-view="home"    → chữ ARRAY + ô tra nằm giữa màn
