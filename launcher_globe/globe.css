@@ -99,7 +99,7 @@
 
 .globe-destination:focus-visible,
 .globe-tools button:focus-visible {
-  outline: 2px solid var(--active-cyan);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 

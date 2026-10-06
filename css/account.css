@@ -90,7 +90,7 @@
 .acc-dropdown summary { display: flex; align-items: center; gap: 12px; padding: 12px 16px; min-height: 48px; border: 1px solid var(--hairline-hi); border-radius: 8px; background: var(--m-3); color: var(--fg-strong); font: 16px var(--font-sans); cursor: pointer; list-style: none; }
 .acc-dropdown summary::-webkit-details-marker { display: none; }
 .acc-chevron { margin-left: auto; color: var(--m-11); }
-.acc-dropdown[open] summary { border-color: var(--active-cyan); }
+.acc-dropdown[open] summary { border-color: var(--accent); }
 .acc-dropdown-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 1; width: 100%; max-height: 280px; overflow-y: auto; padding: 6px; border: 1px solid var(--hairline-hi); border-radius: 10px; background: var(--m-4); box-shadow: 0 12px 24px rgba(0,0,0,.35); }
 .acc-option { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; border: 0; border-radius: 6px; background: transparent; color: var(--fg); font: 16px var(--font-sans); text-align: left; cursor: pointer; }
 .acc-option:hover, .acc-option.is-on { background: var(--m-6); color: var(--fg-strong); }
@@ -133,17 +133,9 @@
 }
 .acc-ghost { background: transparent; border: 1px solid var(--hairline-hi); color: var(--fg-dim); }
 .acc-ghost:hover { color: var(--fg-strong); }
-.acc-primary { background: var(--active-cyan); border: 1px solid var(--active-cyan); color: #060605; font-weight: 600; }
+.acc-primary { background: var(--accent); border: 1px solid var(--accent); color: var(--on-accent); font-weight: 600; }
 
 :root[data-ui-mode="dark"] { color-scheme: dark; }
-:root[data-ui-mode="light"] {
-  color-scheme: light;
-  --m-0: #ffffff; --m-1: #f7f7f4; --m-2: #f0f0ed; --m-3: #e8e8e4;
-  --m-4: #dfdfda; --m-5: #d4d4ce; --m-6: #c8c8c1; --m-7: #b4b4ac;
-  --m-8: #909089; --m-9: #76766e; --m-10: #62625b; --m-11: #505049;
-  --m-12: #3c3c36; --m-13: #292924; --m-14: #191915; --m-15: #0a0a09;
-  --hairline: rgba(0,0,0,.09); --hairline-hi: rgba(0,0,0,.18);
-}
 @media (max-width: 680px) {
   .acc-row { flex-wrap: wrap; gap: 14px; }
   .acc-dropdown, .acc-seg { width: 100%; }

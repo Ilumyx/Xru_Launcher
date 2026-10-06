@@ -27,7 +27,7 @@ Entry: `launcher_mockup.html`.
 | `crawler_sources.html` | Crawler mockup sources: image + video, filters and source details |
 | `gate_mockup.html` | Redirect stub to the gate pages |
 
-Shared: `css/tokens.css` (palette, zoom, page-swap), `css/rail.css`, `css/account.css` + `js/account.js` (font/accent/zoom settings).
+Shared: `profiles/*.css` (màu từng profile), `css/tokens.css` (màu dùng vào việc gì, zoom, page-swap), `css/rail.css`, `css/account.css` + `js/account.js` (font/accent/zoom settings).
 
 ## Array snapshot
 
@@ -40,6 +40,9 @@ python3 tools/array_snapshot.py
 
 ## Rules
 
-- Palette is fixed: black `#0a0a09`, cyan `#00d2b4`; red = pending, amber = detained.
+- Màu chỉ khai báo trong `profiles/<tên>.css`. Mặc định: **Graphite** (đơn sắc xám ấm, nhấn trắng ngà). Có thêm: Cyan XRU.
+- Trang chỉ gọi màu theo vai trò: `--accent` (nhấn), `--warn` (cảnh báo/chờ duyệt), `--hold` (tạm giữ), `--idle`, thang `--m-0..15`. Không viết mã màu trong trang.
+- Độ mờ: `rgba(var(--accent-rgb), .2)`, không pha màu bằng mã cứng.
+- Thêm profile: copy `profiles/graphite.css` → đổi tên + `data-profile`, thêm 1 dòng `@import` trong `css/tokens.css`, 1 dòng vào `PROFILES` trong `js/account.js`.
 - Avoid `color-mix()`; use the rgba tokens.
 - Placeholders are CSS dot patterns (`.ph-1..6`), no image assets.

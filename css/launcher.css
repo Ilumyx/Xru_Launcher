@@ -54,10 +54,10 @@
   color: var(--fg-strong);
 }
 .stat-value.alert {
-  color: var(--accent);
+  color: var(--warn);
 }
 .stat-value.ok {
-  color: var(--active-cyan);
+  color: var(--accent);
 }
 .stat-value.federal-online {
   color: #ffffff;
@@ -134,12 +134,12 @@
   border-color: var(--hairline-hi);
 }
 .itin-mod-pill.alert {
-  color: var(--accent);
-  background: rgba(240, 80, 46, 0.12);
-  border: 1px solid rgba(240, 80, 46, 0.3);
+  color: var(--warn);
+  background: rgba(var(--warn-rgb), 0.12);
+  border: 1px solid rgba(var(--warn-rgb), 0.3);
 }
 .itin-mod-pill.alert:hover {
-  background: rgba(240, 80, 46, 0.22);
+  background: rgba(var(--warn-rgb), 0.22);
 }
 
 .itin-ago {
@@ -148,7 +148,7 @@
   color: var(--fg);
 }
 .itin-ago.stale {
-  color: var(--stale-amber);
+  color: var(--hold);
 }
 
 .itin-status {
@@ -159,10 +159,10 @@
   gap: 6px;
 }
 .itin-status.live {
-  color: var(--active-cyan);
+  color: var(--accent);
 }
 .itin-status.stale {
-  color: var(--stale-amber);
+  color: var(--hold);
 }
 .itin-status.idle {
   color: var(--fg-dim);
@@ -237,7 +237,7 @@
   color: var(--fg-strong);
 }
 .sector-activity .act-val.stale {
-  color: var(--stale-amber);
+  color: var(--hold);
 }
 .sector-metrics {
   display: flex;
@@ -263,7 +263,7 @@
   color: var(--fg-strong);
 }
 .metric-item .m-val.has-pending {
-  color: var(--accent);
+  color: var(--warn);
 }
 .sector-actions {
   display: flex;

@@ -1,11 +1,14 @@
 // ==========================================================================
 // XRU ACCOUNT — Menu tài khoản (bấm avatar IL) + Cài đặt giao diện
-// Đổi: chế độ sáng/tối, font chữ, màu nhấn, cỡ giao diện. Lưu vào trình duyệt, mọi trang dùng chung.
+// Đổi: profile màu, chế độ sáng/tối, font chữ, màu nhấn, cỡ giao diện. Lưu vào trình duyệt, mọi trang dùng chung.
+// Màu của từng profile nằm ở profiles/<tên>.css. Thêm profile: tạo file đó, thêm 1 dòng @import
+// trong css/tokens.css và 1 dòng vào PROFILES dưới đây.
 // File này nạp trong <head> để áp cài đặt ngay, không bị nháy màu cũ.
 // ==========================================================================
 (() => {
   const KEY = 'xru-ui-settings';
-  const DEFAULTS = { mode: 'dark', font: 'Inter', accent: '#00d2b4', zoom: '1.15' };
+  const DEFAULTS = { profile: 'graphite', mode: 'dark', font: 'Inter', accent: '', zoom: '1.15' };
+  const PROFILES = [['graphite', 'Graphite'], ['cyan', 'Cyan XRU']];
   const MODES = [['system', 'Hệ thống'], ['light', 'Sáng'], ['dark', 'Tối']];
   const systemMode = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -15,8 +18,9 @@
     'IBM Plex Sans':  'IBM+Plex+Sans:wght@300;400;500;600;700',
     'Roboto':         'Roboto:wght@300;400;500;700',
   };
-  // Chọn màu nhấn theo tên; không có ô nhập mã màu.
+  // Chọn màu nhấn theo tên; không có ô nhập mã màu. '' = dùng màu nhấn của profile.
   const ACCENTS = [
+    ['', 'Theo profile'],
     ['#00d2b4', 'Cyan XRU'],
     ['#4da3ff', 'Xanh dương'],
     ['#9b8cff', 'Tím'],
@@ -49,10 +53,9 @@
     document.documentElement.dataset.uiMode = s.mode === 'system' ? (systemMode.matches ? 'dark' : 'light') : s.mode;
     const r = document.documentElement.style;
     r.setProperty('--font-sans', `'${s.font}', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`);
-    r.setProperty('--active-cyan', s.accent);
-    const [cr, cg, cb] = [1, 3, 5].map(i => parseInt(s.accent.slice(i, i + 2), 16));
-    r.setProperty('--active-cyan-soft', `rgba(${cr}, ${cg}, ${cb}, 0.2)`);
-    r.setProperty('--active-cyan-line', `rgba(${cr}, ${cg}, ${cb}, 0.35)`);
+    document.documentElement.dataset.profile = PROFILES.some(([k]) => k === s.profile) ? s.profile : DEFAULTS.profile;
+    if (s.accent) r.setProperty('--accent-rgb', [1, 3, 5].map(i => parseInt(s.accent.slice(i, i + 2), 16)).join(', '));
+    else r.removeProperty('--accent-rgb');
     r.setProperty('--ui-zoom', s.zoom);
     ensureFont(s.font);
   }
@@ -103,7 +106,8 @@
     modal.addEventListener('click', (e) => {
       if (e.target === modal) return closePanel();
       const b = e.target.closest('[data-k]');
-      if (b) update({ [b.dataset.k]: b.dataset.v });
+      // Đổi profile thì bỏ màu nhấn chọn tay, để thấy đúng profile mới.
+      if (b) update(b.dataset.k === 'profile' ? { profile: b.dataset.v, accent: '' } : { [b.dataset.k]: b.dataset.v });
       if (e.target.closest('[data-reset]')) update({ ...DEFAULTS });
       if (e.target.closest('[data-done]')) closePanel();
     });
@@ -121,6 +125,12 @@
         </div>
 
         <div class="acc-options">
+          <div class="acc-row">
+            <span class="acc-row-label">Profile</span>
+            <div class="acc-seg" aria-label="Profile màu">
+              ${PROFILES.map(([v, n]) => `<button class="${on('profile', v).trim()}" data-k="profile" data-v="${v}" aria-pressed="${settings.profile === v}">${n}</button>`).join('')}
+            </div>
+          </div>
           <div class="acc-row">
             <span class="acc-row-label">Chế độ</span>
             <div class="acc-seg acc-modes" aria-label="Chế độ giao diện">
@@ -142,9 +152,9 @@
           <div class="acc-row">
             <span class="acc-row-label">Màu nhấn</span>
             <details class="acc-dropdown" name="acc-setting-picker">
-              <summary><i class="acc-swatch" style="background:${settings.accent}"></i><span>${ACCENTS.find(([c]) => c === settings.accent)?.[1] || 'Màu hiện tại'}</span><span class="acc-chevron">⌄</span></summary>
+              <summary><i class="acc-swatch" style="background:${settings.accent || 'var(--accent)'}"></i><span>${ACCENTS.find(([c]) => c === settings.accent)?.[1] || 'Màu hiện tại'}</span><span class="acc-chevron">⌄</span></summary>
               <div class="acc-dropdown-menu" aria-label="Chọn màu nhấn">
-                ${ACCENTS.map(([c, n]) => `<button class="acc-option${on('accent', c)}" data-k="accent" data-v="${c}" aria-label="${n}" aria-pressed="${settings.accent === c}"><i class="acc-swatch" style="background:${c}"></i><span>${n}</span><span class="acc-check">${settings.accent === c ? '✓' : ''}</span></button>`).join('')}
+                ${ACCENTS.map(([c, n]) => `<button class="acc-option${on('accent', c)}" data-k="accent" data-v="${c}" aria-label="${n}" aria-pressed="${settings.accent === c}"><i class="acc-swatch" style="background:${c || 'var(--accent)'}"></i><span>${n}</span><span class="acc-check">${settings.accent === c ? '✓' : ''}</span></button>`).join('')}
               </div>
             </details>
           </div>
