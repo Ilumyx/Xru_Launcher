@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/rail.css">
   <link rel="stylesheet" href="css/page.css">
+  <link rel="stylesheet" href="css/sidebar.css">
   <link rel="stylesheet" href="css/gate.css">
   <link rel="stylesheet" href="css/account.css?v=2">
   <script src="js/account.js?v=2"></script>
@@ -21,93 +22,94 @@
     <div class="ws">
 
       <!-- CỘT TRÁI: Danh sách + lọc (nút đóng/mở trên rail) -->
-      <aside class="ws-list">
-        <div class="ws-list-head">
-          <div class="ws-count"><b>548</b><span>WAITING_PO</span></div>
-          <div class="ws-field">
+      <aside class="side">
+        <div class="side-head">
+          <div class="side-count"><b>548</b><span>WAITING_PO</span></div>
+          <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" placeholder="Tìm tiêu đề, nguồn…" aria-label="Tìm trong danh sách"></label>
+          <div class="side-field">
             <label>Nguồn</label>
             <select><option>Mọi nguồn (548)</option><option>War Album</option><option>MIKN</option><option>1st Slaughterhouse</option></select>
           </div>
-          <div class="ws-field" style="margin-bottom:0;">
+          <div class="side-field">
             <label>Sắp xếp</label>
             <select><option>Cũ nhất trước</option><option>Mới nhất trước</option></select>
           </div>
         </div>
-        <div class="ws-items">
-          <div class="ws-item is-active" data-pick="001" onclick="pickItem(this)">
+        <div class="side-items">
+          <div class="side-item is-active" data-pick="001" onclick="pickItem(this)">
             <span class="n">01</span>
-            <div><div class="t">Танки КВ-1 на марше</div><div class="s">War Album</div></div>
+            <div><div class="t">Танки КВ-1 на марше</div><div class="s">War Album · 4195×2796</div></div>
           </div>
-          <div class="ws-item" data-pick="002" onclick="pickItem(this)">
+          <div class="side-item" data-pick="002" onclick="pickItem(this)">
             <span class="n">02</span>
-            <div><div class="t">Взвод ПТРС на позиции</div><div class="s">MIKN</div></div>
+            <div><div class="t">Взвод ПТРС на позиции</div><div class="s">MIKN · 4414×2768</div></div>
           </div>
-          <div class="ws-item" data-pick="003" onclick="pickItem(this)">
+          <div class="side-item" data-pick="003" onclick="pickItem(this)">
             <span class="n">03</span>
-            <div><div class="t">Колонна танков Т-34</div><div class="s">1st Slaughterhouse</div></div>
+            <div><div class="t">Колонна танков Т-34</div><div class="s">1st Slaughterhouse · 4319×2779</div></div>
           </div>
-          <div class="ws-item" data-pick="004" onclick="pickItem(this)">
+          <div class="side-item" data-pick="004" onclick="pickItem(this)">
             <span class="n">04</span>
-            <div><div class="t">Вручение ордена</div><div class="s">War Album</div></div>
+            <div><div class="t">Вручение ордена</div><div class="s">War Album · 4419×2947</div></div>
           </div>
-          <div class="ws-item" data-pick="005" onclick="pickItem(this)">
+          <div class="side-item" data-pick="005" onclick="pickItem(this)">
             <span class="n">05</span>
-            <div><div class="t">Разведчик Бакисов</div><div class="s">MIKN</div></div>
+            <div><div class="t">Разведчик Бакисов</div><div class="s">MIKN · 2533×4063</div></div>
           </div>
-          <div class="ws-item" data-pick="006" onclick="pickItem(this)">
+          <div class="side-item" data-pick="006" onclick="pickItem(this)">
             <span class="n">06</span>
-            <div><div class="t">Расчет пулемета «Максим»</div><div class="s">1st Slaughterhouse</div></div>
+            <div><div class="t">Расчет пулемета «Максим»</div><div class="s">1st Slaughterhouse · 4056×2738</div></div>
           </div>
-          <div class="ws-item" data-pick="007" onclick="pickItem(this)">
+          <div class="side-item" data-pick="007" onclick="pickItem(this)">
             <span class="n">07</span>
-            <div><div class="t">Танки КВ-1 на марше</div><div class="s">War Album</div></div>
+            <div><div class="t">Танки КВ-1 на марше</div><div class="s">War Album · 4195×2796</div></div>
           </div>
-          <div class="ws-item" data-pick="008" onclick="pickItem(this)">
+          <div class="side-item" data-pick="008" onclick="pickItem(this)">
             <span class="n">08</span>
-            <div><div class="t">Взвод ПТРС на позиции</div><div class="s">MIKN</div></div>
+            <div><div class="t">Взвод ПТРС на позиции</div><div class="s">MIKN · 4414×2768</div></div>
           </div>
-          <div class="ws-item" data-pick="009" onclick="pickItem(this)">
+          <div class="side-item" data-pick="009" onclick="pickItem(this)">
             <span class="n">09</span>
-            <div><div class="t">Колонна танков Т-34</div><div class="s">1st Slaughterhouse</div></div>
+            <div><div class="t">Колонна танков Т-34</div><div class="s">1st Slaughterhouse · 4319×2779</div></div>
           </div>
-          <div class="ws-item" data-pick="010" onclick="pickItem(this)">
+          <div class="side-item" data-pick="010" onclick="pickItem(this)">
             <span class="n">10</span>
-            <div><div class="t">Вручение ордена</div><div class="s">War Album</div></div>
+            <div><div class="t">Вручение ордена</div><div class="s">War Album · 4419×2947</div></div>
           </div>
-          <div class="ws-item" data-pick="011" onclick="pickItem(this)">
+          <div class="side-item" data-pick="011" onclick="pickItem(this)">
             <span class="n">11</span>
-            <div><div class="t">Разведчик Бакисов</div><div class="s">MIKN</div></div>
+            <div><div class="t">Разведчик Бакисов</div><div class="s">MIKN · 2533×4063</div></div>
           </div>
-          <div class="ws-item" data-pick="012" onclick="pickItem(this)">
+          <div class="side-item" data-pick="012" onclick="pickItem(this)">
             <span class="n">12</span>
-            <div><div class="t">Расчет пулемета «Максим»</div><div class="s">1st Slaughterhouse</div></div>
+            <div><div class="t">Расчет пулемета «Максим»</div><div class="s">1st Slaughterhouse · 4056×2738</div></div>
           </div>
-          <div class="ws-item" data-pick="013" onclick="pickItem(this)">
+          <div class="side-item" data-pick="013" onclick="pickItem(this)">
             <span class="n">13</span>
-            <div><div class="t">Танки КВ-1 на марше</div><div class="s">War Album</div></div>
+            <div><div class="t">Танки КВ-1 на марше</div><div class="s">War Album · 4195×2796</div></div>
           </div>
-          <div class="ws-item" data-pick="014" onclick="pickItem(this)">
+          <div class="side-item" data-pick="014" onclick="pickItem(this)">
             <span class="n">14</span>
-            <div><div class="t">Взвод ПТРС на позиции</div><div class="s">MIKN</div></div>
+            <div><div class="t">Взвод ПТРС на позиции</div><div class="s">MIKN · 4414×2768</div></div>
           </div>
-          <div class="ws-item" data-pick="015" onclick="pickItem(this)">
+          <div class="side-item" data-pick="015" onclick="pickItem(this)">
             <span class="n">15</span>
-            <div><div class="t">Колонна танков Т-34</div><div class="s">1st Slaughterhouse</div></div>
+            <div><div class="t">Колонна танков Т-34</div><div class="s">1st Slaughterhouse · 4319×2779</div></div>
           </div>
-          <div class="ws-item" data-pick="016" onclick="pickItem(this)">
+          <div class="side-item" data-pick="016" onclick="pickItem(this)">
             <span class="n">16</span>
-            <div><div class="t">Вручение ордена</div><div class="s">War Album</div></div>
+            <div><div class="t">Вручение ордена</div><div class="s">War Album · 4419×2947</div></div>
           </div>
-          <div class="ws-item" data-pick="017" onclick="pickItem(this)">
+          <div class="side-item" data-pick="017" onclick="pickItem(this)">
             <span class="n">17</span>
-            <div><div class="t">Разведчик Бакисов</div><div class="s">MIKN</div></div>
+            <div><div class="t">Разведчик Бакисов</div><div class="s">MIKN · 2533×4063</div></div>
           </div>
-          <div class="ws-item" data-pick="018" onclick="pickItem(this)">
+          <div class="side-item" data-pick="018" onclick="pickItem(this)">
             <span class="n">18</span>
-            <div><div class="t">Расчет пулемета «Максим»</div><div class="s">1st Slaughterhouse</div></div>
+            <div><div class="t">Расчет пулемета «Максим»</div><div class="s">1st Slaughterhouse · 4056×2738</div></div>
           </div>
         </div>
-        <div class="ws-pager"><span>← Trước</span><b>1–100 / 548</b><span>Sau →</span></div>
+        <div class="side-pager"><span>← Trước</span><b>1–100 / 548</b><span>Sau →</span></div>
       </aside>
 
       <!-- CỘT GIỮA: Tiêu đề + lane + gallery -->
@@ -253,6 +255,7 @@
 
     </div>
   </div>
+  <script src="js/sidebar.js"></script>
   <script src="js/gate.js"></script>
 </body>
 </html>

@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/rail.css">
   <link rel="stylesheet" href="css/page.css">
+  <link rel="stylesheet" href="css/sidebar.css">
   <link rel="stylesheet" href="css/gate.css">
   <link rel="stylesheet" href="css/account.css?v=2">
   <script src="js/account.js?v=2"></script>
@@ -21,82 +22,82 @@
     <div class="ws">
 
       <!-- CỘT TRÁI: Hàng đợi duyệt (nút đóng/mở trên rail) -->
-      <aside class="ws-list">
-        <div class="ws-list-head">
-          <div class="ws-count"><b>2446</b><span>WAITING_PO</span></div>
-          <div class="ws-chips"><button class="is-active">ALL</button><button>DVIDS</button><button>FB</button><button>REDDIT</button></div>
-          <div class="ws-field">
+      <aside class="side">
+        <div class="side-head">
+          <div class="side-count"><b>2446</b><span>WAITING_PO</span></div>
+          <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" placeholder="Tìm tiêu đề, nguồn…" aria-label="Tìm trong danh sách"></label>
+          <div class="side-field">
             <label>Nguồn</label>
             <select><option>Mọi nguồn (2446)</option><option>U.S. Central Command</option><option>Jamie Wearmouth</option><option>MIKN</option></select>
           </div>
-          <div class="ws-field" style="margin-bottom:0;">
+          <div class="side-field">
             <label>Sắp xếp</label>
             <select><option>Cũ nhất trước</option><option>Mới nhất trước</option><option>Dài nhất trước</option></select>
           </div>
         </div>
-        <div class="ws-items">
-          <div class="ws-item is-active" data-pick="001" data-ph="1" data-label="UTV" data-title="Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil" data-cap="Đoàn xe địa hình UTV hành quân trên đường rừng trong buổi huấn luyện." data-src="facebook / U.S. Central Command" data-res="1280×720 (16:9)" data-dur="0:56" data-xid="01a0e65c-350d-1c84-93ff-a4862a700900" onclick="pickItem(this)">
+        <div class="side-items">
+          <div class="side-item is-active" data-pick="001" data-ph="1" data-label="UTV" data-title="Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil" data-cap="Đoàn xe địa hình UTV hành quân trên đường rừng trong buổi huấn luyện." data-src="facebook / U.S. Central Command" data-res="1280×720 (16:9)" data-dur="0:56" data-xid="01a0e65c-350d-1c84-93ff-a4862a700900" onclick="pickItem(this)">
             <span class="n">01</span>
-            <div><div class="t">facebook / U.S. Central Command</div><div class="r"><span>1280×720</span><span>0:56</span></div><div class="x">01a0e65c-350d-1c84-93ff-a4862a700900</div></div>
+            <div><div class="t">Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil</div><div class="s">U.S. Central Command · 0:56</div></div>
           </div>
-          <div class="ws-item" data-pick="002" data-ph="2" data-label="ATGM" data-title="Kornet ATGM mounted on armored personnel carrier" data-cap="Tên lửa chống tăng Kornet lắp trên xe bọc thép chở quân, quay dọc 9:16." data-src="facebook / Jamie Wearmouth" data-res="1080×1920 (9:16)" data-dur="0:22" data-xid="01a0e65c-350d-1c8b-93ff-a4862a700901" onclick="pickItem(this)">
+          <div class="side-item" data-pick="002" data-ph="2" data-label="ATGM" data-title="Kornet ATGM mounted on armored personnel carrier" data-cap="Tên lửa chống tăng Kornet lắp trên xe bọc thép chở quân, quay dọc 9:16." data-src="facebook / Jamie Wearmouth" data-res="1080×1920 (9:16)" data-dur="0:22" data-xid="01a0e65c-350d-1c8b-93ff-a4862a700901" onclick="pickItem(this)">
             <span class="n">02</span>
-            <div><div class="t">facebook / Jamie Wearmouth</div><div class="r"><span>1080×1920</span><span>0:22</span></div><div class="x">01a0e65c-350d-1c8b-93ff-a4862a700901</div></div>
+            <div><div class="t">Kornet ATGM mounted on armored personnel carrier</div><div class="s">Jamie Wearmouth · 0:22</div></div>
           </div>
-          <div class="ws-item" data-pick="003" data-ph="3" data-label="HCTP" data-title="M1A2 Abrams live-fire gunnery qualification" data-cap="Xe tăng M1A2 bắn đạn thật trong bài kiểm tra xạ kích cấp tổ lái." data-src="dvids / 1st Cavalry Division" data-res="1920×1080 (16:9)" data-dur="0:48" data-xid="01a0e65c-350d-1c92-93ff-a4862a700902" onclick="pickItem(this)">
+          <div class="side-item" data-pick="003" data-ph="3" data-label="HCTP" data-title="M1A2 Abrams live-fire gunnery qualification" data-cap="Xe tăng M1A2 bắn đạn thật trong bài kiểm tra xạ kích cấp tổ lái." data-src="dvids / 1st Cavalry Division" data-res="1920×1080 (16:9)" data-dur="0:48" data-xid="01a0e65c-350d-1c92-93ff-a4862a700902" onclick="pickItem(this)">
             <span class="n">03</span>
-            <div><div class="t">dvids / 1st Cavalry Division</div><div class="r"><span>1920×1080</span><span>0:48</span></div><div class="x">01a0e65c-350d-1c92-93ff-a4862a700902</div></div>
+            <div><div class="t">M1A2 Abrams live-fire gunnery qualification</div><div class="s">1st Cavalry Division · 0:48</div></div>
           </div>
-          <div class="ws-item" data-pick="004" data-ph="4" data-label="UAV" data-title="FPV drone strike on BMP column" data-cap="Drone FPV tấn công đoàn BMP. Có 3 góc quay khác của cùng pha này." data-src="reddit / r/CombatFootage" data-res="720×1280 (9:16)" data-dur="0:15" data-xid="01a0e65c-350d-1c99-93ff-a4862a700903" onclick="pickItem(this)">
+          <div class="side-item" data-pick="004" data-ph="4" data-label="UAV" data-title="FPV drone strike on BMP column" data-cap="Drone FPV tấn công đoàn BMP. Có 3 góc quay khác của cùng pha này." data-src="reddit / r/CombatFootage" data-res="720×1280 (9:16)" data-dur="0:15" data-xid="01a0e65c-350d-1c99-93ff-a4862a700903" onclick="pickItem(this)">
             <span class="n">04</span>
-            <div><div class="t">reddit / r/CombatFootage</div><div class="r"><span>720×1280</span><span>0:15</span></div><div class="x">01a0e65c-350d-1c99-93ff-a4862a700903</div></div>
+            <div><div class="t">FPV drone strike on BMP column</div><div class="s">r/CombatFootage · 0:15</div></div>
           </div>
-          <div class="ws-item" data-pick="005" data-ph="5" data-label="HCTP" data-title="T-90M Proryv firing from closed position" data-cap="T-90M khai hỏa từ vị trí che khuất, quay ngang 16:9." data-src="facebook / MIKN" data-res="1920×1080 (16:9)" data-dur="0:34" data-xid="01a0e65c-350d-1ca0-93ff-a4862a700904" onclick="pickItem(this)">
+          <div class="side-item" data-pick="005" data-ph="5" data-label="HCTP" data-title="T-90M Proryv firing from closed position" data-cap="T-90M khai hỏa từ vị trí che khuất, quay ngang 16:9." data-src="facebook / MIKN" data-res="1920×1080 (16:9)" data-dur="0:34" data-xid="01a0e65c-350d-1ca0-93ff-a4862a700904" onclick="pickItem(this)">
             <span class="n">05</span>
-            <div><div class="t">facebook / MIKN</div><div class="r"><span>1920×1080</span><span>0:34</span></div><div class="x">01a0e65c-350d-1ca0-93ff-a4862a700904</div></div>
+            <div><div class="t">T-90M Proryv firing from closed position</div><div class="s">MIKN · 0:34</div></div>
           </div>
-          <div class="ws-item" data-pick="006" data-ph="6" data-label="UTV" data-title="Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil" data-cap="Đoàn xe địa hình UTV hành quân trên đường rừng trong buổi huấn luyện." data-src="facebook / U.S. Central Command" data-res="1280×720 (16:9)" data-dur="0:26" data-xid="01a0e65c-350d-1ca7-93ff-a4862a700905" onclick="pickItem(this)">
+          <div class="side-item" data-pick="006" data-ph="6" data-label="UTV" data-title="Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil" data-cap="Đoàn xe địa hình UTV hành quân trên đường rừng trong buổi huấn luyện." data-src="facebook / U.S. Central Command" data-res="1280×720 (16:9)" data-dur="0:26" data-xid="01a0e65c-350d-1ca7-93ff-a4862a700905" onclick="pickItem(this)">
             <span class="n">06</span>
-            <div><div class="t">facebook / U.S. Central Command</div><div class="r"><span>1280×720</span><span>0:26</span></div><div class="x">01a0e65c-350d-1ca7-93ff-a4862a700905</div></div>
+            <div><div class="t">Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil</div><div class="s">U.S. Central Command · 0:26</div></div>
           </div>
-          <div class="ws-item" data-pick="007" data-ph="1" data-label="ATGM" data-title="Kornet ATGM mounted on armored personnel carrier" data-cap="Tên lửa chống tăng Kornet lắp trên xe bọc thép chở quân, quay dọc 9:16." data-src="facebook / Jamie Wearmouth" data-res="1080×1920 (9:16)" data-dur="1:12" data-xid="01a0e65c-350d-1cae-93ff-a4862a700906" onclick="pickItem(this)">
+          <div class="side-item" data-pick="007" data-ph="1" data-label="ATGM" data-title="Kornet ATGM mounted on armored personnel carrier" data-cap="Tên lửa chống tăng Kornet lắp trên xe bọc thép chở quân, quay dọc 9:16." data-src="facebook / Jamie Wearmouth" data-res="1080×1920 (9:16)" data-dur="1:12" data-xid="01a0e65c-350d-1cae-93ff-a4862a700906" onclick="pickItem(this)">
             <span class="n">07</span>
-            <div><div class="t">facebook / Jamie Wearmouth</div><div class="r"><span>1080×1920</span><span>1:12</span></div><div class="x">01a0e65c-350d-1cae-93ff-a4862a700906</div></div>
+            <div><div class="t">Kornet ATGM mounted on armored personnel carrier</div><div class="s">Jamie Wearmouth · 1:12</div></div>
           </div>
-          <div class="ws-item" data-pick="008" data-ph="2" data-label="HCTP" data-title="M1A2 Abrams live-fire gunnery qualification" data-cap="Xe tăng M1A2 bắn đạn thật trong bài kiểm tra xạ kích cấp tổ lái." data-src="dvids / 1st Cavalry Division" data-res="1920×1080 (16:9)" data-dur="0:11" data-xid="01a0e65c-350d-1cb5-93ff-a4862a700907" onclick="pickItem(this)">
+          <div class="side-item" data-pick="008" data-ph="2" data-label="HCTP" data-title="M1A2 Abrams live-fire gunnery qualification" data-cap="Xe tăng M1A2 bắn đạn thật trong bài kiểm tra xạ kích cấp tổ lái." data-src="dvids / 1st Cavalry Division" data-res="1920×1080 (16:9)" data-dur="0:11" data-xid="01a0e65c-350d-1cb5-93ff-a4862a700907" onclick="pickItem(this)">
             <span class="n">08</span>
-            <div><div class="t">dvids / 1st Cavalry Division</div><div class="r"><span>1920×1080</span><span>0:11</span></div><div class="x">01a0e65c-350d-1cb5-93ff-a4862a700907</div></div>
+            <div><div class="t">M1A2 Abrams live-fire gunnery qualification</div><div class="s">1st Cavalry Division · 0:11</div></div>
           </div>
-          <div class="ws-item" data-pick="009" data-ph="3" data-label="UAV" data-title="FPV drone strike on BMP column" data-cap="Drone FPV tấn công đoàn BMP. Có 3 góc quay khác của cùng pha này." data-src="reddit / r/CombatFootage" data-res="720×1280 (9:16)" data-dur="0:41" data-xid="01a0e65c-350d-1cbc-93ff-a4862a700908" onclick="pickItem(this)">
+          <div class="side-item" data-pick="009" data-ph="3" data-label="UAV" data-title="FPV drone strike on BMP column" data-cap="Drone FPV tấn công đoàn BMP. Có 3 góc quay khác của cùng pha này." data-src="reddit / r/CombatFootage" data-res="720×1280 (9:16)" data-dur="0:41" data-xid="01a0e65c-350d-1cbc-93ff-a4862a700908" onclick="pickItem(this)">
             <span class="n">09</span>
-            <div><div class="t">reddit / r/CombatFootage</div><div class="r"><span>720×1280</span><span>0:41</span></div><div class="x">01a0e65c-350d-1cbc-93ff-a4862a700908</div></div>
+            <div><div class="t">FPV drone strike on BMP column</div><div class="s">r/CombatFootage · 0:41</div></div>
           </div>
-          <div class="ws-item" data-pick="010" data-ph="4" data-label="HCTP" data-title="T-90M Proryv firing from closed position" data-cap="T-90M khai hỏa từ vị trí che khuất, quay ngang 16:9." data-src="facebook / MIKN" data-res="1920×1080 (16:9)" data-dur="0:19" data-xid="01a0e65c-350d-1cc3-93ff-a4862a700909" onclick="pickItem(this)">
+          <div class="side-item" data-pick="010" data-ph="4" data-label="HCTP" data-title="T-90M Proryv firing from closed position" data-cap="T-90M khai hỏa từ vị trí che khuất, quay ngang 16:9." data-src="facebook / MIKN" data-res="1920×1080 (16:9)" data-dur="0:19" data-xid="01a0e65c-350d-1cc3-93ff-a4862a700909" onclick="pickItem(this)">
             <span class="n">10</span>
-            <div><div class="t">facebook / MIKN</div><div class="r"><span>1920×1080</span><span>0:19</span></div><div class="x">01a0e65c-350d-1cc3-93ff-a4862a700909</div></div>
+            <div><div class="t">T-90M Proryv firing from closed position</div><div class="s">MIKN · 0:19</div></div>
           </div>
-          <div class="ws-item" data-pick="011" data-ph="5" data-label="UTV" data-title="Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil" data-cap="Đoàn xe địa hình UTV hành quân trên đường rừng trong buổi huấn luyện." data-src="facebook / U.S. Central Command" data-res="1280×720 (16:9)" data-dur="0:30" data-xid="01a0e65c-350d-1cca-93ff-a4862a700910" onclick="pickItem(this)">
+          <div class="side-item" data-pick="011" data-ph="5" data-label="UTV" data-title="Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil" data-cap="Đoàn xe địa hình UTV hành quân trên đường rừng trong buổi huấn luyện." data-src="facebook / U.S. Central Command" data-res="1280×720 (16:9)" data-dur="0:30" data-xid="01a0e65c-350d-1cca-93ff-a4862a700910" onclick="pickItem(this)">
             <span class="n">11</span>
-            <div><div class="t">facebook / U.S. Central Command</div><div class="r"><span>1280×720</span><span>0:30</span></div><div class="x">01a0e65c-350d-1cca-93ff-a4862a700910</div></div>
+            <div><div class="t">Take a look at some of the military’s #CoolJobs and experiences #KnowYourMil</div><div class="s">U.S. Central Command · 0:30</div></div>
           </div>
-          <div class="ws-item" data-pick="012" data-ph="6" data-label="ATGM" data-title="Kornet ATGM mounted on armored personnel carrier" data-cap="Tên lửa chống tăng Kornet lắp trên xe bọc thép chở quân, quay dọc 9:16." data-src="facebook / Jamie Wearmouth" data-res="1080×1920 (9:16)" data-dur="0:52" data-xid="01a0e65c-350d-1cd1-93ff-a4862a700911" onclick="pickItem(this)">
+          <div class="side-item" data-pick="012" data-ph="6" data-label="ATGM" data-title="Kornet ATGM mounted on armored personnel carrier" data-cap="Tên lửa chống tăng Kornet lắp trên xe bọc thép chở quân, quay dọc 9:16." data-src="facebook / Jamie Wearmouth" data-res="1080×1920 (9:16)" data-dur="0:52" data-xid="01a0e65c-350d-1cd1-93ff-a4862a700911" onclick="pickItem(this)">
             <span class="n">12</span>
-            <div><div class="t">facebook / Jamie Wearmouth</div><div class="r"><span>1080×1920</span><span>0:52</span></div><div class="x">01a0e65c-350d-1cd1-93ff-a4862a700911</div></div>
+            <div><div class="t">Kornet ATGM mounted on armored personnel carrier</div><div class="s">Jamie Wearmouth · 0:52</div></div>
           </div>
-          <div class="ws-item" data-pick="013" data-ph="1" data-label="HCTP" data-title="M1A2 Abrams live-fire gunnery qualification" data-cap="Xe tăng M1A2 bắn đạn thật trong bài kiểm tra xạ kích cấp tổ lái." data-src="dvids / 1st Cavalry Division" data-res="1920×1080 (16:9)" data-dur="0:09" data-xid="01a0e65c-350d-1cd8-93ff-a4862a700912" onclick="pickItem(this)">
+          <div class="side-item" data-pick="013" data-ph="1" data-label="HCTP" data-title="M1A2 Abrams live-fire gunnery qualification" data-cap="Xe tăng M1A2 bắn đạn thật trong bài kiểm tra xạ kích cấp tổ lái." data-src="dvids / 1st Cavalry Division" data-res="1920×1080 (16:9)" data-dur="0:09" data-xid="01a0e65c-350d-1cd8-93ff-a4862a700912" onclick="pickItem(this)">
             <span class="n">13</span>
-            <div><div class="t">dvids / 1st Cavalry Division</div><div class="r"><span>1920×1080</span><span>0:09</span></div><div class="x">01a0e65c-350d-1cd8-93ff-a4862a700912</div></div>
+            <div><div class="t">M1A2 Abrams live-fire gunnery qualification</div><div class="s">1st Cavalry Division · 0:09</div></div>
           </div>
-          <div class="ws-item" data-pick="014" data-ph="2" data-label="UAV" data-title="FPV drone strike on BMP column" data-cap="Drone FPV tấn công đoàn BMP. Có 3 góc quay khác của cùng pha này." data-src="reddit / r/CombatFootage" data-res="720×1280 (9:16)" data-dur="0:37" data-xid="01a0e65c-350d-1cdf-93ff-a4862a700913" onclick="pickItem(this)">
+          <div class="side-item" data-pick="014" data-ph="2" data-label="UAV" data-title="FPV drone strike on BMP column" data-cap="Drone FPV tấn công đoàn BMP. Có 3 góc quay khác của cùng pha này." data-src="reddit / r/CombatFootage" data-res="720×1280 (9:16)" data-dur="0:37" data-xid="01a0e65c-350d-1cdf-93ff-a4862a700913" onclick="pickItem(this)">
             <span class="n">14</span>
-            <div><div class="t">reddit / r/CombatFootage</div><div class="r"><span>720×1280</span><span>0:37</span></div><div class="x">01a0e65c-350d-1cdf-93ff-a4862a700913</div></div>
+            <div><div class="t">FPV drone strike on BMP column</div><div class="s">r/CombatFootage · 0:37</div></div>
           </div>
-          <div class="ws-item" data-pick="015" data-ph="3" data-label="HCTP" data-title="T-90M Proryv firing from closed position" data-cap="T-90M khai hỏa từ vị trí che khuất, quay ngang 16:9." data-src="facebook / MIKN" data-res="1920×1080 (16:9)" data-dur="0:25" data-xid="01a0e65c-350d-1ce6-93ff-a4862a700914" onclick="pickItem(this)">
+          <div class="side-item" data-pick="015" data-ph="3" data-label="HCTP" data-title="T-90M Proryv firing from closed position" data-cap="T-90M khai hỏa từ vị trí che khuất, quay ngang 16:9." data-src="facebook / MIKN" data-res="1920×1080 (16:9)" data-dur="0:25" data-xid="01a0e65c-350d-1ce6-93ff-a4862a700914" onclick="pickItem(this)">
             <span class="n">15</span>
-            <div><div class="t">facebook / MIKN</div><div class="r"><span>1920×1080</span><span>0:25</span></div><div class="x">01a0e65c-350d-1ce6-93ff-a4862a700914</div></div>
+            <div><div class="t">T-90M Proryv firing from closed position</div><div class="s">MIKN · 0:25</div></div>
           </div>
         </div>
-        <div class="ws-pager"><span>← Trước</span><b>1–100 / 2446</b><span>Sau →</span></div>
+        <div class="side-pager"><span>← Trước</span><b>1–100 / 2446</b><span>Sau →</span></div>
       </aside>
 
       <!-- CỘT GIỮA: Tiêu đề + lane + player to -->
@@ -179,6 +180,7 @@
 
     </div>
   </div>
+  <script src="js/sidebar.js"></script>
   <script src="js/gate.js"></script>
 </body>
 </html>

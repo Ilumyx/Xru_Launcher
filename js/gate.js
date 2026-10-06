@@ -11,7 +11,7 @@ function pickItem(el) {
   const id = el.dataset.pick;
   document.querySelectorAll('[data-pick]').forEach(t => t.classList.toggle('is-active', t.dataset.pick === id));
   // Lấy dữ liệu từ ô gallery; trang Xem to không có gallery thì lấy từ mục danh sách
-  const d = (document.querySelector(`.g-tile[data-pick="${id}"]`) || document.querySelector(`.ws-item[data-pick="${id}"]`)).dataset;
+  const d = (document.querySelector(`.g-tile[data-pick="${id}"]`) || document.querySelector(`.side-item[data-pick="${id}"]`)).dataset;
   const big = document.getElementById('insp-img');
   big.className = `ph ph-${d.ph}`;
   big.dataset.label = d.label;
@@ -31,7 +31,7 @@ function toggleChip(el) {
 
 // ---- Trang Xem to: chuyển clip, phát/dừng giả, chấm xong tự sang clip kế ----
 function stepItem(dir) {
-  const items = [...document.querySelectorAll('.ws-item')];
+  const items = [...document.querySelectorAll('.side-item')];
   const i = items.findIndex(x => x.classList.contains('is-active'));
   const next = items[Math.min(items.length - 1, Math.max(0, i + dir))];
   if (!next || next === items[i]) return;
