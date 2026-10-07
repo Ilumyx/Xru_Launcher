@@ -9,10 +9,17 @@ File này giữ quyết định và việc đang làm để phiên sau nối ti�
 - Ilumyx chốt mục tiêu sử dụng, mặt màn và ưu tiên. Codex tự chuyển ý định thành việc kỹ thuật, thực hiện và kiểm kết quả.
 - Codex chịu trách nhiệm từ mặt màn, tương tác, dữ liệu hiển thị đến chuỗi thao tác PO dùng thật; đúng hình và test xanh chưa đủ để báo xong.
 - Phạm vi: Launcher và UI của các land liên quan, gồm Crawler, Gate, Label; phần bật/tắt UI trong `Xru_TUI` thuộc công việc tích hợp này.
-- Một người phụ trách chung không thay ownership: UI nằm trong land/feature của nó. UI là lớp mỏng, không sửa lõi hoặc đổi contract chỉ để dựng mặt. Nếu cần đổi boundary, bàn với Ilumyx trước.
+- Một người phụ trách chung không thay ownership: UI nằm trong land/feature của nó và tuân theo ranh giới độc lập bên dưới. Nếu cần đổi boundary hoặc contract, bàn với Ilumyx trước.
 - Làm trọn từng màn theo ưu tiên đã chốt. Giao phụ trách không phải cho phép tự thiết kế lại tất cả màn cùng lúc.
 
 ## Quyết định đã chốt
+
+### UI và CLI độc lập
+
+- XRU hướng tới vận hành bằng AI qua CLI. UI là một cách sử dụng song song dành cho PO; nghiệp vụ không được đòi hỏi mở UI hoặc Launcher mới chạy được.
+- UI chỉ trình bày dữ liệu và gửi yêu cầu qua CLI hoặc hợp đồng giao tiếp đã chốt. Quy tắc nghiệp vụ, kiểm tra và ghi dữ liệu thuộc lõi; UI không tự làm một bản nghiệp vụ khác.
+- UI không import mã lõi của land; lõi/CLI không import hoặc phụ thuộc UI. Import thư viện phục vụ UI và mã nội bộ UI không thuộc điều cấm này.
+- Gỡ UI và Launcher ra thì lõi, CLI và dữ liệu vẫn vận hành bình thường. Khi kiểm ranh giới này, chạy nghiệp vụ qua CLI với UI vắng mặt.
 
 ### Mặt màn
 
@@ -39,6 +46,8 @@ File này giữ quyết định và việc đang làm để phiên sau nối ti�
 ## Việc đang chờ
 
 Đây là hiện trạng kiểm code ngày 07/10, không phải danh sách màn đã nghiệm thu.
+
+Kiểm các vùng UI hiện tại cho thấy Gate ảnh, Gate video, Label và Crawler vẫn có import mã lõi. Đây là chỗ lệch với quyết định độc lập vừa chốt, chưa được tách. Khả năng chạy CLI sau khi gỡ UI/Launcher chưa verify. Cần bàn phạm vi và hợp đồng giao tiếp trước khi đổi kiến trúc; không gộp việc tách này vào một sửa mặt màn.
 
 | Phần | Hiện trạng / việc tiếp theo |
 |---|---|
