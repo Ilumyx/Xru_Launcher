@@ -1,0 +1,30 @@
+{% set kit_root = kit_root|default('/kit', true) %}
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}XRU{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ kit_root }}/tokens.css">
+  <link rel="stylesheet" href="{{ kit_root }}/rail/rail.css">
+  <link rel="stylesheet" href="{{ kit_root }}/page/page.css">
+  <link rel="stylesheet" href="{{ kit_root }}/sidebar/sidebar.css">
+  <link rel="stylesheet" href="{{ kit_root }}/account/account.css">
+  <script src="{{ kit_root }}/i18n/i18n.js"></script>
+  <script src="{{ kit_root }}/account/account.js"></script>
+  <script src="{{ kit_root }}/sidebar/sidebar.js"></script>
+  {% block extra_head %}{% endblock %}
+</head>
+<body {% block body_attributes %}{% endblock %}>
+<div class="shell">
+  {% block rail_menu %}{% endblock %}
+  <nav class="rail" data-rail="{{ rail_kind }}" data-active="{{ rail_active }}"{% if has_sidebar|default(true) %} data-panel{% endif %}></nav>
+  <script src="{{ kit_root }}/rail/rail.js"></script>
+  {% block workstation %}{% endblock %}
+</div>
+{% block after_shell %}{% endblock %}
+</body>
+</html>

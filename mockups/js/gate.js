@@ -1,10 +1,5 @@
 // XRU GATE — chỉ để nhìn: đóng/mở cột danh sách, chọn mục để xem bên phải, phím tắt chuyển trang.
 
-// Nút đóng/mở trên rail
-function toggleGatePanel() {
-  document.body.classList.toggle('panel-collapsed');
-}
-
 // Bấm 1 mục (ở gallery hoặc danh sách) -> sáng lên + hiện ở cột phải.
 // Mọi data-xxx trên ô gallery sẽ được đổ vào phần tử có id="insp-xxx" (nếu có).
 function pickItem(el) {
@@ -89,7 +84,7 @@ window.addEventListener('keydown', (e) => {
 
   // Bề rộng 1 cột ảnh khi đang ở 5 cột (tính bằng phép cộng trừ, không phụ thuộc animation)
   function colWidth() {
-    const listW = document.body.classList.contains('panel-collapsed') ? 0 : LIST_W;
+    const listW = document.documentElement.classList.contains('sidebar-hidden') ? 0 : LIST_W;
     const extra = main.clientWidth - gallery.clientWidth;              // padding cột giữa
     const free = ws.offsetWidth - listW - BASE_W - extra - (BASE_COLS - 1) * GAP;
     return free / BASE_COLS;

@@ -114,8 +114,8 @@ const CONTINENTAL_DATA = {
         tagline: 'Vòi bạch tuộc thu thập nguyên liệu thô (Video / Image / News)',
         image: '',
         mods: [
-          { label: 'Dashboard', url: '/crawler/dash' },
-          { label: 'Nguồn đã thêm', url: '/crawler/sources' }
+          { label: 'Dashboard', url: 'http://127.0.0.1:5055/dash.html' },
+          { label: 'Nguồn đã thêm', url: 'http://127.0.0.1:5055/' }
         ],
         ago: '1 ngày trước',
         status: '● HOẠT ĐỘNG',
@@ -127,9 +127,9 @@ const CONTINENTAL_DATA = {
         tagline: 'Kiểm định đầu vào & Cửa khẩu thông quan',
         image: '',
         mods: [
-          { label: 'Duyệt ảnh', url: '/gate/image' },
-          { label: 'Duyệt video', url: '/gate/video' },
-          { label: 'Gate Dash', url: '/gate/dash' }
+          { label: 'Duyệt ảnh', url: 'http://127.0.0.1:5059/' },
+          { label: 'Duyệt video', url: 'http://127.0.0.1:5058/' },
+          { label: 'Gate Dash', url: '/mockups/gate_dash.html' }
         ],
         ago: 'Vừa xong',
         status: '● SẴN SÀNG',
@@ -154,7 +154,7 @@ const CONTINENTAL_DATA = {
         tagline: 'Bầy AI gán nhãn & Định danh thực thể (Labeling platoon)',
         image: '',
         mods: [
-          { label: 'Gán nhãn video', url: '/label/video' }
+          { label: 'Gán nhãn video', url: 'http://127.0.0.1:5057/' }
         ],
         ago: '3 ngày trước',
         status: '● SẴN SÀNG',

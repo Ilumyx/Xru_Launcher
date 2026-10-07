@@ -5,9 +5,9 @@
    Bề ngang chung --side-w cho mọi màn, để bấm qua lại không bị giật.
    ========================================================================== */
 :root { --side-w: 260px; }
-/* Nút đóng/mở trên rail (toggleGatePanel) thêm class panel-collapsed vào body: cột trái về 0 */
-body.panel-collapsed { --side-w: 0px; }
-body.panel-collapsed .side { visibility: hidden; border-right: 0; }
+/* Sidebar thuộc chính màn: một class trên html đổi bố cục, không cần vỏ ngoài. */
+html.sidebar-hidden { --side-w: 0px; }
+html.sidebar-hidden .side { visibility: hidden; border-right: 0; }
 
 .side {
   display: flex;
@@ -108,4 +108,3 @@ body.panel-collapsed .side { visibility: hidden; border-right: 0; }
 .side-item.is-child .n { display: none; }
 .side-item.is-child { grid-template-columns: minmax(0, 1fr); }
 .side-item.is-all.is-active::before, .side-item.is-group.is-active::before { top: 15px; }
-

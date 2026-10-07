@@ -4,7 +4,6 @@
 //             <nav class="rail" data-rail="<khu>" data-active="<key>"></nav><script src=".../kit/rail/rail.js"></script>
 //   label/homeTip/tip: khóa chữ trong kit/i18n (không có khóa thì in nguyên chữ). icon: tên trong kit/icons/icons.svg.
 //   data-panel: thêm nút đóng/mở cột danh sách (trang có sidebar lọc).
-//   Trang nằm trong iframe của vỏ thì tự bỏ rail (vỏ đã có rail).
 // ==========================================================================
 (() => {
   const script = document.currentScript;
@@ -22,20 +21,6 @@
 
   const nav = script.previousElementSibling;
   if (!nav) return;
-  // Trang đang nằm trong ô giữa của vỏ (launcher.py): vỏ đã có rail → bỏ rail của trang, không ra hai rail.
-  if (window.self !== window.top) {
-    document.documentElement.classList.add('is-framed');
-    if ('panel' in nav.dataset) {
-      const parentOrigin = document.referrer ? new URL(document.referrer).origin : '';
-      window.addEventListener('message', (event) => {
-        if (event.source !== window.parent || event.origin !== parentOrigin || event.data?.type !== 'xru-toggle-sidebar') return;
-        window.toggleGatePanel?.();
-      });
-    }
-    nav.remove();
-    return;
-  }
-
   // Menu của khu: trang/vỏ đưa vào window.XRU_RAILS; chữ dịch qua kit/i18n
   function menu(kind) {
     const r = (window.XRU_RAILS || {})[kind];
@@ -56,7 +41,7 @@
     const groups = rail.groups.map((g) => `<div class="rail-nav">${g.map(item).join('')}</div>`);
     if ('panel' in nav.dataset) {
       const toggleTip = t('toggle_list');
-      groups.unshift(`<div class="rail-nav"><button class="rail-icon-btn" data-tooltip="${toggleTip}" aria-label="${toggleTip}" onclick="toggleGatePanel()">${svg('panel')}</button></div>`);
+      groups.unshift(`<div class="rail-nav"><button type="button" class="rail-icon-btn" data-sidebar-toggle aria-expanded="${!document.documentElement.classList.contains('sidebar-hidden')}" data-tooltip="${toggleTip}" aria-label="${toggleTip}">${svg('panel')}</button></div>`);
     }
     // Launcher: logo cũng là một "lục địa" (xru) để launcher.js bật/tắt sáng nó.
     const logoData = kind === 'launcher' ? ' data-continent="xru"' : '';
@@ -72,4 +57,10 @@
 
   renderRail();
   window.addEventListener('xru-lang-applied', renderRail);
+  window.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
+    if (event.target.closest('input, textarea, select, dialog') || document.querySelector('dialog[open], [role="dialog"][aria-modal="true"]')) return;
+    const home = (window.XRU_RAILS || {})[nav.dataset.rail]?.home;
+    if (home) { event.preventDefault(); location.href = home; }
+  });
 })();
