@@ -50,16 +50,6 @@
 
       <section class="work" id="work" hidden>
         <section class="stage" id="stage" data-mode="frames">
-          <div class="stage-head">
-            <div class="stage-title"><span class="insp-label" data-i18n="lb_segment">Segment</span><b id="seg-num">01</b><span id="seg-of">/ 01</span></div>
-            <span class="stage-time" id="seg-time"></span>
-            <span class="stage-spacer"></span>
-            <button type="button" class="lb-btn" id="add-protagonist"><span data-i18n="lb_add_p">+ protagonist</span></button>
-            <div class="lb-seg" id="stage-mode">
-              <button type="button" class="is-on" data-mode="frames">Frame <kbd>F</kbd></button>
-              <button type="button" data-mode="video">Video <kbd>V</kbd></button>
-            </div>
-          </div>
           <div class="stage-body">
             <div class="stage-video" id="stage-video"></div>
             <div class="stage-frames" id="stage-frames"></div>
@@ -79,21 +69,21 @@
       </section>
       <div class="lb-empty" id="empty" data-i18n="lb_loading">Loading Label…</div>
 
-      <footer class="page-foot">
-        <div class="key-hints">
-          <span><span class="key">F</span><span class="key">V</span> <span data-i18n="lb_k_mode">Frame / video</span></span>
-          <span><span class="key">Space</span> <span data-i18n="lb_k_play">Play / pause</span></span>
-          <span><span class="key">J</span><span class="key">K</span> <span data-i18n="lb_k_seg">Next / previous segment</span></span>
-          <span><span class="key">Enter</span> <span data-i18n="lb_k_save">Save cell</span></span>
-          <span><span class="key">Tab</span> <span data-i18n="lb_k_tab">Save, next cell</span></span>
-          <span><span class="key">ESC</span> <span data-i18n="esc_launcher">Back to Launcher</span></span>
-        </div><div>XRU LABEL // 2026</div>
-      </footer>
     </main>
 
     <aside class="ws-insp" id="dossier" hidden>
       <div class="insp-top"><span class="insp-tag" id="d-state"></span><span class="insp-num" id="d-num"></span></div>
       <div class="insp-title" id="d-title"></div>
+      <div class="lb-segbox">
+        <div class="stage-title"><span class="insp-label" data-i18n="lb_segment">Segment</span><b id="seg-num">01</b><span id="seg-of">/ 01</span><span class="stage-time" id="seg-time"></span></div>
+        <div class="lb-segctl">
+          <div class="lb-seg" id="stage-mode">
+            <button type="button" class="is-on" data-mode="frames">Frame <kbd>F</kbd></button>
+            <button type="button" data-mode="video">Video <kbd>V</kbd></button>
+          </div>
+          <button type="button" class="lb-btn" id="add-protagonist"><span data-i18n="lb_add_p">+ protagonist</span></button>
+        </div>
+      </div>
       <div>
         <div class="insp-label" data-i18n="lb_progress">Progress</div>
         <div class="lb-progress"><b id="d-answered">0</b><span id="d-segments">/ 0 segment</span></div>
@@ -117,6 +107,14 @@
           <dt>Watermark</dt><dd id="d-wm"></dd>
         </dl>
         <p class="lb-small" data-i18n="lb_gate_ro">Answered by Gate, not editable here.</p>
+      </div>
+      <div class="lb-keys">
+        <div><span class="key">F</span><span class="key">V</span><span data-i18n="lb_k_mode">Frame / video</span></div>
+        <div><span class="key">Space</span><span data-i18n="lb_k_play">Play / pause</span></div>
+        <div><span class="key">J</span><span class="key">K</span><span data-i18n="lb_k_seg">Next / previous segment</span></div>
+        <div><span class="key">Enter</span><span data-i18n="lb_k_save">Save cell</span></div>
+        <div><span class="key">Tab</span><span data-i18n="lb_k_tab">Save, next cell</span></div>
+        <div><span class="key">Esc</span><span data-i18n="esc_launcher">Back to Launcher</span></div>
       </div>
     </aside>
   </div>
