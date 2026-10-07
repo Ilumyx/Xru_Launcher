@@ -1,5 +1,7 @@
 # Xru_Launcher
 
+Phạm vi phụ trách, quyết định của PO và việc UI đang chờ: [UI.md](UI.md).
+
 Land Launcher của XRU Federal (trước là Xru_UI, bản nháp UI). Đang chuyển từ mockup sang đồ thật:
 vỏ + trang chủ + thư viện UI gốc (`kit/`). Không import code của land nào.
 Màn của land do land tự phục vụ; Launcher nhúng vào vỏ. Thứ tự làm thật: Launcher → Crawler → Gate → Label.
