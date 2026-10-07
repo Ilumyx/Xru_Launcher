@@ -1,49 +1,41 @@
 # Xru_Launcher
 
-Phạm vi phụ trách, quyết định của PO và việc UI đang chờ: [UI.md](UI.md).
+Module UI rời của XRU: sảnh, Kit, các màn. Quyết định và việc: [UI.md](UI.md). Không import code land.
 
-Land Launcher của XRU Federal (trước là Xru_UI, bản nháp UI). Đang chuyển từ mockup sang đồ thật:
-trang chủ + thư viện UI gốc (`kit/`). Không import code của land nào.
-Màn của land do land tự phục vụ; sảnh mở link trực tiếp. Thứ tự làm thật: Launcher → Crawler → Gate → Label.
-
-## Run
+## Chạy
 
 ```bash
-python3 launcher.py          # http://127.0.0.1:5050   (--lan: mở cho cả mạng LAN, xem trên điện thoại)
-python3 launcher.py start-apps  # bật Crawler, Gate ảnh/video/Dash, Label
-python3 launcher.py stop     # tắt sảnh + các app đã bật
+python3 launcher.py             # http://127.0.0.1:5050  (--lan: mở cho mạng LAN)
+python3 launcher.py start-apps  # bật các server của land
+python3 launcher.py stop        # tắt hết
 ```
 
-- `/` trang chủ. Các ô sector mở thẳng Crawler :5055, Gate :5059/:5058/:5056, Label :5057. Link cũ `/<land>/<module>` chỉ chuyển hướng.
-- `xru start` bật sảnh và các màn; `xru stop` tắt toàn bộ. Server UI đọc Kit trên ổ đĩa nên tắt riêng server :5050 không làm mất khung của màn đang chạy.
-- `APPS` giữ lệnh khởi động UI cho TUI, không import code land. Server sảnh không có nút Start hay endpoint bật app.
+`xru start` / `xru stop` trong TUI làm việc tương tự.
 
 ## Thư mục
 
 | Ngăn | Là gì |
 |---|---|
-| `launcher.py`, `index.html` | Launcher thật: server :5050, trang chủ |
-| `kit/` | **Thư viện gốc** (màu, icon, rail, đầu trang, sidebar, cài đặt, song ngữ). Mục lục: `kit/README.md`, xem tận mắt: `/kit/` |
-| `home/` | Riêng trang chủ: quả cầu (`home/globe/`), dữ liệu lục địa (`launcher.js`), menu rail trang chủ |
-| `assets/` | Ảnh: `gu/` (ảnh gu của PO), `sectors/` (ảnh ô sector trang chủ, lưu qua nút ✎) |
-| `mockups/` | Bản nháp Gate / Array. Tới lượt land nào thì chuyển về land đó. Gate Dash đã về `Xru_Gate/ui_dashboard/`. (Crawler đã về land: `Xru_Crawler/ui_screen/`.) |
-| `data/`, `tools/` | Số chụp Array + tool chụp |
+| `launcher.py`, `index.html` | Server 5050, trang chủ |
+| `kit/` | Thư viện gốc, xem tại `/kit/` |
+| `home/` | Quả cầu, menu trang chủ |
+| `assets/` | `gu/` ảnh gu PO, `sectors/` ảnh ô sector |
+| `mockups/` | Bản nháp chưa làm thật |
+| `data/`, `tools/` | Số chụp Array (tĩnh, có ngày chụp) |
 
-## Array snapshot
+## Kit
 
-`data/array_snapshot.js` is a real, read-only snapshot of Array query results.
-Regenerate (PC Array must be up; key is read from `XRU_Data/federal_keys/ai/xru_array.json`, never written here):
+Kit không biết land nào có màn gì. Một món vào Kit khi đã có ở ít nhất 2 màn đã chốt.
 
-```bash
-python3 tools/array_snapshot.py
-```
+| Cái gì | Ở đâu | Luật |
+|---|---|---|
+| Màu | `kit/profiles/*.css` | Chỉ khai báo màu ở đây. Mặc định Graphite. |
+| Vai trò màu, chữ | `kit/tokens.css` | Trang chỉ gọi `--bg`, `--fg*`, `--accent`, `--warn`, `--hold`, `--idle`. Đỏ chỉ cho chỗ PO cần nhìn. Inter cho chữ, JetBrains Mono cho số. |
+| Icon | `kit/icons/icons.svg` | `<symbol id="i-TÊN">`, nét 24×24. |
+| Rail | `kit/rail/` | Chỉ vẽ; menu từ `window.XRU_RAILS`. Không iframe. |
+| Đầu/chân trang | `kit/page/page.css` | `.page-head`, `.page-foot`. |
+| Cột lọc | `kit/sidebar/` | Rộng `--side-w`; rail có `data-panel` thì có nút đóng/mở. |
+| Cài đặt | `kit/account/` | Ngôn ngữ, profile, sáng/tối, font, màu nhấn, cỡ. |
+| Hai thứ tiếng | `kit/i18n/i18n.js` | `data-i18n`, đủ `vi` + `en`, English mặc định. Chữ riêng của màn nạp bằng `XRU_I18N.add`. |
 
-## Gate Dash
-
-Gate phục vụ Dash tại :5056 (`Xru_Gate/ui_dashboard/`), đọc số qua CLI `stats` của hai làn. Màn tự đọc lại mỗi 15 giây khi đang mở. Link cũ `/gate/dash` và `/mockups/gate_dash.html` chuyển sang server Gate.
-
-## Rules
-
-- Luật màu, icon, rail, đầu trang, sidebar, song ngữ: `kit/README.md`.
-- Launcher không import code land. Rút Launcher ra thì land vẫn chạy (BA chốt (a): mỗi land tự phục vụ màn của nó, Launcher trỏ sang).
-- Placeholders are CSS dot patterns (`.ph-1..6`), no image assets.
+Thêm profile: chép `graphite.css`, đổi tên và `data-profile`; thêm `@import` trong `tokens.css`; thêm vào `PROFILES` trong `account/account.js`.
