@@ -6,11 +6,17 @@ Module UI rời của XRU: sảnh, Kit, các màn. Quyết định và việc: [
 
 ```bash
 python3 launcher.py             # http://127.0.0.1:5050  (--lan: mở cho mạng LAN)
-python3 launcher.py start-apps  # bật các server của land
-python3 launcher.py stop        # tắt hết
+python3 launcher.py stop        # chỉ tắt UI, giữ Backend và CLI
+xru backend image start        # Backend Gate ảnh :5059
+xru backend image stop
+xru backend image status       # READY khi API trả được dữ liệu
 ```
 
-`xru start` / `xru stop` trong TUI làm việc tương tự.
+`xru start` / `xru stop` chỉ bật/tắt UI :5050. Gate ảnh mở tại `/gate/image/`; Backend chạy riêng bằng `python -m gate_image.backend_service.image_api` trong Xru_Gate. Hợp đồng trường và hành động ở `Xru_Gate/gate_image/backend_service/API.md`.
+
+Gate video/Dash, Label, Crawler chưa chuyển: `python3 launcher.py start-apps` bật các server màn cũ; `stop-apps` tắt chúng và UI. Gate ảnh cũ đã xoá. Backend ảnh mới không nằm trong `start-apps` / `stop-apps`.
+
+Mặc định chạy localhost. `--lan` mở server UI cho LAN; để dùng Backend từ máy khác phải cấu hình host và `--ui-origin` của Backend tương ứng. UI có `--port` và `--image-backend` để thử với dữ liệu riêng.
 
 ## Thư mục
 
@@ -19,6 +25,7 @@ python3 launcher.py stop        # tắt hết
 | `launcher.py`, `index.html` | Server 5050, trang chủ |
 | `kit/` | Thư viện gốc, xem tại `/kit/` |
 | `home/` | Quả cầu, menu trang chủ |
+| `gate/image/` | Màn Gate ảnh, chỉ gọi Backend qua HTTP |
 | `assets/` | `gu/` ảnh gu PO, `sectors/` ảnh ô sector |
 | `mockups/` | Bản nháp chưa làm thật |
 | `data/`, `tools/` | Số chụp Array (tĩnh, có ngày chụp) |

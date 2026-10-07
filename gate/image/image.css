@@ -1,0 +1,273 @@
+/* Face copied from Xru_Launcher mockup @71d5870. Gate routes/actions own the real data. */
+/* ---------- Thanh lane (chỉ ở Gate Image) ---------- */
+.gate-lanes-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--hairline);
+}
+.gate-tabs { display: flex; gap: 8px; }
+.gate-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  color: var(--fg-dim);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.gate-tab-btn:hover { background: var(--m-3); color: var(--fg); }
+.gate-tab-btn.is-active {
+  background: var(--m-5);
+  color: var(--fg-strong);
+}
+.gate-tab-btn .count {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--fg-dim);
+}
+.gate-tab-btn .count.alert { color: var(--warn); }
+.gate-tab-btn .count.warn { color: var(--hold); }
+.gate-tab-btn .count.accept { color: var(--accent); }
+
+.mode-toggle {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: var(--m-2);
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+}
+.mode-btn {
+  padding: 4px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 2px;
+  color: var(--fg-dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+}
+.mode-btn.active { background: var(--m-5); color: #fff; font-weight: 600; }
+
+
+.card-act-btn {
+  padding: 5px 0;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
+}
+.card-act-btn:hover { background: var(--m-5); color: #fff; }
+.card-act-btn.approve:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.card-act-btn.detain:hover  { background: rgba(var(--hold-rgb), 0.2); border-color: var(--hold); color: var(--hold); }
+.card-act-btn.purge:hover   { background: rgba(var(--warn-rgb), 0.2);  border-color: var(--warn);      color: var(--warn); }
+
+
+.ws {
+  display: grid;
+  grid-template-columns: var(--side-w) minmax(0, 1fr) var(--insp-w, 360px);
+  height: calc(100vh / var(--ui-zoom));
+  position: relative;
+  transition: grid-template-columns 0.2s ease;
+}
+
+/* --- Cột giữa: header + gallery --- */
+.ws-main { min-width: 0; overflow-y: auto; padding: 28px 32px; }
+/* Đầu trang chung ở kit/page/page.css; Gate chỉ thêm khoảng dưới và hàng tab bên phải */
+.ws-head { margin-bottom: 22px; }
+.ws-head .gate-tabs { flex-wrap: wrap; justify-content: flex-end; }
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(var(--g-cols, 5), minmax(0, 1fr));
+  gap: 18px 14px;
+}
+.g-tile { cursor: pointer; min-width: 0; }
+.g-thumb {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--m-2);
+  border: 1px solid var(--hairline);
+  border-radius: 3px;
+  overflow: hidden;
+  transition: border-color 0.12s;
+}
+/* Ảnh và video cùng một khung 4:3; ảnh thật co vừa khung (không cắt mép, để còn thấy watermark ở góc) */
+.g-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.g-tile:hover .g-thumb { border-color: var(--hairline-hi); }
+.g-tile.is-active .g-thumb { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.g-num {
+  position: absolute;
+  z-index: 1;
+  top: 6px;
+  left: 6px;
+  padding: 1px 5px;
+  background: rgba(0, 0, 0, 0.72);
+  border-radius: 2px;
+  font: 10px var(--font-mono);
+  color: var(--fg);
+}
+.g-cap {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--fg);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.8em; /* luôn chừa 2 dòng: tiêu đề ngắn hay dài thì hàng ô vẫn thẳng */
+}
+.g-meta { margin-top: 3px; font: 10px var(--font-mono); color: var(--fg-dim); }
+
+/* --- Cột phải: xem chi tiết --- */
+.ws-insp {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 24px 20px;
+  border-left: 1px solid var(--hairline);
+  background: var(--m-1);
+}
+.insp-top { display: flex; justify-content: space-between; align-items: center; }
+.insp-tag {
+  padding: 2px 6px;
+  border: 1px solid var(--hairline-hi);
+  border-radius: 2px;
+  font: 10px var(--font-mono);
+  color: var(--warn);
+}
+.insp-num { font: 11px var(--font-mono); color: var(--fg-dim); }
+.insp-img {
+  aspect-ratio: 4 / 3;
+  background: #000;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.insp-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.insp-title { font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--fg-strong); }
+.insp-label { margin-bottom: 4px; font: 10px var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-faint); }
+.insp-cap { font-size: 12px; line-height: 1.6; color: var(--fg-dim); }
+.insp-meta { display: grid; grid-template-columns: 70px 1fr; gap: 6px 10px; font: 11px var(--font-mono); }
+.insp-meta dt { color: var(--fg-faint); }
+.insp-meta dd { color: var(--fg); overflow-wrap: anywhere; }
+.insp-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 1px solid var(--hairline); }
+.insp-note {
+  width: 100%;
+  height: 64px;
+  padding: 8px 10px;
+  background: var(--m-2);
+  border: 1px solid var(--hairline);
+  border-radius: 3px;
+  color: var(--fg);
+  font: 12px var(--font-sans);
+  resize: none;
+}
+.insp-note:focus { outline: none; border-color: var(--hairline-hi); }
+.insp-acts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.insp-acts .card-act-btn { padding: 9px 0; font-size: 12px; }
+.insp-acts kbd { margin-left: 6px; padding: 0 4px; background: var(--m-4); border-radius: 2px; font: 10px var(--font-mono); color: var(--fg-dim); }
+
+/* Thanh cuộn tối, mảnh — hợp nền đen */
+.ws-main, .ws-insp { scrollbar-width: thin; scrollbar-color: var(--m-6) transparent; }
+
+
+/* Thanh lane: không bao giờ gãy 3+2. Thiếu chỗ thì cả thanh xuống dưới tiêu đề */
+.ws-head { flex-wrap: wrap; row-gap: 14px; }
+.ws-head .gate-tabs { flex-wrap: nowrap; gap: 6px; }
+.ws-head .gate-tab-btn { padding: 5px 10px; font-size: 11px; white-space: nowrap; }
+/* Tên nguồn dưới ô gallery: 1 dòng, dài thì "..." */
+.g-meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+
+.insp-grip {
+  position: absolute; top: 0; bottom: 0;
+  right: calc(var(--insp-w, 360px) - 5px);
+  width: 10px; z-index: 5;
+  cursor: col-resize;
+  transition: right 0.2s ease;
+}
+.insp-grip::before {
+  content: ''; position: absolute; left: 4px; top: 0; bottom: 0; width: 2px;
+  background: transparent; transition: background 0.12s;
+}
+.insp-grip::after {
+  content: ''; position: absolute; left: 2px; top: 50%; width: 6px; height: 36px; margin-top: -18px;
+  border-radius: 3px; background: var(--m-6); opacity: 0; transition: opacity 0.12s;
+}
+.insp-grip:hover::before, body.is-gripping .insp-grip::before { background: var(--accent); }
+.insp-grip:hover::after, body.is-gripping .insp-grip::after { opacity: 1; background: var(--accent); }
+body.is-gripping { cursor: col-resize; user-select: none; }
+.insp-grip-tip {
+  position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
+  padding: 3px 7px; white-space: nowrap;
+  background: var(--m-3); border: 1px solid var(--accent-line); border-radius: 3px;
+  font: 10px var(--font-mono); color: var(--accent);
+  opacity: 0; pointer-events: none; transition: opacity 0.12s;
+}
+body.is-gripping .insp-grip-tip { opacity: 1; }
+/* Cột phải rộng ra thì khung xem không cao quá màn */
+.ws-insp .insp-img { max-height: calc(55vh / var(--ui-zoom)); }
+/* Cột giữa hẹp lại (đã kéo giãn cột phải) → thanh lane thành 5 ô đều, số trên chữ dưới */
+.ws-main { container-type: inline-size; }
+@container (max-width: 640px) {
+  .ws-head .page-title { flex-basis: 100%; }
+  .ws-head .gate-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; width: 100%; }
+  .ws-head .gate-tab-btn { flex-direction: column; align-items: center; gap: 4px; padding: 6px 4px; font-size: 10px; min-width: 0; }
+  .ws-head .gate-tab-btn > span:last-child { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* Tiêu đề gộp 1 dòng: EURASIA / GATE / IMAGE — chữ nhỏ là đường dẫn, chữ to là trang hiện tại */
+.hud-header { align-items: center; }
+.ws-head { column-gap: 16px; }
+.ws-head .gate-tabs { gap: 4px; }
+
+/* Đổi khấc: ô ảnh trôi về chỗ mới — nhanh, đầu nhanh cuối êm (gate.js → morph) */
+html.vt-notch::view-transition-group(*) { animation-duration: 180ms; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+html.vt-notch::view-transition-old(*),
+html.vt-notch::view-transition-new(*) { animation-duration: 180ms; }
+
+a.side-item, a.g-tile, a.gate-tab-btn { text-decoration: none; color: inherit; }
+.side-item > div { min-width: 0; }
+.gate-tab-btn:disabled { cursor: default; }
+.card-act-btn:disabled { opacity: .4; cursor: default; }
+.insp-img { flex-shrink: 0; }
+.insp-cap { white-space: pre-wrap; overflow-wrap: anywhere; }
+.insp-meta dd { min-width: 0; }
+.ig-flash { padding: 10px; margin-bottom: 12px; border: 1px solid var(--warn); color: var(--warn); }
+.gr-tile.is-done { opacity: .4; }
+.gr-tile.is-busy { opacity: .65; pointer-events: none; }
+.gr-peek { display: none; position: fixed; inset: 0; z-index: 20; background: #000e; padding: 32px; }
+.gr-peek.is-open { display: flex; }
+.gr-peek img { width: 100%; height: 100%; object-fit: contain; }
+.gr-peek button { position: absolute; top: 12px; right: 12px; padding: 8px 12px; }
+[hidden] { display: none !important; }
+
+/* Real captions can be long: scroll the caption, retain the mockup action position. */
+.insp-caption { min-height: 0; overflow-y: auto; scrollbar-width: thin; }
+.insp-bottom, .insp-meta, .insp-title, .insp-top { flex-shrink: 0; }
+.side-pager a { color: inherit; text-decoration: none; }
+.side-pager a:hover { color: var(--fg-strong); }
+.side-field > span { font-size: 11px; color: var(--fg-dim); }
+/* UI state: unavailable/empty selection cannot submit a decision. */
+.side-pager button {background:none; border:0; color:var(--fg-dim); cursor:pointer; font:11px var(--font-mono);}
+.side-pager button:disabled {opacity:.35; cursor:default;}
+.card-act-btn:disabled {opacity:.35; cursor:default;}
+.insp-acts button[hidden] {display:none;}
+.gr-peek:not(.is-open) {display:none;}

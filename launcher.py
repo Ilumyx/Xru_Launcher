@@ -1,13 +1,14 @@
-"""Sảnh XRU: trang chủ, Kit và link sang màn độc lập của mỗi land.
+"""UI XRU: sảnh, Kit, Gate ảnh; các lane khác đang chờ chuyển.
 python3 launcher.py          # sảnh :5050
-python3 launcher.py start-apps  # bật các màn cho lệnh xru start
-python3 launcher.py stop        # tắt sảnh và các màn đã bật
+python3 launcher.py start-apps  # bật các server màn cũ chưa chuyển
+python3 launcher.py stop        # chỉ tắt UI :5050, giữ Backend
 Không import code của land. Chỉ dùng thư viện chuẩn Python.
 """
 
 from __future__ import annotations
 
 import os
+import json
 import shutil
 import signal
 import socket
@@ -22,13 +23,13 @@ from urllib.parse import parse_qs, urlparse
 HERE = Path(__file__).resolve().parent
 XRU_CODE = HERE.parent
 PORT = 5050
+IMAGE_BACKEND = "http://127.0.0.1:5059"
 LOGS = HERE / "logs"
 
-# Lệnh bật UI cho TUI: khóa → (thư mục land, lệnh, cổng). Không import land.
+# Các server UI cũ chờ chuyển lane: khóa → (thư mục land, lệnh, cổng). Không import land.
 APPS = {
     "crawler-sources": ("Xru_Crawler", ["python", "-m", "ui_screen.source_board_app"], 5055),
     "gate-dashboard": ("Xru_Gate", ["python", "-m", "ui_dashboard.dashboard_web_app"], 5056),
-    "gate-image": ("Xru_Gate", ["python", "-m", "gate_image.ui_screen.image_review_web_app"], 5059),
     "gate-video": ("Xru_Gate", ["python", "-m", "gate_video.ui_screen.video_review_web_app"], 5058),
     "label-video": ("Xru_Label", ["python", "-m", "label_division_video.video_po_review_ui.video_review_web_app"], 5057),
 }
@@ -38,8 +39,8 @@ DESTINATIONS = {
     '/crawler': 'http://127.0.0.1:5055/dash.html',
     '/crawler/dash': 'http://127.0.0.1:5055/dash.html',
     '/crawler/sources': 'http://127.0.0.1:5055/',
-    '/gate': 'http://127.0.0.1:5059/',
-    '/gate/image': 'http://127.0.0.1:5059/',
+    '/gate': '/gate/image/',
+    '/gate/image': '/gate/image/index.html',
     '/gate/video': 'http://127.0.0.1:5058/',
     '/gate/dash': 'http://127.0.0.1:5056/',
     '/mockups/gate_dash.html': 'http://127.0.0.1:5056/',
@@ -54,7 +55,7 @@ def is_up(port: int) -> bool:
 
 
 def start(key: str) -> None:
-    """Bật app bằng CLI của land; process sống độc lập với sảnh."""
+    """Bật module server màn cũ; process sống độc lập với UI."""
     if key not in APPS or is_up(APPS[key][2]):
         return
     land, cmd, _ = APPS[key]
@@ -134,10 +135,13 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self) -> None:
         path = urlparse(self.path).path
+        if path == '/ui-config':
+            return self._send(200, json.dumps({'image_backend': IMAGE_BACKEND}), 'application/json')
         destination = DESTINATIONS.get(path.rstrip('/'))
         if destination:
             self.send_response(302)
-            self.send_header('Location', destination)
+            query = urlparse(self.path).query
+            self.send_header('Location', destination + ('?' + query if query else ''))
             self.end_headers()
             return
         return super().do_GET()
@@ -159,14 +163,32 @@ def sector_file(land: str) -> Path | None:
     return SECTORS / f"{name}.jpg" if name and all(c.isalnum() or c in "-_ " for c in name) else None
 
 
+def stop_ui() -> None:
+    pid_file = LOGS / 'launcher.pid'
+    if pid_file.exists():
+        try:
+            os.kill(int(pid_file.read_text()), signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+        pid_file.unlink(missing_ok=True)
+
+
 def main() -> None:
+    global PORT, IMAGE_BACKEND
     if sys.argv[1:2] == ["stop"]:
+        return stop_ui()
+    if sys.argv[1:2] == ["stop-apps"]:
         return stop_all()
     if sys.argv[1:2] == ["start-apps"]:
         sys.exit(0 if start_apps() else 1)
+    if '--port' in sys.argv:
+        PORT = int(sys.argv[sys.argv.index('--port') + 1])
+    if '--image-backend' in sys.argv:
+        IMAGE_BACKEND = sys.argv[sys.argv.index('--image-backend') + 1].rstrip('/')
     host = "0.0.0.0" if "--lan" in sys.argv else "127.0.0.1"
     LOGS.mkdir(exist_ok=True)
-    (LOGS / "launcher.pid").write_text(str(os.getpid()))
+    if PORT == 5050:
+        (LOGS / "launcher.pid").write_text(str(os.getpid()))
     print(f"Xru_Launcher: http://127.0.0.1:{PORT}", flush=True)
     ThreadingHTTPServer((host, PORT), partial(Handler, directory=str(HERE))).serve_forever()
 

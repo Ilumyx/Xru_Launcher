@@ -33,9 +33,11 @@ Gate ảnh → Gate video → Gate Dash → Label → Crawler.
 
 Mỗi lane: Backend → màn trên 5050 → PO dùng thật → xoá ui_screen và server UI cũ của lane. Không giữ hai bản.
 
+Lane 1 — Gate ảnh: Backend `Xru_Gate/gate_image/backend_service/` đọc/ghi qua clerk; màn `gate/image/` trên 5050 chỉ gọi HTTP. Đã kiểm trên dữ liệu thử và đọc dữ liệu thật. PO yêu cầu clean ngay, bỏ bước chờ dùng thật cho lần chuyển này: đã xoá các ngăn `gate_image/ui_*`, server và khai báo màn cũ; chưa chuyển Gate video/Dash.
+
 ## Còn mở (sửa khi chuyển lane, không vá màn cũ)
 
-- Gate ảnh: lọc chỉ một trang; phím chọn món bị ẩn; nút quyết định còn bật khi không có kết quả.
+- Gate ảnh: lọc trước phân trang tại Backend; phím chọn trong kết quả hiện tại; hết kết quả thì xoá inspector, khoá quyết định. Đã kiểm bằng fixture và trình duyệt; PO chưa nghiệm thu thao tác trên dữ liệu thật.
 - Gate video: mất note chưa lưu khi đổi clip; SQL thẳng vào sổ, count và danh sách đọc tách nhau.
 - Gate Dash: đang gọi CLI `stats`. NONE = máy chưa kết luận, không phải sạch.
 - Label: lưu dòng xoá draft ô khác; chọn video trang 2 nhảy về trang 1.

@@ -1,0 +1,177 @@
+// UI talks only to Image Gate HTTP API. Business facts and actions belong to Backend.
+(() => {
+  const $ = id => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  const states = ['WAITING_PO', 'DETAINED', 'ACCEPT_APPROVED', 'PURGE_APPROVED'];
+  const view = {
+    state: states.includes(params.get('state')) ? params.get('state') : 'WAITING_PO',
+    source: params.get('source') || '', sort: params.get('sort') === 'newest' ? 'newest' : 'oldest',
+    query: params.get('q') || '', grid: params.get('view') === 'grid',
+    page: Math.max(1, Number(params.get('page')) || 1), selected: params.get('selected'),
+  };
+  let backend, page, selected, pending = false, reading = false, writing = false, readId = 0, detailId = 0;
+  const drafts = new Map();
+  const search = document.querySelector('.side-search input');
+  const rows = document.querySelector('.side-items');
+  const actions = [...document.querySelectorAll('[data-act]')];
+  const format = n => n.toLocaleString('en-US');
+  const sourceName = item => item.source_name || item.source_platform;
+  const resolution = item => item.resolution_readable ? `${item.width}×${item.height}` : '';
+  const element = (tag, className, text) => { const node = document.createElement(tag); node.className = className; if (text != null) node.textContent = text; return node; };
+  function notice(message) { $('err').textContent = message; $('err').hidden = !message; }
+  function saveDraft() { if (selected && !$('po_note_input').disabled) drafts.set(selected.xru_id, $('po_note_input').value); }
+  function syncUrl() {
+    const p = new URLSearchParams({state:view.state, view:view.grid ? 'grid' : 'single'});
+    for (const [key, value] of Object.entries({source:view.source, sort:view.sort, q:view.query, page:view.page > 1 ? view.page : '', selected:selected?.xru_id || ''})) if (value) p.set(key, value);
+    history.replaceState(null, '', `/gate/image/?${p}`);
+  }
+  function controls() {
+    const valid = selected && !reading && !writing && selected.state === view.state;
+    for (const button of actions) {
+      const enabledIn = ['ACCEPT', 'DETAIN'].includes(button.dataset.act) ? 'WAITING_PO' : 'DETAINED';
+      button.hidden = enabledIn !== view.state && button.dataset.act !== 'PURGE';
+      button.disabled = !valid || selected.state !== enabledIn;
+    }
+    $('po_note_input').disabled = !valid || view.state !== 'WAITING_PO';
+    $('po_note_input').hidden = view.state !== 'WAITING_PO';
+    $('insp-note').hidden = view.state === 'WAITING_PO';
+    $('readonly').hidden = !selected || ['WAITING_PO','DETAINED'].includes(view.state);
+    $('prev').disabled = reading || writing || !page || page.offset === 0;
+    $('next').disabled = reading || writing || !page || page.offset + page.items.length >= page.total;
+    for (const control of document.querySelectorAll('[data-state], #source_filter, #sort_filter, .side-search input')) control.disabled = writing;
+  }
+  function clearSelection() {
+    saveDraft(); selected = null; ++detailId;
+    $('insp-img').hidden = true; $('insp-img').removeAttribute('src');
+    for (const id of ['insp-title','insp-cap','insp-src','insp-res','insp-state','insp-lane','insp-num','insp-note']) $(id).textContent = '';
+    $('po_note_input').value = '';
+    closePeek();
+    controls();
+  }
+  async function json(path, options = {}) {
+    const response = await fetch(backend + path, {...options, cache:'no-store', signal:AbortSignal.timeout(20000)});
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.error || 'Backend Gate ảnh chưa sẵn sàng.');
+    return body;
+  }
+  function paintSelection(item, index) {
+    selected = item; view.selected = item.xru_id;
+    $('insp-img').src = backend + '/media/' + encodeURIComponent(item.xru_id); $('insp-img').hidden = false;
+    $('insp-img').alt = item.title || '';
+    for (const [id, value] of Object.entries({'insp-title':item.title, 'insp-cap':item.description, 'insp-src':sourceName(item), 'insp-res':resolution(item), 'insp-state':item.state, 'insp-lane':item.state, 'insp-note':item.po_note})) $(id).textContent = value || '';
+    $('insp-num').textContent = `${String(page.offset + index + 1).padStart(3,'0')} / ${page.total}`;
+    $('po_note_input').value = drafts.has(item.xru_id) ? drafts.get(item.xru_id) : item.po_note || '';
+    for (const node of document.querySelectorAll('[data-id]')) node.classList.toggle('is-active', node.dataset.id === item.xru_id);
+    controls(); syncUrl();
+    if ($('peek').classList.contains('is-open')) openPeek();
+  }
+  async function select(index) {
+    if (!page || reading || writing || !page.items[index]) return;
+    saveDraft(); const id = ++detailId;
+    paintSelection(page.items[index], index);
+    // Queue already contains light detail; confirm current persisted state separately.
+    try {
+      const detail = await json('/api/assets/' + encodeURIComponent(page.items[index].xru_id));
+      if (id !== detailId) return;
+      saveDraft(); paintSelection(detail.item, index);
+      if (detail.item.state !== view.state) { notice('Ảnh đã chuyển trạng thái. Đang đọc lại hàng chờ…'); await load(); }
+    } catch (error) {
+      if (id !== detailId) return;
+      notice('Backend Gate ảnh đang tắt hoặc đọc lỗi. ' + error.message);
+      reading = true; controls();
+    }
+  }
+  function paintPage() {
+    rows.replaceChildren(); $('tiles').replaceChildren();
+    page.items.forEach((item,index) => {
+      const row = element('a','side-item ig-row'); row.href = '#'; row.dataset.id = item.xru_id;
+      row.append(element('span','n',String(page.offset+index+1).padStart(2,'0')));
+      const labels = element('div',''); labels.append(element('div','t',item.title || ''), element('div','s',`${sourceName(item)}${resolution(item) ? ' · '+resolution(item) : ''}`)); row.append(labels); rows.append(row);
+      const tile = element('a','g-tile gr-tile'); tile.href = '#'; tile.dataset.id = item.xru_id;
+      const thumb = element('div','g-thumb'); thumb.append(element('span','g-num',String(page.offset+index+1).padStart(3,'0')));
+      const image = document.createElement('img'); image.loading='lazy'; image.decoding='async'; image.src=backend+'/thumb/'+encodeURIComponent(item.xru_id); image.alt=''; thumb.append(image);
+      tile.append(thumb, element('div','g-cap',[item.title,item.description].filter(Boolean).join(' — ')), element('div','g-meta',`${sourceName(item)}${resolution(item) ? ' · '+resolution(item) : ''}`)); $('tiles').append(tile);
+      for (const node of [row,tile]) node.addEventListener('click',event => {event.preventDefault(); select(index); if (event.detail === 2) openPeek();});
+    });
+    $('total').textContent = format(page.total); $('lane-label').textContent = view.state;
+    for (const button of document.querySelectorAll('[data-state]')) { button.classList.toggle('is-active',button.dataset.state===view.state); button.querySelector('.count').textContent=format(page.counts[button.dataset.state]); }
+    const options = [new Option(`${window.XRU_I18N.t('all_sources')} (${page.counts[view.state]})`,'')];
+    for (const source of page.sources) options.push(new Option(`${sourceName(source)} (${source.total})`,`${source.source_platform}:${source.source_name || ''}`));
+    $('source_filter').replaceChildren(...options); $('source_filter').value = view.source;
+    // Keep a deleted source visible until the operator clears their filter.
+    if (view.source && !$('source_filter').value) { $('source_filter').add(new Option(view.source,view.source)); $('source_filter').value=view.source; }
+    $('sort_filter').value = view.sort;
+    $('page-count').textContent = page.total ? `${page.offset+1}–${page.offset+page.items.length} / ${format(page.total)}` : '0';
+    controls();
+  }
+  async function load(preferred = view.selected) {
+    if (writing) return;
+    saveDraft(); reading=true; pending=true; const id=++readId; ++detailId; controls();
+    if (!backend) return;
+    const limit = view.grid ? 60 : 100;
+    const query = new URLSearchParams({state:view.state, sort:view.sort, source:view.source, q:view.query, limit, offset:(view.page-1)*limit});
+    try {
+      const result = await json('/api/queue?'+query);
+      if (id !== readId) return;
+      page=result; view.page=Math.floor(page.offset/page.limit)+1; reading=false;
+      paintPage(); notice('');
+      const index = page.items.findIndex(item=>item.xru_id===preferred);
+      if (page.items.length) await select(index>=0 ? index : 0);
+      else { clearSelection(); notice('Không có ảnh khớp bộ lọc.'); syncUrl(); }
+    } catch (error) {
+      if (id !== readId) return;
+      reading=true; controls();
+      notice('Backend Gate ảnh đang tắt hoặc đọc lỗi. Số đang hiện, nếu có, chưa được cập nhật. '+error.message);
+    } finally { if (id === readId) pending=false; }
+  }
+  async function act(action) {
+    if (!selected || reading || writing) return;
+    const button=actions.find(button=>button.dataset.act===action); if (!button || button.disabled) return;
+    saveDraft(); const item=selected; const index=page.items.findIndex(row=>row.xru_id===item.xru_id);
+    const next=page.items[index+1]?.xru_id || page.items[index-1]?.xru_id;
+    writing=true; controls();
+    try {
+      await json('/api/assets/'+encodeURIComponent(item.xru_id)+'/decisions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action, expected_state:item.state, po_note:drafts.get(item.xru_id) ?? item.po_note})});
+      drafts.delete(item.xru_id); writing=false; await load(next);
+    } catch (error) { writing=false; notice('Chưa xác nhận lưu. Ghi chú được giữ. '+error.message); controls(); }
+  }
+  function closePeek() { $('peek').classList.remove('is-open'); $('peek').removeAttribute('aria-modal'); }
+  function openPeek() { if (!selected || reading) return; $('peek-img').src=backend+'/media/'+encodeURIComponent(selected.xru_id); $('peek-img').alt=selected.title || ''; $('peek').classList.add('is-open'); $('peek').setAttribute('aria-modal','true'); }
+  $('peek-close').addEventListener('click',closePeek);
+  $('insp-img').addEventListener('dblclick',openPeek);
+  for (const button of actions) button.addEventListener('click',()=>act(button.dataset.act));
+  $('po_note_input').addEventListener('input',saveDraft);
+  $('source_filter').addEventListener('change',()=>{view.source=$('source_filter').value; view.page=1; load();});
+  $('sort_filter').addEventListener('change',()=>{view.sort=$('sort_filter').value; view.page=1; load();});
+  let searchTimer;
+  search.value=view.query;
+  search.addEventListener('input',()=>{clearTimeout(searchTimer); view.query=search.value.trim(); ++readId; pending=false; view.page=1; clearSelection(); reading=true; controls(); searchTimer=setTimeout(()=>load(),180);});
+  search.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault(); search.value=''; view.query=''; view.page=1; load(); search.blur();} event.stopPropagation();});
+  $('prev').addEventListener('click',()=>{view.page--; load();}); $('next').addEventListener('click',()=>{view.page++; load();});
+  for (const button of document.querySelectorAll('[data-state]')) button.addEventListener('click',()=>{view.state=button.dataset.state; view.source=''; view.page=1; view.selected=null; load();});
+  document.addEventListener('click',event=>{const button=event.target.closest('.rail a[aria-current="page"]'); if(!button)return; event.preventDefault(); if(writing)return; view.grid=!view.grid; document.body.dataset.grid=String(view.grid); view.page=1; load();});
+  document.addEventListener('keydown',event=>{
+    if (event.ctrlKey || event.metaKey || event.altKey || event.target.closest('input,textarea,select')) return;
+    const key=event.key.toLowerCase();
+    if (key==='escape' && $('peek').classList.contains('is-open')) {event.preventDefault(); closePeek(); return;}
+    if (key==='a' || key==='d') {event.preventDefault(); act(key==='a'?'ACCEPT':'DETAIN'); return;}
+    if (key==='enter') {event.preventDefault(); openPeek(); return;}
+    if (key==='1') document.querySelector('.rail a[aria-current="page"]')?.click();
+    if (key==='2') location.href='http://127.0.0.1:5058/';
+    if (key==='3') location.href='http://127.0.0.1:5056/';
+    if (!selected || reading || writing || !page) return;
+    const columns=view.grid ? (document.querySelectorAll('.g-tile').length ? [...document.querySelectorAll('.g-tile')].filter(tile=>tile.offsetTop===document.querySelector('.g-tile').offsetTop).length : 1) : 1;
+    const moves={arrowright:1,l:1,arrowleft:-1,h:-1,arrowdown:columns,arrowup:-columns,k:-columns};
+    if (!(key in moves)) return;
+    event.preventDefault(); const index=page.items.findIndex(item=>item.xru_id===selected.xru_id);
+    const target=Math.max(0,Math.min(page.items.length-1,index+moves[key]));
+    select(target);
+    (view.grid ? $('tiles').children[target] : rows.children[target])?.scrollIntoView({block:'nearest'});
+  });
+  window.addEventListener('focus',()=>{if(backend&&!writing)load();});
+  // Retry disconnected reads; do not redraw a healthy working screen on a timer.
+  setInterval(()=>{if(reading&&!pending&&!writing&&!document.hidden&&backend)load();},5000);
+  document.body.dataset.grid=String(view.grid);
+  controls();
+  fetch('/ui-config',{cache:'no-store'}).then(response=>response.json()).then(config=>{backend=config.image_backend; load();}).catch(()=>notice('Không đọc được cấu hình UI. Hãy tải lại trang.'));
+})();

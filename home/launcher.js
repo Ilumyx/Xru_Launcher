@@ -127,7 +127,7 @@ const CONTINENTAL_DATA = {
         tagline: 'Kiểm định đầu vào & Cửa khẩu thông quan',
         image: '',
         mods: [
-          { label: 'Duyệt ảnh', url: 'http://127.0.0.1:5059/' },
+          { label: 'Duyệt ảnh', url: '/gate/image/' },
           { label: 'Duyệt video', url: 'http://127.0.0.1:5058/' },
           { label: 'Gate Dash', url: 'http://127.0.0.1:5056/' }
         ],
