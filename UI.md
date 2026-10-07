@@ -27,6 +27,12 @@ Lõi land ──► CLI ──► LLM
 | 5057 / 5055 | Hiện là UI Label / Crawler, thành Backend khi tới lượt |
 | 5056 | Bỏ khi Gate Dash về 5050 |
 
+## Thao tác trong một màn
+
+- Chọn ảnh/clip/dòng, lọc, sắp xếp, phân trang và quyết định cập nhật tại chỗ. Đọc/ghi qua API rồi cập nhật DOM; không tải lại cả trang bằng `form.submit()`, POST form hoặc đổi `location.href`. Link đi sang màn khác vẫn là điều hướng bình thường.
+- Giữ ghi chú chưa lưu khi đổi mục rồi quay lại. Không tự mất vị trí làm việc sau khi lưu; mục đã rời hàng chờ thì chọn mục còn hiển thị. Backend lỗi thì giữ draft, báo chưa xác nhận lưu; không tự báo thành công hay sửa số bằng tay.
+- Khi chuyển lane, kiểm một chuỗi chọn → ghi note → đổi mục/quay lại → lọc/sort → phân trang → quyết định. Kiểm không phát sinh tải lại document, draft/vị trí còn đúng và dữ liệu đã lưu khớp Backend. Đây là yêu cầu chung cho UI mới, không chỉ bản vá Gate ảnh.
+
 ## Thứ tự
 
 Gate ảnh → Gate video → Gate Dash → Label → Crawler.
@@ -38,9 +44,9 @@ Lane 1 — Gate ảnh: Backend `Xru_Gate/gate_image/backend_service/` đọc/ghi
 ## Còn mở (sửa khi chuyển lane, không vá màn cũ)
 
 - Gate ảnh: lọc trước phân trang tại Backend; phím chọn trong kết quả hiện tại; hết kết quả thì xoá inspector, khoá quyết định. Đã kiểm bằng fixture và trình duyệt; PO chưa nghiệm thu thao tác trên dữ liệu thật.
-- Gate video: mất note chưa lưu khi đổi clip; SQL thẳng vào sổ, count và danh sách đọc tách nhau.
+- Gate video: lọc/sort tải lại cả trang; mất note chưa lưu khi đổi clip; SQL thẳng vào sổ, count và danh sách đọc tách nhau.
 - Gate Dash: đang gọi CLI `stats`. NONE = máy chưa kết luận, không phải sạch.
-- Label: lưu dòng xoá draft ô khác; chọn video trang 2 nhảy về trang 1.
+- Label: thêm/xoá protagonist còn redirect; lưu dòng xoá draft ô khác; chọn video trang 2 nhảy về trang 1.
 - Crawler: lỗi lane hiện thành 0.
 
 ## Commit
