@@ -1,0 +1,22 @@
+<!doctype html>
+<!-- Mặt chép từ mockup PO đã duyệt: Xru_Launcher 544f36f^:mockups/crawler_sources.html. Số thật từ /api/board. -->
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XRU Crawler — Nguồn đã thêm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/kit/page/page.css"><link rel="stylesheet" href="crawler.css">
+  <link rel="stylesheet" href="/kit/account/account.css"><script src="/kit/i18n/i18n.js"></script><script src="/kit/account/account.js"></script>
+  <script>window.XRU_RAILS = { crawler: { label: "Crawler", home: "/?continent=eurasia", homeTip: "Về sảnh (ESC)",
+    groups: [[{ key: "dash", href: "/crawler/dash", icon: "bars", tip: "Dashboard" }], [{ key: "sources", href: "/crawler/sources", icon: "table", tip: "Nguồn" }]] } };</script>
+</head>
+<body><div class="shell">
+  <nav class="rail" data-rail="crawler" data-active="sources"></nav><script src="/kit/rail/rail.js"></script>
+  <main class="cr-stage">
+    <header class="page-head"><div class="page-title"><a href="/?continent=eurasia">EURASIA</a><span>/</span><h1>CRAWLER</h1></div></header><div id="cr-error" role="alert" hidden></div>
+
+    <div class="cr-toolbar"><div class="cr-filters" aria-label="Lọc trạng thái nguồn"><button data-status-filter="all" aria-pressed="true">Tất cả</button><button data-status-filter="on" aria-pressed="false">Đang bật</button><button data-status-filter="off" aria-pressed="false">Đang tắt</button></div><input type="search" id="source-search" class="cr-search" placeholder="Tìm tên hoặc nền tảng..." aria-label="Tìm nguồn"></div><div class="cr-table-wrap"><table class="cr-table" data-source-table><thead><tr><th>NGUỒN</th><th>PLATFORM</th><th>LOẠI</th><th>TRẠNG THÁI</th><th>HẠNG</th><th>ĐÃ TẢI</th><th>NHẬN MỚI GẦN NHẤT</th></tr></thead><tbody></tbody></table></div><div class="cr-empty" id="source-empty" hidden>Không có nguồn phù hợp.</div><p class="cr-label" id="source-result-count" style="margin-top:20px"></p><dialog class="cr-dialog" id="source-detail" aria-labelledby="source-detail-name"><header><h2 id="source-detail-name"></h2><button id="source-detail-close" aria-label="Đóng chi tiết">Đóng ×</button></header><dl><dt>URL</dt><dd id="source-detail-url"></dd><dt>Loại</dt><dd id="source-detail-kind"></dd><dt>Trạng thái</dt><dd id="source-detail-state"></dd><dt>Hạng</dt><dd id="source-detail-tier"></dd><dt>Đã thu</dt><dd id="source-detail-assets"></dd><dt>Nhận mới</dt><dd id="source-detail-last"></dd><dt>Lỗi gần nhất</dt><dd id="source-detail-error"></dd><dt>Ghi chú PO</dt><dd id="source-detail-note"></dd></dl></dialog>
+    <footer class="page-foot"><div class="key-hints"><span><span class="key">1</span> Dashboard</span><span><span class="key">2</span> Nguồn</span><span><span class="key">ESC</span> Sảnh</span></div><div id="cr-foot">CHỈ ĐỌC · ẢNH + VIDEO</div></footer>
+  </main>
+</div><script src="crawler.js"></script></body></html>

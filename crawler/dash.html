@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- Mặt chép từ mockup PO đã duyệt: Xru_Launcher 544f36f^:mockups/crawler_dash.html. Số thật từ /api/board. -->
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XRU Crawler — 01 · Tổng quan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/kit/page/page.css"><link rel="stylesheet" href="crawler.css">
+  <link rel="stylesheet" href="/kit/account/account.css"><script src="/kit/i18n/i18n.js"></script><script src="/kit/account/account.js"></script>
+  <script>window.XRU_RAILS = { crawler: { label: "Crawler", home: "/?continent=eurasia", homeTip: "Về sảnh (ESC)",
+    groups: [[{ key: "dash", href: "/crawler/dash", icon: "bars", tip: "Dashboard" }], [{ key: "sources", href: "/crawler/sources", icon: "table", tip: "Nguồn" }]] } };</script>
+</head>
+<body><div class="shell">
+  <nav class="rail" data-rail="crawler" data-active="dash"></nav><script src="/kit/rail/rail.js"></script>
+  <main class="cr-stage">
+    <header class="page-head"><div class="page-title"><a href="/?continent=eurasia">EURASIA</a><span>/</span><h1>CRAWLER</h1></div></header><div id="cr-error" role="alert" hidden></div>
+
+    <section class="cr-metrics" aria-label="Thống kê Crawler"><div class="cr-metric"><span class="cr-label">THU MỚI HÔM NAY</span><b id="m-today">—</b><p id="m-today-split"></p></div><div class="cr-metric"><span class="cr-label">NGUỒN ĐANG BẬT</span><b><span id="m-on">—</span> <span class="cr-dim">/ <span id="m-all">—</span></span></b><p id="m-off"></p></div><div class="cr-metric"><span class="cr-label">ĐÃ THU THẬP</span><b id="m-total">—</b><p id="m-total-split"></p></div><div class="cr-metric"><span class="cr-label">NHẬN MỚI GẦN NHẤT</span><b id="m-latest">—</b><p id="m-latest-src"></p></div></section><div class="cr-columns"><section class="cr-section"><div class="cr-section-head"><h3>Nhịp thu thập</h3><span class="cr-label">7 NGÀY GẦN NHẤT</span></div><svg class="cr-chart" id="cr-chart" viewBox="0 0 720 380" role="img" aria-label="Lượng thu mới mỗi ngày: tổng, video và ảnh."></svg>
+<div class="cr-legend" aria-label="Bật tắt đường biểu đồ"><button type="button" data-chart-series="total" aria-pressed="true" aria-controls="cr-series-total"><i class="total"></i><span>Tổng</span></button><button type="button" data-chart-series="video" aria-pressed="true" aria-controls="cr-series-video"><i class="video"></i>Video</button><button type="button" data-chart-series="image" aria-pressed="true" aria-controls="cr-series-image"><i class="image"></i><span>Ảnh</span></button></div></section><aside class="cr-section">
+  <div class="cr-section-head"><h3>Đã thu theo nền tảng</h3><a href="/crawler/sources">Tất cả ↗</a></div>
+  <div class="cr-platform-chart" id="cr-donut" role="img">
+    <div class="cr-platform-total"><b id="cr-donut-total">—</b><span>ẢNH + VIDEO</span></div>
+  </div>
+  <div class="cr-platform-legend" id="cr-platforms"></div>
+</aside></div>
+    <footer class="page-foot"><div class="key-hints"><span><span class="key">1</span> Dashboard</span><span><span class="key">2</span> Nguồn</span><span><span class="key">ESC</span> Sảnh</span></div><div id="cr-foot">CHỈ ĐỌC · ẢNH + VIDEO</div></footer>
+  </main>
+</div><script src="crawler.js"></script></body></html>

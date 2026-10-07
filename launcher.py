@@ -1,4 +1,4 @@
-"""UI XRU: sảnh, Kit, Gate ảnh; các lane khác đang chờ chuyển.
+"""UI XRU: sảnh, Kit, Gate ảnh/video và Crawler; các lane khác đang chờ chuyển.
 python3 launcher.py          # sảnh :5050
 python3 launcher.py start-apps  # bật các server màn cũ chưa chuyển
 python3 launcher.py stop        # chỉ tắt UI :5050, giữ Backend
@@ -24,24 +24,24 @@ HERE = Path(__file__).resolve().parent
 XRU_CODE = HERE.parent
 PORT = 5050
 IMAGE_BACKEND = "http://127.0.0.1:5059"
+VIDEO_BACKEND = "http://127.0.0.1:5058"
+CRAWLER_BACKEND = "http://127.0.0.1:5055"
 LOGS = HERE / "logs"
 
 # Các server UI cũ chờ chuyển lane: khóa → (thư mục land, lệnh, cổng). Không import land.
 APPS = {
-    "crawler-sources": ("Xru_Crawler", ["python", "-m", "ui_screen.source_board_app"], 5055),
     "gate-dashboard": ("Xru_Gate", ["python", "-m", "ui_dashboard.dashboard_web_app"], 5056),
-    "gate-video": ("Xru_Gate", ["python", "-m", "gate_video.ui_screen.video_review_web_app"], 5058),
     "label-video": ("Xru_Label", ["python", "-m", "label_division_video.video_po_review_ui.video_review_web_app"], 5057),
 }
 
 # Giữ link cũ dưới dạng chuyển hướng; không tạo vỏ hay nhúng màn.
 DESTINATIONS = {
-    '/crawler': 'http://127.0.0.1:5055/dash.html',
-    '/crawler/dash': 'http://127.0.0.1:5055/dash.html',
-    '/crawler/sources': 'http://127.0.0.1:5055/',
+    '/crawler': '/crawler/dash.html',
+    '/crawler/dash': '/crawler/dash.html',
+    '/crawler/sources': '/crawler/sources.html',
     '/gate': '/gate/image/',
     '/gate/image': '/gate/image/index.html',
-    '/gate/video': 'http://127.0.0.1:5058/',
+    '/gate/video': '/gate/video/index.html',
     '/gate/dash': 'http://127.0.0.1:5056/',
     '/mockups/gate_dash.html': 'http://127.0.0.1:5056/',
     '/label': 'http://127.0.0.1:5057/',
@@ -136,7 +136,7 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self) -> None:
         path = urlparse(self.path).path
         if path == '/ui-config':
-            return self._send(200, json.dumps({'image_backend': IMAGE_BACKEND}), 'application/json')
+            return self._send(200, json.dumps({'image_backend': IMAGE_BACKEND, 'video_backend': VIDEO_BACKEND, 'crawler_backend': CRAWLER_BACKEND}), 'application/json')
         destination = DESTINATIONS.get(path.rstrip('/'))
         if destination:
             self.send_response(302)
@@ -174,7 +174,7 @@ def stop_ui() -> None:
 
 
 def main() -> None:
-    global PORT, IMAGE_BACKEND
+    global PORT, IMAGE_BACKEND, VIDEO_BACKEND, CRAWLER_BACKEND
     if sys.argv[1:2] == ["stop"]:
         return stop_ui()
     if sys.argv[1:2] == ["stop-apps"]:
@@ -185,6 +185,10 @@ def main() -> None:
         PORT = int(sys.argv[sys.argv.index('--port') + 1])
     if '--image-backend' in sys.argv:
         IMAGE_BACKEND = sys.argv[sys.argv.index('--image-backend') + 1].rstrip('/')
+    if '--video-backend' in sys.argv:
+        VIDEO_BACKEND = sys.argv[sys.argv.index('--video-backend')+1].rstrip('/')
+    if '--crawler-backend' in sys.argv:
+        CRAWLER_BACKEND = sys.argv[sys.argv.index('--crawler-backend')+1].rstrip('/')
     host = "0.0.0.0" if "--lan" in sys.argv else "127.0.0.1"
     LOGS.mkdir(exist_ok=True)
     if PORT == 5050:

@@ -1,0 +1,421 @@
+/* Video face follows Launcher mockups; frame/colors are served from Launcher kit on disk. */
+/* ==========================================================================
+   XRU GATE — STYLE DÙNG CHUNG CHO 3 TRANG: gate_image / gate_video / gate_dash
+   Tự đứng một mình (không phụ thuộc launcher.css). Chỉ để nhìn, không có logic.
+   Màu: theo profile đang chọn (profiles/*.css)
+   ========================================================================== */
+
+/* ---------- Thanh lane (chỉ ở Gate Image) ---------- */
+.gate-lanes-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--hairline);
+}
+.gate-tabs { display: flex; gap: 8px; }
+.gate-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  color: var(--fg-dim);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.gate-tab-btn:hover { background: var(--m-3); color: var(--fg); }
+.gate-tab-btn.is-active {
+  background: var(--m-5);
+  color: var(--fg-strong);
+}
+.gate-tab-btn .count {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--fg-dim);
+}
+.gate-tab-btn .count.alert { color: var(--warn); }
+.gate-tab-btn .count.warn { color: var(--hold); }
+.gate-tab-btn .count.accept { color: var(--accent); }
+
+.mode-toggle {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: var(--m-2);
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+}
+.mode-btn {
+  padding: 4px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 2px;
+  color: var(--fg-dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+}
+.mode-btn.active { background: var(--m-5); color: #fff; font-weight: 600; }
+
+.card-act-btn {
+  padding: 5px 0;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
+}
+.card-act-btn:hover { background: var(--m-5); color: #fff; }
+.card-act-btn.approve:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.card-act-btn.detain:hover  { background: rgba(var(--hold-rgb), 0.2); border-color: var(--hold); color: var(--hold); }
+.card-act-btn.purge:hover   { background: rgba(var(--warn-rgb), 0.2);  border-color: var(--warn);      color: var(--warn); }
+
+/* ==========================================================================
+   GATE IMAGE — BÀN LÀM VIỆC 3 CỘT: Danh sách | Gallery | Xem chi tiết
+   ========================================================================== */
+.ws {
+  display: grid;
+  grid-template-columns: var(--side-w) minmax(0, 1fr) var(--insp-w, 360px);
+  height: calc(100vh / var(--ui-zoom));
+  position: relative;
+  transition: grid-template-columns 0.2s ease;
+}
+
+/* --- Cột giữa: header + gallery --- */
+.ws-main { min-width: 0; overflow-y: auto; padding: 28px 32px; }
+/* Đầu trang chung ở kit/page/page.css; Gate chỉ thêm khoảng dưới và hàng tab bên phải */
+.ws-head { margin-bottom: 22px; }
+.ws-head .gate-tabs { flex-wrap: wrap; justify-content: flex-end; }
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(var(--g-cols, 5), minmax(0, 1fr));
+  gap: 18px 14px;
+}
+.g-tile { cursor: pointer; min-width: 0; }
+.g-thumb {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--m-2);
+  border: 1px solid var(--hairline);
+  border-radius: 3px;
+  overflow: hidden;
+  transition: border-color 0.12s;
+}
+/* Ảnh và video cùng một khung 4:3; ảnh thật co vừa khung (không cắt mép, để còn thấy watermark ở góc) */
+.g-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.g-tile:hover .g-thumb { border-color: var(--hairline-hi); }
+.g-tile.is-active .g-thumb { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.g-num {
+  position: absolute;
+  z-index: 1;
+  top: 6px;
+  left: 6px;
+  padding: 1px 5px;
+  background: rgba(0, 0, 0, 0.72);
+  border-radius: 2px;
+  font: 10px var(--font-mono);
+  color: var(--fg);
+}
+.g-cap {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--fg);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.8em; /* luôn chừa 2 dòng: tiêu đề ngắn hay dài thì hàng ô vẫn thẳng */
+}
+.g-meta { margin-top: 3px; font: 10px var(--font-mono); color: var(--fg-dim); }
+
+/* --- Cột phải: xem chi tiết --- */
+.ws-insp {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 24px 20px;
+  border-left: 1px solid var(--hairline);
+  background: var(--m-1);
+}
+.insp-top { display: flex; justify-content: space-between; align-items: center; }
+.insp-tag {
+  padding: 2px 6px;
+  border: 1px solid var(--hairline-hi);
+  border-radius: 2px;
+  font: 10px var(--font-mono);
+  color: var(--warn);
+}
+.insp-num { font: 11px var(--font-mono); color: var(--fg-dim); }
+.insp-img {
+  aspect-ratio: 4 / 3;
+  background: #000;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.insp-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.insp-title { font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--fg-strong); }
+.insp-label { margin-bottom: 4px; font: 10px var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-faint); }
+.insp-cap { font-size: 12px; line-height: 1.6; color: var(--fg-dim); }
+.insp-meta { display: grid; grid-template-columns: 70px 1fr; gap: 6px 10px; font: 11px var(--font-mono); }
+.insp-meta dt { color: var(--fg-faint); }
+.insp-meta dd { color: var(--fg); overflow-wrap: anywhere; }
+.insp-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 1px solid var(--hairline); }
+.insp-note {
+  width: 100%;
+  height: 64px;
+  padding: 8px 10px;
+  background: var(--m-2);
+  border: 1px solid var(--hairline);
+  border-radius: 3px;
+  color: var(--fg);
+  font: 12px var(--font-sans);
+  resize: none;
+}
+.insp-note:focus { outline: none; border-color: var(--hairline-hi); }
+.insp-acts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.insp-acts .card-act-btn { padding: 9px 0; font-size: 12px; }
+.insp-acts kbd { margin-left: 6px; padding: 0 4px; background: var(--m-4); border-radius: 2px; font: 10px var(--font-mono); color: var(--fg-dim); }
+
+/* Thanh cuộn tối, mảnh — hợp nền đen */
+.ws-main, .ws-insp { scrollbar-width: thin; scrollbar-color: var(--m-6) transparent; }
+
+/* ==========================================================================
+   GATE VIDEO — dùng chung khung 3 cột với Image, chỉ thêm vài chi tiết video
+   ========================================================================== */
+/* Ô clip trong gallery */
+.g-play {
+  position: absolute; left: 50%; top: 50%;
+  width: 30px; height: 30px; margin: -15px 0 0 -15px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  display: grid; place-items: center;
+}
+.g-play::before { content: ''; margin-left: 3px; border-left: 9px solid rgba(255, 255, 255, 0.85); border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
+.g-dur { position: absolute; right: 6px; bottom: 6px; padding: 1px 5px; background: rgba(0, 0, 0, 0.75); border-radius: 2px; font: 10px var(--font-mono); color: var(--fg); }
+.g-ratio { position: absolute; right: 6px; top: 6px; padding: 1px 5px; border: 1px solid var(--hairline-hi); background: rgba(0, 0, 0, 0.6); border-radius: 2px; font: 9px var(--font-mono); color: var(--fg-dim); }
+/* Chip cụm nằm trên khung (góc dưới trái), không đẩy chữ bên dưới lệch hàng */
+.g-cluster { position: absolute; left: 6px; bottom: 6px; padding: 1px 5px; border: 1px solid var(--accent-line); background: rgba(0, 0, 0, 0.75); border-radius: 2px; font: 9px var(--font-mono); color: var(--accent); }
+.gallery.is-video .ph::after { display: none; }
+
+/* Khung xem video giả ở cột phải */
+.insp-img.is-video { aspect-ratio: 16 / 9; position: relative; }
+.insp-img.is-video .g-play { width: 44px; height: 44px; margin: -22px 0 0 -22px; }
+.insp-img.is-video .g-play::before { border-left-width: 13px; border-top-width: 8px; border-bottom-width: 8px; }
+.insp-bar { display: flex; align-items: center; gap: 10px; font: 10px var(--font-mono); color: var(--fg-dim); }
+.insp-bar .track { flex: 1; height: 3px; background: var(--m-5); border-radius: 2px; position: relative; }
+.insp-bar .track::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 28%; background: var(--fg); border-radius: 2px; }
+
+/* Ô đánh dấu NOISE / WATERMARK / EVENT / CAUTION */
+.insp-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.insp-chips button {
+  padding: 6px 0; background: var(--surface); border: 1px solid var(--hairline); border-radius: 2px;
+  color: var(--fg-dim); font: 10px var(--font-mono); cursor: pointer;
+}
+.insp-chips button.is-on { border-color: var(--hold); color: var(--hold); background: rgba(var(--hold-rgb), 0.12); }
+.insp-chips kbd { margin-left: 4px; color: var(--fg-faint); font: 9px var(--font-mono); }
+.card-act-btn.skip:hover { background: var(--m-5); border-color: var(--hairline-hi); color: var(--fg-strong); }
+
+/* Thanh lane: không bao giờ gãy 3+2. Thiếu chỗ thì cả thanh xuống dưới tiêu đề */
+.ws-head { flex-wrap: wrap; row-gap: 14px; }
+.ws-head .gate-tabs { flex-wrap: nowrap; gap: 6px; }
+.ws-head .gate-tab-btn { padding: 5px 10px; font-size: 11px; white-space: nowrap; }
+/* Tên nguồn dưới ô gallery: 1 dòng, dài thì "..." */
+.g-meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ==========================================================================
+   GATE VIDEO — XEM TO (gate_video_watch.html, bản thử nghiệm)
+   Cột giữa = 1 player lớn, khung tự co theo clip ngang 16:9 hay dọc 9:16
+   ========================================================================== */
+body[data-mode="watch"] .ws-main { display: flex; flex-direction: column; overflow: hidden; padding-bottom: 20px; }
+body[data-mode="watch"] #watch-area { display: flex; flex: 1; min-height: 0; }
+body[data-mode="watch"] .page-foot { margin-top: 16px; }
+.watch {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+  background: #000;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.watch-stage { flex: 1; min-height: 0; position: relative; container-type: size; display: grid; place-items: center; }
+.watch-frame {
+  --rw: 16; --rh: 9;
+  position: relative;
+  width: min(100cqw, calc(100cqh * var(--rw) / var(--rh)));
+  height: min(100cqh, calc(100cqw * var(--rh) / var(--rw)));
+}
+.watch-frame.is-portrait { --rw: 9; --rh: 16; }
+.watch-frame .ph::after { font-size: 13px; right: 14px; bottom: 12px; }
+.watch-frame .g-play { width: 64px; height: 64px; margin: -32px 0 0 -32px; transition: opacity 0.15s; }
+.watch-frame .g-play::before { margin-left: 5px; border-left-width: 18px; border-top-width: 11px; border-bottom-width: 11px; }
+.watch.is-playing .watch-frame .g-play { opacity: 0; }
+
+/* Dấu chấm điểm hiện thoáng qua giữa khung khi bấm A / D / S */
+.watch-stamp {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0.9);
+  padding: 8px 18px; border: 1px solid currentColor; border-radius: 3px;
+  background: rgba(0, 0, 0, 0.7);
+  font: 600 14px var(--font-mono); letter-spacing: 0.12em;
+  opacity: 0; pointer-events: none; transition: opacity 0.12s, transform 0.12s;
+}
+.watch-stamp.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.watch-stamp.accept { color: var(--accent); }
+.watch-stamp.detain { color: var(--hold); }
+.watch-stamp.skip   { color: var(--fg); }
+
+/* Nút ‹ › hai bên khung, chỉ hiện khi rê chuột */
+.watch-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 56px;
+  background: rgba(0, 0, 0, 0.5); border: 1px solid var(--hairline-hi); border-radius: 3px;
+  color: var(--fg); font-size: 24px; line-height: 1; cursor: pointer;
+  opacity: 0; transition: opacity 0.15s;
+}
+.watch-nav.prev { left: 12px; }
+.watch-nav.next { right: 12px; }
+.watch-stage:hover .watch-nav { opacity: 1; }
+.watch-nav:hover { background: var(--m-4); }
+
+/* Thanh điều khiển giả dưới khung */
+.watch-ctrl {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--hairline);
+  background: var(--m-1);
+  font: 11px var(--font-mono); color: var(--fg-dim);
+}
+.watch-btn {
+  width: 26px; height: 26px; display: grid; place-items: center;
+  background: transparent; border: 0; cursor: pointer;
+}
+.watch-btn::before { content: ''; margin-left: 2px; border-left: 10px solid var(--fg); border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
+.watch.is-playing .watch-btn::before { margin-left: 0; width: 3px; height: 12px; border: 0; border-left: 3px solid var(--fg); border-right: 3px solid var(--fg); }
+.watch-time { white-space: nowrap; }
+.watch-track { flex: 1; height: 3px; background: var(--m-5); border-radius: 2px; position: relative; }
+.watch-track span { position: absolute; left: 0; top: 0; bottom: 0; width: 28%; background: var(--accent); border-radius: 2px; }
+.watch-ic { color: var(--fg-dim); font-size: 12px; }
+
+/* ==========================================================================
+   KÉO GIÃN CỘT PHẢI THEO KHẤC — mỗi khấc cột phải ăn đúng 1 cột ảnh,
+   ô ảnh giữ nguyên cỡ (5 → 4 → 3 cột). Bấm đúp vào mép để về mặc định.
+   ========================================================================== */
+.insp-grip {
+  position: absolute; top: 0; bottom: 0;
+  right: calc(var(--insp-w, 360px) - 5px);
+  width: 10px; z-index: 5;
+  cursor: col-resize;
+  transition: right 0.2s ease;
+}
+.insp-grip::before {
+  content: ''; position: absolute; left: 4px; top: 0; bottom: 0; width: 2px;
+  background: transparent; transition: background 0.12s;
+}
+.insp-grip::after {
+  content: ''; position: absolute; left: 2px; top: 50%; width: 6px; height: 36px; margin-top: -18px;
+  border-radius: 3px; background: var(--m-6); opacity: 0; transition: opacity 0.12s;
+}
+.insp-grip:hover::before, body.is-gripping .insp-grip::before { background: var(--accent); }
+.insp-grip:hover::after, body.is-gripping .insp-grip::after { opacity: 1; background: var(--accent); }
+body.is-gripping { cursor: col-resize; user-select: none; }
+.insp-grip-tip {
+  position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
+  padding: 3px 7px; white-space: nowrap;
+  background: var(--m-3); border: 1px solid var(--accent-line); border-radius: 3px;
+  font: 10px var(--font-mono); color: var(--accent);
+  opacity: 0; pointer-events: none; transition: opacity 0.12s;
+}
+body.is-gripping .insp-grip-tip { opacity: 1; }
+/* Cột phải rộng ra thì khung xem không cao quá màn */
+.ws-insp .insp-img { max-height: calc(55vh / var(--ui-zoom)); }
+/* Cột giữa hẹp lại (đã kéo giãn cột phải) → thanh lane thành 5 ô đều, số trên chữ dưới */
+.ws-main { container-type: inline-size; }
+@container (max-width: 640px) {
+  .ws-head .page-title { flex-basis: 100%; }
+  .ws-head .gate-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; width: 100%; }
+  .ws-head .gate-tab-btn { flex-direction: column; align-items: center; gap: 4px; padding: 6px 4px; font-size: 10px; min-width: 0; }
+  .ws-head .gate-tab-btn > span:last-child { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* Tiêu đề gộp 1 dòng: EURASIA / GATE / IMAGE — chữ nhỏ là đường dẫn, chữ to là trang hiện tại */
+.hud-header { align-items: center; }
+.ws-head { column-gap: 16px; }
+.ws-head .gate-tabs { gap: 4px; }
+
+/* Đổi khấc: ô ảnh trôi về chỗ mới — nhanh, đầu nhanh cuối êm (gate.js → morph) */
+html.vt-notch::view-transition-group(*) { animation-duration: 180ms; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+html.vt-notch::view-transition-old(*),
+html.vt-notch::view-transition-new(*) { animation-duration: 180ms; }
+
+/* Place the existing fragment workspace in the mockup grid. */
+.review-workspace { display: contents; }
+.side-field > span { font-size: 11px; color: var(--fg-dim); }
+.side-item, .gate-tab-btn { text-decoration: none; color: inherit; }
+.side-item > div { min-width: 0; }
+.queue-list { height: 100%; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--m-6) transparent; }
+.side-items { overflow: hidden; }
+.side-item.active { background: var(--m-3); }
+.side-item.active::before { content: ''; position: absolute; left: 6px; top: 15px; width: 4px; height: 4px; border-radius: 50%; background: var(--warn); }
+.side-item.active .n { color: var(--fg); }
+.side-pager button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.side-pager button:disabled { cursor: default; opacity: .4; }
+.g-thumb video { display: block; width: 100%; height: 100%; object-fit: contain; }
+.g-tile.is-active .g-thumb { border-color: var(--accent); }
+.video-container { width: 100%; height: 100%; }
+.watch-stage .video-container { display: grid; place-items: center; }
+#review-video-player { display: block; width: 100%; height: 100%; object-fit: contain; }
+.insp-img { position: relative; flex-shrink: 0; }
+.watch-ic { background: none; border: 0; color: inherit; font: inherit; cursor: pointer; }
+.watch-track { cursor: pointer; }
+.watch-track > span, .track > span { width: 0; }
+.track { cursor: pointer; overflow: hidden; }
+.track::before { display: none; }
+.track > span { display: block; height: 100%; background: var(--fg); }
+.watch.is-playing .g-play, .insp-img.is-playing .g-play { opacity: 0; }
+.g-play { cursor: pointer; }
+.evidence-grid { order: 2; display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+.insp-caption { min-height: 0; overflow-y: auto; scrollbar-width: thin; }
+.insp-cap { white-space: pre-wrap; overflow-wrap: anywhere; }
+.insp-title, .technical-manifest, .insp-top, .insp-bar { flex-shrink: 0; }
+.insp-top { order: 0; }
+.insp-img, .insp-bar { order: 1; }
+.actions-bar { order: 3; margin-top: auto; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 1px solid var(--hairline); }
+.finding-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.finding-control { position: relative; padding: 6px 0; background: var(--surface); border: 1px solid var(--hairline); border-radius: 2px; color: var(--fg-dim); font: 10px var(--font-mono); cursor: pointer; text-align: center; }
+.finding-control input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; cursor: pointer; }
+.finding-control:has(input:checked), .finding-control.active { border-color: var(--hold); color: var(--hold); background: rgba(var(--hold-rgb), .12); }
+.finding-control kbd { margin-left: 4px; color: var(--fg-faint); font: 9px var(--font-mono); }
+.decision-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.decision-row .btn { display: block; width: 100%; padding: 9px 0; background: var(--surface); border: 1px solid var(--hairline); border-radius: 2px; color: var(--fg); font: 12px var(--font-mono); text-align: center; text-decoration: none; cursor: pointer; }
+.decision-row .btn:hover { background: var(--m-5); }
+.decision-row .btn-accept:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.decision-row .btn-detain:hover { border-color: var(--hold); color: var(--hold); }
+.decision-row kbd { margin-left: 6px; padding: 0 4px; background: var(--m-4); border-radius: 2px; font: 10px var(--font-mono); color: var(--fg-dim); }
+.btn.disabled { opacity: .4; cursor: default; }
+.related-videos, .po-note-display { font: 11px var(--font-mono); overflow-wrap: anywhere; }
+.dupe-link { color: var(--fg-dim); }
+.flash-banner { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 30; padding: 12px; background: var(--surface); border: 1px solid var(--hairline-hi); color: var(--fg); }
+.flash-error { color: var(--warn); }
+[hidden] { display: none !important; }
+
+a.g-tile { color: inherit; text-decoration: none; }
+
+[hidden] { display: none !important; }
+.btn:disabled { opacity: .35; cursor: default; }
+
+body[data-mode="watch"] .insp-grip { display:none; }
