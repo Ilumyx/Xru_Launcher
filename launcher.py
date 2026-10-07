@@ -1,7 +1,6 @@
-"""UI XRU: sảnh, Kit, Gate ảnh/video/Dash và Crawler; các lane khác đang chờ chuyển.
+"""UI XRU: sảnh, Kit, Gate ảnh/video/Dash, Crawler và Label. Mọi màn chỉ gọi Backend qua HTTP.
 python3 launcher.py          # sảnh :5050
-python3 launcher.py start-apps  # bật các server màn cũ chưa chuyển
-python3 launcher.py stop        # chỉ tắt UI :5050, giữ Backend
+python3 launcher.py stop     # chỉ tắt UI :5050, giữ Backend
 Không import code của land. Chỉ dùng thư viện chuẩn Python.
 """
 
@@ -9,29 +8,20 @@ from __future__ import annotations
 
 import os
 import json
-import shutil
 import signal
-import socket
-import subprocess
 import sys
-import time
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 HERE = Path(__file__).resolve().parent
-XRU_CODE = HERE.parent
 PORT = 5050
 IMAGE_BACKEND = "http://127.0.0.1:5059"
 VIDEO_BACKEND = "http://127.0.0.1:5058"
 CRAWLER_BACKEND = "http://127.0.0.1:5055"
+LABEL_BACKEND = "http://127.0.0.1:5057"
 LOGS = HERE / "logs"
-
-# Các server UI cũ chờ chuyển lane: khóa → (thư mục land, lệnh, cổng). Không import land.
-APPS = {
-    "label-video": ("Xru_Label", ["python", "-m", "label_division_video.video_po_review_ui.video_review_web_app"], 5057),
-}
 
 # Giữ link cũ dưới dạng chuyển hướng; không tạo vỏ hay nhúng màn.
 DESTINATIONS = {
@@ -43,63 +33,9 @@ DESTINATIONS = {
     '/gate/video': '/gate/video/index.html',
     '/gate/dash': '/gate/dash/index.html',
     '/mockups/gate_dash.html': '/gate/dash/',
-    '/label': 'http://127.0.0.1:5057/',
-    '/label/video': 'http://127.0.0.1:5057/',
+    '/label': '/label/video/index.html',
+    '/label/video': '/label/video/index.html',
 }
-
-def is_up(port: int) -> bool:
-    with socket.socket() as s:
-        s.settimeout(0.2)
-        return s.connect_ex(("127.0.0.1", port)) == 0
-
-
-def start(key: str) -> None:
-    """Bật module server màn cũ; process sống độc lập với UI."""
-    if key not in APPS or is_up(APPS[key][2]):
-        return
-    land, cmd, _ = APPS[key]
-    LOGS.mkdir(exist_ok=True)
-    log = open(LOGS / f"{key}.log", "ab")
-    proc = subprocess.Popen([shutil.which("uv") or "uv", "run", *cmd], cwd=XRU_CODE / land,
-                            stdin=subprocess.DEVNULL, stdout=log, stderr=log, start_new_session=True)
-    log.close()
-    (LOGS / f"{key}.pid").write_text(str(proc.pid))
-
-
-def start_apps() -> bool:
-    """Bật các màn song song, rồi chỉ báo thành công khi mọi cổng trả lời."""
-    for key in APPS:
-        start(key)
-    deadline = time.monotonic() + 20
-    while time.monotonic() < deadline:
-        if all(is_up(port) for _, _, port in APPS.values()):
-            return True
-        time.sleep(0.2)
-    for key, (_, _, port) in APPS.items():
-        if not is_up(port):
-            print(f"Không bật được {key} :{port}. Log: {LOGS / (key + '.log')}", file=sys.stderr)
-    return False
-
-
-def stop_all() -> None:
-    """Tắt group của app, rồi PID riêng của sảnh (kể cả chạy trực tiếp)."""
-    for key in APPS:
-        pid_file = LOGS / f"{key}.pid"
-        if not pid_file.exists():
-            continue
-        try:
-            os.killpg(int(pid_file.read_text()), signal.SIGTERM)
-        except (ProcessLookupError, ValueError, PermissionError):
-            pass
-        pid_file.unlink(missing_ok=True)
-    pid_file = LOGS / "launcher.pid"
-    if pid_file.exists():
-        try:
-            os.kill(int(pid_file.read_text()), signal.SIGTERM)
-        except (ProcessLookupError, ValueError, PermissionError):
-            pass
-        pid_file.unlink(missing_ok=True)
-
 
 class Handler(SimpleHTTPRequestHandler):
     """File tĩnh của sảnh + chuyển hướng link cũ. Không cache để luôn thấy bản mới."""
@@ -135,7 +71,7 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self) -> None:
         path = urlparse(self.path).path
         if path == '/ui-config':
-            return self._send(200, json.dumps({'image_backend': IMAGE_BACKEND, 'video_backend': VIDEO_BACKEND, 'crawler_backend': CRAWLER_BACKEND}), 'application/json')
+            return self._send(200, json.dumps({'image_backend': IMAGE_BACKEND, 'video_backend': VIDEO_BACKEND, 'crawler_backend': CRAWLER_BACKEND, 'label_backend': LABEL_BACKEND}), 'application/json')
         destination = DESTINATIONS.get(path.rstrip('/'))
         if destination:
             self.send_response(302)
@@ -173,19 +109,17 @@ def stop_ui() -> None:
 
 
 def main() -> None:
-    global PORT, IMAGE_BACKEND, VIDEO_BACKEND, CRAWLER_BACKEND
+    global PORT, IMAGE_BACKEND, VIDEO_BACKEND, CRAWLER_BACKEND, LABEL_BACKEND
     if sys.argv[1:2] == ["stop"]:
         return stop_ui()
-    if sys.argv[1:2] == ["stop-apps"]:
-        return stop_all()
-    if sys.argv[1:2] == ["start-apps"]:
-        sys.exit(0 if start_apps() else 1)
     if '--port' in sys.argv:
         PORT = int(sys.argv[sys.argv.index('--port') + 1])
     if '--image-backend' in sys.argv:
         IMAGE_BACKEND = sys.argv[sys.argv.index('--image-backend') + 1].rstrip('/')
     if '--video-backend' in sys.argv:
         VIDEO_BACKEND = sys.argv[sys.argv.index('--video-backend')+1].rstrip('/')
+    if '--label-backend' in sys.argv:
+        LABEL_BACKEND = sys.argv[sys.argv.index('--label-backend')+1].rstrip('/')
     if '--crawler-backend' in sys.argv:
         CRAWLER_BACKEND = sys.argv[sys.argv.index('--crawler-backend')+1].rstrip('/')
     host = "0.0.0.0" if "--lan" in sys.argv else "127.0.0.1"

@@ -1,0 +1,31 @@
+// Chữ riêng của màn Label video (kit giữ chữ dùng chung).
+window.XRU_I18N.add({
+  en: {
+    lb_rail_video: 'Label video', lb_all: 'ALL', lb_todo: 'MISSING', lb_done: 'COMPLETE',
+    lb_loading: 'Loading Label…', lb_empty: 'No video in this filter.', lb_segment: 'Segment',
+    lb_add_p: '+ protagonist', lb_progress: 'Progress', lb_dossier: 'Dossier', lb_hint: 'Hint',
+    lb_claimed: 'Claimed', lb_gate: 'Measured by Gate', lb_gate_ro: 'Answered by Gate, not editable here.',
+    lb_k_mode: 'Frame / video', lb_k_play: 'Play / pause', lb_k_seg: 'Next / previous segment',
+    lb_k_save: 'Save cell', lb_k_tab: 'Save, next cell',
+    lb_down: 'Label Backend is off or failed to read. Numbers shown are not updated.',
+    lb_saved: 'Saved', lb_not_saved: 'Not saved. Your text is kept; fix it or press Esc.',
+    lb_confirm_delete: 'Delete this protagonist and its labels?',
+    lb_no_media: 'No source video. Use frames.', lb_no_frames: 'No frames for this segment.',
+    lb_published: 'published', lb_complete: 'complete', lb_in_progress: 'in progress', lb_not_started: 'not started',
+    lb_broken: 'broken', lb_outside_dict: 'outside the dictionary',
+  },
+  vi: {
+    lb_rail_video: 'Gán nhãn video', lb_all: 'TẤT CẢ', lb_todo: 'THIẾU', lb_done: 'ĐỦ',
+    lb_loading: 'Đang đọc Label…', lb_empty: 'Không có video trong bộ lọc này.', lb_segment: 'Segment',
+    lb_add_p: '+ nhân vật', lb_progress: 'Tiến độ', lb_dossier: 'Hồ sơ', lb_hint: 'Gợi ý',
+    lb_claimed: 'Đang nhận', lb_gate: 'Đo bởi Gate', lb_gate_ro: 'Gate trả lời, không sửa ở đây.',
+    lb_k_mode: 'Xem frame / video', lb_k_play: 'Phát / dừng', lb_k_seg: 'Segment sau / trước',
+    lb_k_save: 'Lưu ô', lb_k_tab: 'Lưu rồi sang ô kế',
+    lb_down: 'Backend Label đang tắt hoặc đọc lỗi. Số đang hiện chưa được cập nhật.',
+    lb_saved: 'Đã lưu', lb_not_saved: 'Chưa lưu. Chữ vẫn giữ; sửa lại hoặc bấm Esc.',
+    lb_confirm_delete: 'Xoá nhân vật này và các nhãn của nó?',
+    lb_no_media: 'Không có video gốc. Xem frame.', lb_no_frames: 'Segment này không có frame.',
+    lb_published: 'đã xuất', lb_complete: 'đủ nhãn', lb_in_progress: 'đang dở', lb_not_started: 'chưa bắt đầu',
+    lb_broken: 'hỏng', lb_outside_dict: 'ngoài từ điển',
+  },
+});

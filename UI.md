@@ -25,7 +25,7 @@ Lõi land ──► CLI ──► LLM
 | 5050 | UI: sảnh, Kit, mọi màn |
 | 5059 / 5058 | Backend Gate ảnh / video |
 | 5055 | Backend Crawler |
-| 5057 | UI Label cũ, thành Backend khi tới lượt |
+| 5057 | Backend Label video |
 
 ## Thao tác trong một màn
 
@@ -35,7 +35,7 @@ Lõi land ──► CLI ──► LLM
 
 ## Thứ tự
 
-Gate ảnh (xong) → Gate video + Crawler (xong đợt chuyển) → Gate Dash (xong) → Label.
+Gate ảnh → Gate video + Crawler → Gate Dash → Label. Đã chuyển xong cả năm lane (07/10).
 
 Mỗi lane: Backend → màn trên 5050 → Codex kiểm chuỗi thao tác → xoá ui_screen và server UI cũ của lane trong cùng đợt. Không giữ hai bản. PO không thử tay từng lane (07/10); PO chỉ xem phần phức tạp.
 
@@ -47,9 +47,11 @@ Crawler: Backend `Xru_Crawler/backend_service/` gọi reader trong `crawler_imag
 
 Gate Dash: màn `gate/dash/` trên 5050 đọc `/api/stats` từ Backend ảnh 5059 và video 5058, không gọi CLI. Giữ số và nghĩa cũ; NONE = chưa có kết luận máy, không phải sạch. Lane không trả dữ liệu thì báo đang tắt/chưa có số; lane còn lại vẫn đọc được. Đã đối chiếu số tổng/trạng thái/nguồn với hai API và kiểm tắt từng Backend rồi phục hồi. Đã xoá màn, test và server Dash cũ.
 
-## Còn mở (sửa khi chuyển lane, không vá màn cũ)
+Label video (Claude làm theo yêu cầu PO 07/10): Backend `Xru_Label/label_division_video/backend_service/` gọi use case `label_division_review`; màn `label/video/` trên 5050 cùng khung Gate (hàng chờ kit | sân khấu frame/video + timeline + bảng nhãn | hồ sơ). Lọc Tất cả/Thiếu/Đủ trên toàn hàng chờ (số đếm từ cùng catalog). Lưu một ô chỉ gửi ô đó, ô đang gõ khác giữ nguyên; thêm/xoá nhân vật tại chỗ; trang hàng chờ và mục đang mở giữ trên URL. Đã kiểm chuỗi trên fixture và đọc dữ liệu thật (322 = CLI, phát/tua video); xoá `video_po_review_ui/` và lệnh `start-apps`.
 
-- Label: thêm/xoá protagonist còn redirect; lưu dòng xoá draft ô khác; chọn video trang 2 nhảy về trang 1.
+## Còn mở
+
+Không còn mục mở từ đợt chuyển.
 
 ## Commit
 

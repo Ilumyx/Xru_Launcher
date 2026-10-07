@@ -154,7 +154,7 @@ const CONTINENTAL_DATA = {
         tagline: 'Bầy AI gán nhãn & Định danh thực thể (Labeling platoon)',
         image: '',
         mods: [
-          { label: 'Gán nhãn video', url: 'http://127.0.0.1:5057/' }
+          { label: 'Gán nhãn video', url: '/label/video/' }
         ],
         ago: '3 ngày trước',
         status: '● SẴN SÀNG',

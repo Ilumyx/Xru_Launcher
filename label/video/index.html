@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XRU Label — Video</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/kit/tokens.css">
+  <link rel="stylesheet" href="/kit/rail/rail.css">
+  <link rel="stylesheet" href="/kit/page/page.css">
+  <link rel="stylesheet" href="/kit/sidebar/sidebar.css">
+  <link rel="stylesheet" href="/kit/account/account.css">
+  <script src="/kit/i18n/i18n.js"></script>
+  <script src="/label/video/label_text.js"></script>
+  <script src="/kit/account/account.js"></script>
+  <script src="/kit/sidebar/sidebar.js"></script>
+  <link rel="stylesheet" href="/label/video/label.css">
+</head>
+<body>
+<div class="shell">
+  <script>window.XRU_RAILS={label:{label:'Label',home:'/',homeTip:'rail_esc_launcher',groups:[[
+    {key:'video',href:'/label/video/',icon:'table',tip:'lb_rail_video'}]]}};</script>
+  <nav class="rail" data-rail="label" data-active="video" data-panel></nav>
+  <script src="/kit/rail/rail.js"></script>
+
+  <div class="ws lb">
+    <aside class="side">
+      <div class="side-head">
+        <div class="side-count"><b id="queue-count">—</b><span id="queue-label" data-i18n="lb_all">ALL</span></div>
+      </div>
+      <div class="side-items" id="queue-list"><div class="side-empty" data-i18n="lb_loading">Loading Label…</div></div>
+      <div class="side-pager">
+        <button type="button" id="page-prev" data-i18n="pager_prev">← Prev</button>
+        <b id="page-range"></b>
+        <button type="button" id="page-next" data-i18n="pager_next">Next →</button>
+      </div>
+    </aside>
+
+    <main class="ws-main">
+      <header class="page-head">
+        <div class="page-title"><a href="/">EURASIA</a><span>/</span><span>LABEL</span><span>/</span><h1>VIDEO</h1></div>
+        <nav class="lb-tabs" aria-label="Queue filter">
+          <button type="button" data-status="all" class="lb-tab is-active"><strong id="count-all">—</strong><span data-i18n="lb_all">ALL</span></button>
+          <button type="button" data-status="todo" class="lb-tab"><strong class="warn" id="count-todo">—</strong><span data-i18n="lb_todo">MISSING</span></button>
+          <button type="button" data-status="done" class="lb-tab"><strong class="accept" id="count-done">—</strong><span data-i18n="lb_done">COMPLETE</span></button>
+        </nav>
+      </header>
+
+      <section class="work" id="work" hidden>
+        <section class="stage" id="stage" data-mode="frames">
+          <div class="stage-head">
+            <div class="stage-title"><span class="insp-label" data-i18n="lb_segment">Segment</span><b id="seg-num">01</b><span id="seg-of">/ 01</span></div>
+            <span class="stage-time" id="seg-time"></span>
+            <span class="stage-spacer"></span>
+            <button type="button" class="lb-btn" id="add-protagonist"><span data-i18n="lb_add_p">+ protagonist</span></button>
+            <div class="lb-seg" id="stage-mode">
+              <button type="button" class="is-on" data-mode="frames">Frame <kbd>F</kbd></button>
+              <button type="button" data-mode="video">Video <kbd>V</kbd></button>
+            </div>
+          </div>
+          <div class="stage-body">
+            <div class="stage-video" id="stage-video"></div>
+            <div class="stage-frames" id="stage-frames"></div>
+          </div>
+        </section>
+        <section class="track" id="track" aria-label="Timeline"><i class="track-head" id="playhead"></i></section>
+        <div class="ruler" id="ruler" aria-hidden="true"></div>
+        <section class="sheet" id="sheet">
+          <table class="labels">
+            <thead><tr>
+              <th class="c-seg">Seg</th><th class="c-time">Time</th><th class="c-p">P</th>
+              <th>tag</th><th>sub</th><th>var</th><th>actions</th><th>framing</th><th>palette</th><th>des</th><th>note</th>
+            </tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </section>
+      </section>
+      <div class="lb-empty" id="empty" data-i18n="lb_loading">Loading Label…</div>
+
+      <footer class="page-foot">
+        <div class="key-hints">
+          <span><span class="key">F</span><span class="key">V</span> <span data-i18n="lb_k_mode">Frame / video</span></span>
+          <span><span class="key">Space</span> <span data-i18n="lb_k_play">Play / pause</span></span>
+          <span><span class="key">J</span><span class="key">K</span> <span data-i18n="lb_k_seg">Next / previous segment</span></span>
+          <span><span class="key">Enter</span> <span data-i18n="lb_k_save">Save cell</span></span>
+          <span><span class="key">Tab</span> <span data-i18n="lb_k_tab">Save, next cell</span></span>
+          <span><span class="key">ESC</span> <span data-i18n="esc_launcher">Back to Launcher</span></span>
+        </div><div>XRU LABEL // 2026</div>
+      </footer>
+    </main>
+
+    <aside class="ws-insp" id="dossier" hidden>
+      <div class="insp-top"><span class="insp-tag" id="d-state"></span><span class="insp-num" id="d-num"></span></div>
+      <div class="insp-title" id="d-title"></div>
+      <div>
+        <div class="insp-label" data-i18n="lb_progress">Progress</div>
+        <div class="lb-progress"><b id="d-answered">0</b><span id="d-segments">/ 0 segment</span></div>
+        <div class="lb-bar" id="d-bar"></div>
+      </div>
+      <div>
+        <div class="insp-label" data-i18n="lb_dossier">Dossier</div>
+        <dl class="insp-meta">
+          <dt>XRU ID</dt><dd id="d-id" class="accent"></dd>
+          <dt data-i18n="source_lbl">Source</dt><dd id="d-source"></dd>
+          <dt data-i18n="lb_hint">Hint</dt><dd id="d-domain"></dd>
+          <dt>PO note</dt><dd id="d-note"></dd>
+          <dt data-i18n="lb_claimed">Claimed</dt><dd id="d-claim"></dd>
+        </dl>
+      </div>
+      <div>
+        <div class="insp-label" data-i18n="lb_gate">Measured by Gate</div>
+        <dl class="insp-meta">
+          <dt>Aspect</dt><dd id="d-aspect"></dd>
+          <dt>Noise</dt><dd id="d-noise"></dd>
+          <dt>Watermark</dt><dd id="d-wm"></dd>
+        </dl>
+        <p class="lb-small" data-i18n="lb_gate_ro">Answered by Gate, not editable here.</p>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<dialog id="frame-viewer" aria-labelledby="fv-title">
+  <div class="fv-bar">
+    <strong id="fv-title" class="insp-label">Original frame</strong>
+    <span class="fv-status" id="fv-status" role="status"></span>
+    <span class="stage-spacer"></span>
+    <button class="lb-btn" type="button" id="fv-prev" aria-label="Previous frame">←</button>
+    <button class="lb-btn" type="button" id="fv-next" aria-label="Next frame">→</button>
+    <button class="lb-btn" type="button" id="fv-zoom" aria-pressed="false">Zoom 100%</button>
+    <button class="lb-btn" type="button" id="fv-close" aria-label="Close">✕</button>
+  </div>
+  <div class="fv-stage"><img id="fv-img" alt=""></div>
+</dialog>
+<div class="lb-banner" id="banner" role="status" hidden></div>
+<script src="/label/video/label.js"></script>
+</body>
+</html>
