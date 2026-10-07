@@ -25,6 +25,13 @@
   // Trang đang nằm trong ô giữa của vỏ (launcher.py): vỏ đã có rail → bỏ rail của trang, không ra hai rail.
   if (window.self !== window.top) {
     document.documentElement.classList.add('is-framed');
+    if ('panel' in nav.dataset) {
+      const parentOrigin = document.referrer ? new URL(document.referrer).origin : '';
+      window.addEventListener('message', (event) => {
+        if (event.source !== window.parent || event.origin !== parentOrigin || event.data?.type !== 'xru-toggle-sidebar') return;
+        window.toggleGatePanel?.();
+      });
+    }
     nav.remove();
     return;
   }

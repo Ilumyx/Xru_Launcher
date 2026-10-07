@@ -7,6 +7,11 @@
   const frame = $('sh-frame'), down = $('sh-down'), btn = $('sh-start');
   let up = null;
 
+  // Nút nằm trên rail của vỏ; màn của land tự đóng/mở cột danh sách của nó.
+  window.toggleGatePanel = () => {
+    if (up) frame.contentWindow?.postMessage({ type: 'xru-toggle-sidebar' }, new URL(V.url, location.href).origin);
+  };
+
   function show(isUp) {
     if (isUp === up) return;
     up = isUp;
