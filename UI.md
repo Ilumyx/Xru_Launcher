@@ -29,7 +29,7 @@ File này giữ quyết định và việc đang làm để phiên sau nối ti�
 - Giữ các chức năng đã có, trừ khi PO yêu cầu thay đổi.
 - PO yêu cầu bỏ phím J chuyển ảnh ở Gate ảnh ngày 07/10.
 - Rail Launcher giữ Search ở vị trí chính, Kit là mục phụ riêng bên dưới. Mở Kit vẫn giữ Search; trang Search cũng có đường sang Kit. Menu minh họa trong Kit không thay rail điều hướng này.
-- Màn có cột danh sách như Gate ảnh/video giữ nút đóng/mở danh sách trên rail, cả khi mở trực tiếp lẫn nằm trong vỏ Launcher. Vỏ gửi thao tác đóng/mở cho UI của land; land tự đổi bố cục, không đụng nghiệp vụ.
+- Màn có cột danh sách giữ nút đóng/mở danh sách trên rail, cả khi mở trực tiếp lẫn nằm trong vỏ Launcher. Cả ba màn Gate hiện tại (ảnh, video, Dash) đều có nút này. Vỏ gửi thao tác đóng/mở cho UI của land; land tự đổi bố cục, không đụng nghiệp vụ.
 - Thử nghiệm template đã được revert; không áp lại Order template cũ. Gate ảnh và Gate video hiện dùng khung từ `Xru_Launcher/kit` trên ổ đĩa, không tải khung qua server `:5050`.
 
 ### Nhịp làm việc
@@ -69,7 +69,7 @@ Audit 07/10: 100/100 test UI Gate + Label qua; các lỗi tương tác trên v�
 
 Bug report avatar/TUI 07/10: avatar mở được sau 4 lần rail vẽ lại; bảng cài đặt mở lại được. Test TUI tương tác với tiến trình mô phỏng xác nhận header DOWN → READY trước khi tiếp tục, khởi động lỗi trả exit 1. Launcher thật :5050 đang READY; Gate/Label đang tắt, được bật khi mở module trong Launcher. Evidence: `Xru_Code/.codex/evidence/avatar-tui-20261007/`.
 
-Bug report nút đóng/mở danh sách 07/10: vỏ Launcher thiếu nút khi ẩn rail riêng của Gate. Đã khôi phục trên rail của vỏ, gọi hành vi UI của land qua thông điệp giữa hai trang. Gate ảnh đã thử đóng/mở cả trực tiếp :5059 và qua :5050/gate/image; không tải lại màn. Kiểm thông điệp sai nguồn/origin/type không được xử lý. Gate video có cùng nút và hợp đồng, chưa thử browser trong đợt này. Evidence: `Xru_Code/.codex/evidence/sidebar-toggle-20261007/`.
+Bug report nút đóng/mở danh sách 07/10: vỏ Launcher thiếu nút khi ẩn rail riêng của Gate. Đã khôi phục trên rail của vỏ cho cả ảnh, video và Dash, gọi hành vi UI của màn qua thông điệp giữa hai trang. Đã thử browser đóng/mở cả ba màn qua Launcher; Gate ảnh cũng đã thử trực tiếp :5059. Không tải lại màn. Kiểm thông điệp sai nguồn/origin/type không được xử lý. Gate video bật tạm để kiểm đã tắt lại. Evidence: `Xru_Code/.codex/evidence/sidebar-toggle-20261007/`.
 
 ## Chỗ bắt đầu đọc code
 

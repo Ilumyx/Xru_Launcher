@@ -120,7 +120,7 @@ def shell_page(land: str, mod: str) -> str | None:
     }
     view = {"land": land, "mod": current[0], "key": app_key(current[3]),
             "url": module_url(current[3]), "title": current[1]}
-    panel_attr = " data-panel" if view["key"] in {"gate-image", "gate-video"} else ""
+    panel_attr = " data-panel" if land == "gate" else ""
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(name)} — XRU</title>
