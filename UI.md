@@ -23,9 +23,11 @@ File này giữ quyết định và việc đang làm để phiên sau nối ti�
 
 ### Mặt màn
 
-- Dùng mockup PO đã duyệt làm chuẩn cho bố cục, chữ, vị trí, màu và rail/logo. Số giả thay bằng dữ liệu thật.
+- Mockup PO đã duyệt chỉ chốt hình dáng: bố cục, chữ, vị trí, màu và rail/logo. Mockup được dựng để diễn đạt mặt màn; logic/JS, nút và phím trong đó không phải đặc tả chức năng. Số giả thay bằng dữ liệu thật.
+- Chức năng lấy từ yêu cầu PO đã chốt và nghiệp vụ đang có. Không tự thêm hành vi hoặc chép logic chỉ vì mockup có; chỗ chưa rõ thì làm rõ với PO.
 - Chỗ mockup có mà dữ liệu thật chưa có: để trống và báo rõ, không tự chế.
 - Giữ các chức năng đã có, trừ khi PO yêu cầu thay đổi.
+- PO yêu cầu bỏ phím J chuyển ảnh ở Gate ảnh ngày 07/10.
 - Thử nghiệm template đã được revert; không áp lại Order template cũ. Gate ảnh và Gate video hiện dùng khung từ `Xru_Launcher/kit` trên ổ đĩa, không tải khung qua server `:5050`.
 
 ### Nhịp làm việc
@@ -53,7 +55,7 @@ Kiểm ngày 07/10: 0 import trực tiếp từ lõi/CLI sang UI trong 285 file 
 
 | Phần | Hiện trạng / việc tiếp theo |
 |---|---|
-| Gate ảnh | Audit tái hiện nguồn có ảnh nhưng lọc ra trống; J chọn món bị ẩn, inspector/nút quyết định vẫn bật khi không có kết quả. Ưu tiên lọc/sort toàn hàng chờ và chọn đúng tập đang hiện. Link Watch còn dẫn mockup. |
+| Gate ảnh | Đã bỏ phím J theo yêu cầu PO. Lỗi audit về lọc chỉ một trang, phím điều hướng chọn món bị ẩn và inspector/nút quyết định còn bật khi không có kết quả vẫn cần sửa. Ưu tiên lọc/sort toàn hàng chờ và chọn đúng tập đang hiện. Link Watch còn dẫn mockup. |
 | Gate video | Audit tái hiện mất note/noise chưa lưu khi đổi clip rồi quay lại. Lọc/sort còn tải cả trang. Quyết định đã dùng fetch. |
 | Label | Phản hồi lưu toàn dòng có thể xóa draft ở ô khác (đã tái hiện bằng hàm thật/phản hồi mô phỏng). Chọn video từ trang hai làm sidebar về trang một (đã kiểm browser). Thêm/xóa protagonist còn redirect. |
 | Crawler | Màn thật mở được. Fixture đọc lỗi cho thấy dashboard giấu lane_errors thành số 0, donut thành 1. Cần hiển thị lỗi/thiếu dữ liệu đúng. |
