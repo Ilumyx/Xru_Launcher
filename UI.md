@@ -28,6 +28,7 @@ File này giữ quyết định và việc đang làm để phiên sau nối ti�
 - Chỗ mockup có mà dữ liệu thật chưa có: để trống và báo rõ, không tự chế.
 - Giữ các chức năng đã có, trừ khi PO yêu cầu thay đổi.
 - PO yêu cầu bỏ phím J chuyển ảnh ở Gate ảnh ngày 07/10.
+- Rail Launcher giữ Search ở vị trí chính, Kit là mục phụ riêng bên dưới. Mở Kit vẫn giữ Search; trang Search cũng có đường sang Kit. Menu minh họa trong Kit không thay rail điều hướng này.
 - Thử nghiệm template đã được revert; không áp lại Order template cũ. Gate ảnh và Gate video hiện dùng khung từ `Xru_Launcher/kit` trên ổ đĩa, không tải khung qua server `:5050`.
 
 ### Nhịp làm việc
