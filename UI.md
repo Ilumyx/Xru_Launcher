@@ -1,87 +1,116 @@
 # UI XRU
 
-Cập nhật: 07/10/2026. Ilumyx giao Codex phụ trách Launcher và UI liên quan.
+Cập nhật: 07/10/2026. Sổ chung của Codex và Claude cho Launcher và UI. PO chốt kiến trúc theo bản vẽ của PO ngày 07/10.
 
 File này giữ quyết định và việc đang làm để phiên sau nối tiếp được. Không chép lại implementation; đường dẫn bên dưới là nơi kiểm code hiện tại. Cập nhật mục cũ khi quyết định đổi, không nối thêm luật sau mỗi lỗi.
 
-## Trách nhiệm
+## Vận hành
 
-- Ilumyx chốt mục tiêu sử dụng, mặt màn và ưu tiên. Codex tự chuyển ý định thành việc kỹ thuật, thực hiện và kiểm kết quả.
-- Codex chịu trách nhiệm từ mặt màn, tương tác, dữ liệu hiển thị đến chuỗi thao tác PO dùng thật; đúng hình và test xanh chưa đủ để báo xong.
-- Phạm vi: Launcher và UI của các land liên quan, gồm Crawler, Gate, Label; phần bật/tắt UI trong `Xru_TUI` thuộc công việc tích hợp này.
-- Một người phụ trách chung không thay ownership: UI nằm trong land/feature của nó và tuân theo ranh giới độc lập bên dưới. Nếu cần đổi boundary hoặc contract, bàn với Ilumyx trước.
-- Làm trọn từng màn theo ưu tiên đã chốt. Giao phụ trách không phải cho phép tự thiết kế lại tất cả màn cùng lúc.
+- Ilumyx chốt mục tiêu sử dụng, mặt màn và ưu tiên.
+- Codex làm code: Backend của land, module UI rời, Launcher, tích hợp TUI. Codex tự chuyển ý định thành việc kỹ thuật và kiểm kết quả; đúng hình và test xanh chưa đủ để báo xong.
+- Claude soát theo bản vẽ PO và sổ này, không sửa code song song với Codex.
+- Hai bên chỉ đọc sổ này làm nguồn quyết định. Thảo luận xong thì ghi vào đây; không giữ quyết định trong đầu phiên.
+- Mỗi Order dùng branch/worktree riêng, nói rõ file nào được sửa. Mỗi service đang vận hành chỉ một phiên sửa tại một lúc; bản thử dùng cổng và dữ liệu riêng.
+- Làm trọn từng lane theo thứ tự đã chốt. Không thiết kế lại mọi màn cùng lúc.
 
-## Quyết định đã chốt
+## Kiến trúc đích
 
-### Lõi và CLI độc lập với UI
+```
+Lõi land ──► CLI ──► LLM / agent
+   │
+   └──► Backend service (của land/lane) ──HTTP──► UI (module rời, ngoài mọi land)
+```
 
-- XRU hướng tới vận hành bằng AI qua CLI. UI là một cách sử dụng song song dành cho PO; nghiệp vụ không được đòi hỏi mở UI hoặc Launcher mới chạy được.
-- UI là lớp mỏng: trình bày dữ liệu và gọi nghiệp vụ có sẵn của chính land. UI được import các hàm đọc/ghi của lõi trong cùng land; không cần dựng API riêng hay gọi subprocess chỉ để tránh import. Quy tắc nghiệp vụ, kiểm tra và ghi dữ liệu vẫn thuộc lõi, không làm một bản nghiệp vụ khác trong UI.
-- Chiều phụ thuộc là UI → lõi. Lõi/CLI không import hoặc phụ thuộc UI. Giữa các land vẫn không cross-import.
-- Gỡ UI và Launcher ra thì lõi, CLI và dữ liệu vẫn vận hành bình thường. Khi kiểm ranh giới này, chạy nghiệp vụ qua CLI với UI vắng mặt.
+- Lõi có hai cửa độc lập: CLI cho LLM, Backend service cho UI. Lõi không phụ thuộc cửa nào.
+- Chiều phụ thuộc: CLI → lõi; Backend → lõi; UI → API Backend.
+- UI thuộc module rời ngoài mọi land. UI chỉ giao tiếp với Backend qua API; không import lõi, không truy cập sổ, không gọi CLI.
+- Backend và nghiệp vụ thuộc land/lane sở hữu. Backend gọi clerk của chính land để đọc/ghi; không tự SQL vào sổ, không làm bản nghiệp vụ khác.
+- Backend trả JSON cho nghiệp vụ; media/thumbnail trả file, video hỗ trợ tua (Range). Không trả HTML.
+- Hợp đồng API do chủ land giữ: mỗi trường ghi nguồn và nghĩa. Trường chưa có nghĩa xác nhận thì không đưa lên màn.
+- Gỡ module UI và Launcher thì lõi, CLI, Backend và dữ liệu vẫn vận hành. Tắt một Backend thì màn của land đó báo đang tắt, màn khác chạy bình thường.
+- Giữ đặc tính đọc hiện có khi chuyển: đọc theo trang, count và danh sách cùng một lần đọc, không tải BLOB cho lưới.
 
-### Mặt màn
+### Cổng
 
-- Mockup PO đã duyệt chỉ chốt hình dáng: bố cục, chữ, vị trí, màu và rail/logo. Mockup được dựng để diễn đạt mặt màn; logic/JS, nút và phím trong đó không phải đặc tả chức năng. Số giả thay bằng dữ liệu thật.
-- Chức năng lấy từ yêu cầu PO đã chốt và nghiệp vụ đang có. Không tự thêm hành vi hoặc chép logic chỉ vì mockup có; chỗ chưa rõ thì làm rõ với PO.
-- Chỗ mockup có mà dữ liệu thật chưa có: để trống và báo rõ, không tự chế.
+| Cổng | Vai trò |
+|---|---|
+| 5050 | Module UI: sảnh, Kit, mọi màn (Gate ảnh/video/Dash, Label, Crawler) |
+| 5059 | Backend Gate ảnh |
+| 5058 | Backend Gate video |
+| 5056 | Bỏ. Gate Dash về 5050, gọi hai Backend Gate |
+| 5057, 5055 | Hiện là server UI của Label, Crawler; thành Backend khi tới lượt lane đó |
+
+TUI bật/tắt UI và từng Backend riêng; báo READY bằng kiểm HTTP trả dữ liệu, không chỉ thấy cổng mở. Tắt UI không tắt Backend.
+
+### Thứ tự chuyển
+
+Mỗi lane: chốt nghĩa dữ liệu → clerk có hàm đọc/ghi cần thiết → Backend service → màn trong module UI → PO dùng thật → xoá đường cũ của lane (ui_screen, server UI cũ, SQL trực tiếp).
+
+1. Gate ảnh
+2. Gate video
+3. Gate Dash (sau khi hai Backend Gate có API số liệu)
+4. Label video
+5. Crawler
+
+Màn cũ chạy tiếp cho tới khi màn mới được PO dùng thật; xong thì xoá ngay, không giữ hai bản.
+
+## Mặt màn
+
+- Mockup PO đã duyệt chỉ chốt hình dáng: bố cục, chữ, vị trí, màu và rail/logo. Logic/JS, nút và phím trong mockup không phải đặc tả chức năng. Số giả thay bằng dữ liệu thật.
+- Chức năng lấy từ yêu cầu PO đã chốt và nghiệp vụ đang có. Không tự thêm hành vi; chỗ chưa rõ thì hỏi PO.
+- Chỗ mockup có mà dữ liệu thật chưa có: để trống và báo rõ, không tự chế. Không có số tĩnh, số gõ tay hay bản chụp gắn nhãn số thật.
 - Giữ các chức năng đã có, trừ khi PO yêu cầu thay đổi.
 - PO yêu cầu bỏ phím J chuyển ảnh ở Gate ảnh ngày 07/10.
-- Rail Launcher giữ Search ở vị trí chính, Kit là mục phụ riêng bên dưới. Mở Kit vẫn giữ Search; trang Search cũng có đường sang Kit. Menu minh họa trong Kit không thay rail điều hướng này.
-- Launcher là sảnh: quả cầu, sector, Search và Kit. Link mở thẳng màn của land, không iframe, không giấu rail và không gửi thao tác xuyên khung. Mỗi màn tự giữ phím và bố cục. Logo/ESC về sảnh; ESC đóng menu hoặc phần xem đang mở trước khi rời màn.
-- Kit trên ổ đĩa là nguồn chung cho khung UI, màu/phông và rail. Gate ảnh/video, Label dùng `kit/base_workstation.html`; server của từng land đọc template và phục vụ asset từ ổ đĩa, không tải qua :5050. Crawler vẫn là trang tĩnh dùng component Kit; không thêm engine chỉ để đổi cách viết HTML. Logic và dữ liệu riêng vẫn thuộc UI của land.
-- Rail có `data-panel` thì Kit tạo nút đóng/mở danh sách. Một trạng thái bố cục chung do Kit quản lý, nhớ khi tải lại/chuyển màn. LocalStorage nhớ tại từng cổng, cookie cùng host chia sẻ lựa chọn giữa các cổng. Màn phải bố trí cột riêng theo trạng thái chung; không khai báo danh sách ngoại lệ trong sảnh.
-- Thử nghiệm template đã được revert; không áp lại Order template cũ. Gate ảnh và Gate video hiện dùng khung từ `Xru_Launcher/kit` trên ổ đĩa, không tải khung qua server `:5050`.
+- Rail Launcher giữ Search ở vị trí chính, Kit là mục phụ riêng bên dưới. Mở Kit vẫn giữ Search; trang Search cũng có đường sang Kit.
+- Launcher là sảnh: quả cầu, sector, Search và Kit. Không iframe. Mỗi màn tự giữ phím và bố cục. Logo/ESC về sảnh; ESC đóng menu hoặc phần xem đang mở trước khi rời màn.
+- Kit (`kit/`) là nguồn chung cho khung UI, màu/phông và rail. Trong module UI, mọi màn dùng Kit trực tiếp, không chép.
+- Rail có `data-panel` thì Kit tạo nút đóng/mở danh sách. Một trạng thái bố cục chung do Kit quản lý, nhớ khi tải lại/chuyển màn.
 
-### Nhịp làm việc
+## Nhịp làm việc
 
 - UI phục vụ một phiên làm việc liên tục. Chọn mục, lọc, sắp xếp, duyệt và sửa trong cùng màn chỉ đổi phần liên quan; giữ vị trí làm việc, lựa chọn còn hợp lệ và nội dung chưa lưu.
-- Lọc/sắp xếp phải đúng trên toàn bộ hàng chờ, kể cả khi màn chia trang; không chỉ xử lý các món đang có trong trình duyệt rồi coi đó là toàn bộ dữ liệu.
-- Máy chủ xác nhận lưu thành công rồi màn mới báo đã lưu và cập nhật kết quả. Khi thất bại, giữ việc đang làm và báo rõ để thử lại.
-- Chuyển sang nhà/màn khác có thể mở trang mới. Không cấm thẻ link/form; kiểm hành vi thực tế của thao tác.
+- Lọc/sắp xếp đúng trên toàn bộ hàng chờ (Backend làm), không chỉ trên các món đang có trong trình duyệt.
+- Backend xác nhận lưu thành công rồi màn mới báo đã lưu và cập nhật kết quả. Thất bại thì giữ việc đang làm và báo rõ để thử lại.
 - Không hứa thời gian xử lý “0ms”. Giữ khung ổn định trong lúc chờ dữ liệu hoặc media.
 
-### Kiểm và bàn giao
+## Kiểm và bàn giao
 
 - Thử một chuỗi thao tác như PO dùng thật, gồm giữ ghi chú/vị trí, quyết định, lọc/sắp xếp và chuyển mục; không chỉ thử từng nút riêng.
-- Kiểm kết quả lưu và số liệu trên màn cùng nhau. Test xanh là bằng chứng, không thay việc kiểm màn thật.
+- Kiểm kết quả lưu và số liệu trên màn cùng nhau: số trên màn phải bằng số Backend/CLI trả về cùng lúc.
+- Kiểm rút phích: tắt UI, CLI và Backend vẫn chạy; tắt Backend, màn báo đang tắt.
 - Ảnh bàn giao phải chụp đúng trang, mở từng ảnh kiểm trước khi gửi.
-- Khi công việc có commit: báo commit, phép kiểm và phần chưa verify. Chưa push nếu PO chưa yêu cầu.
-- Commit trong repo Launcher dùng `Laucher Order <số>: <nội dung>` theo tiền tố PO chốt. Nối tiếp số có sẵn, gồm lịch sử `UI Order` và `Launcher Order`; không đánh lại lịch sử. Sau `Launcher Order 4` là `Laucher Order 5`.
-- Khi sửa UI trong repo land khác, dùng `Order UI <số>: <nội dung>` để phân biệt với Order gốc của land. Tra Git của chính repo đó và nối tiếp số Order cao nhất (cả Order gốc và Order UI), không bắt đầu một dãy UI riêng. Ví dụ Gate đang có `Order 32` thì commit UI tiếp theo là `Order UI 33`. Quy ước này áp dụng từ giờ, không đổi tên các commit cũ.
+- Khi có commit: báo commit, phép kiểm và phần chưa verify. Chưa push nếu PO chưa yêu cầu.
+- Commit trong repo Launcher dùng `Laucher Order <số>: <nội dung>`, nối tiếp số có sẵn (sau `Laucher Order 10` là `Laucher Order 11`).
+- Khi sửa UI/Backend trong repo land khác, dùng `Order UI <số>: <nội dung>`, nối tiếp số Order cao nhất của chính repo đó (cả Order gốc và Order UI).
 
-## Việc đang chờ
+## Hiện trạng cần chuyển (07/10)
 
-Đây là hiện trạng kiểm code ngày 07/10, không phải danh sách màn đã nghiệm thu.
+Hiện trạng chưa đạt đích; không coi là kiến trúc đúng.
 
-UI Gate ảnh, Gate video, Label và Crawler đang gọi hàm nghiệp vụ trong chính land của chúng. Điều này phù hợp chiều phụ thuộc UI → lõi; không phải việc cần tách hay lý do đổi kiến trúc.
+- Gate ảnh, Gate video, Label, Crawler: màn (`ui_screen` / `*_ui`) còn nằm trong land, chạy chung process với phần đọc/ghi và import thẳng lõi.
+- SELECT trực tiếp vào sổ, không qua clerk (chỉ đọc, chưa thấy ghi vòng): `gate_image/ui_backend/image_review_rows_reader.py`, `image_review_page_reader.py`; `gate_video/ui_backend/video_review_detail_reader.py`, `video_review_page_reader.py`; `gate_video/ui_screen/video_review_page_routes.py`. Video đọc count rồi danh sách không chung một lần đọc.
+- Ghi quyết định đã đi qua writer của clerk (`ui_clerk_desk/*_action_routes.py`).
+- Gate Dash (`Xru_Gate/ui_dashboard/`, :5056) gọi CLI `stats` bằng subprocess; chưa đạt đích. Số và nghĩa trường do chủ Gate giữ. NONE là chưa có kết luận máy, không phải đã soi sạch.
+- Kit được server của từng land đọc từ ổ đĩa `Xru_Launcher/kit`; hết khi màn về module UI.
+- Lõi không import UI (kiểm 07/10, 285 file). Điểm này giữ nguyên.
 
-Kiểm ngày 07/10: 0 import trực tiếp từ lõi/CLI sang UI trong 285 file Python ngoài UI/tests của 5 vùng nghiệp vụ (Gate ảnh/video, Label video, Crawler ảnh/video). Khi chặn import các package UI, 3 lệnh `stats` của Gate ảnh/video và Label cùng 2 lệnh `--help` của Crawler source stats vẫn chạy. Đây là bằng chứng cho phạm vi đã thử, chưa phải kiểm toàn bộ nghiệp vụ khi gỡ thư mục UI thật.
+Việc tương tác còn mở theo audit 07/10 (`Xru_Code/.codex/evidence/ui-audit-20261007/audit.md`), sửa khi chuyển lane tương ứng, không vá trên màn cũ:
 
-| Phần | Hiện trạng / việc tiếp theo |
+| Phần | Còn mở |
 |---|---|
-| Gate ảnh | Đã bỏ phím J theo yêu cầu PO. Lỗi audit về lọc chỉ một trang, phím điều hướng chọn món bị ẩn và inspector/nút quyết định còn bật khi không có kết quả vẫn cần sửa. Ưu tiên lọc/sort toàn hàng chờ và chọn đúng tập đang hiện. Link Watch đã dẫn màn video thật. |
-| Gate Dash | Đã bỏ bản chụp tĩnh; đọc lại số hiện tại. NONE là chưa có kết luận ghi trong trường máy, không phải đã soi sạch. Tỷ lệ nhận tính từ trạng thái nhận/giữ/hủy, không gọi là tỷ lệ duyệt riêng PO. Không có số đúng/sai và máy theo nguồn thì báo chưa có. |
-| Gate video | Audit tái hiện mất note/noise chưa lưu khi đổi clip rồi quay lại. Lọc/sort còn tải cả trang. Quyết định đã dùng fetch. |
-| Label | Phản hồi lưu toàn dòng có thể xóa draft ở ô khác (đã tái hiện bằng hàm thật/phản hồi mô phỏng). Chọn video từ trang hai làm sidebar về trang một (đã kiểm browser). Thêm/xóa protagonist còn redirect. |
-| Crawler | Màn thật mở được. Fixture đọc lỗi cho thấy dashboard giấu lane_errors thành số 0, donut thành 1. Cần hiển thị lỗi/thiếu dữ liệu đúng. |
-| Launcher / TUI | TUI start/stop đã sửa (`30caa7b`, `74bfe40`). Đã sửa avatar IL mất click sau khi rail vẽ lại; TUI cập nhật trạng thái dịch vụ ngay sau bật/tắt, `xru start` bật sảnh và năm server UI để các link trực tiếp dùng được; lỗi khởi động trả exit 1. Đã sửa stop tách PID sảnh khỏi group app. |
-
-Audit 07/10: 100/100 test UI Gate + Label qua; các lỗi tương tác trên vẫn tồn tại. Báo cáo, phạm vi verify và ảnh ở `Xru_Code/.codex/evidence/ui-audit-20261007/audit.md`. Audit không sửa code UI/lõi hoặc ghi quyết định/nhãn vào dữ liệu PO.
-
-Bug report avatar/TUI 07/10: avatar mở được sau 4 lần rail vẽ lại; bảng cài đặt mở lại được. Test TUI tương tác với tiến trình mô phỏng xác nhận header DOWN → READY trước khi tiếp tục, khởi động lỗi trả exit 1. Cách bật từng module trong vỏ được thay bằng `xru start` bật các màn độc lập. Evidence: `Xru_Code/.codex/evidence/avatar-tui-20261007/`.
-
-Chuyển sang màn độc lập 07/10: đã bỏ vỏ iframe, giấu rail và bridge đóng/mở. Cùng nút Kit dùng ở Gate ảnh, video, Dash và Label. Crawler mở trực tiếp tại :5055. Gate Dash thuộc `Xru_Gate/ui_dashboard/`, server riêng :5056, lấy số hiện tại qua CLI stats của hai làn và đọc lại mỗi 15 giây khi màn hiện. Không dùng bản chụp Launcher. Bật/tắt toàn bộ qua TUI, dừng riêng server Launcher thì Gate/Label vẫn phục vụ khung từ ổ đĩa. Evidence và ảnh: `Xru_Code/.codex/evidence/standalone-ui-20261007/`.
+| Gate ảnh | Lọc chỉ một trang; phím điều hướng chọn món bị ẩn; inspector/nút quyết định còn bật khi không có kết quả. |
+| Gate video | Mất note/noise chưa lưu khi đổi clip rồi quay lại; lọc/sort tải cả trang. |
+| Label | Lưu toàn dòng có thể xoá draft ô khác; chọn video trang hai làm sidebar về trang một; thêm/xoá protagonist còn redirect. |
+| Crawler | Dashboard giấu lane_errors thành 0, donut thành 1; cần hiện lỗi/thiếu dữ liệu đúng. |
 
 ## Chỗ bắt đầu đọc code
 
-Các đường dẫn tính từ `Xru_Code/`, trừ TUI nằm cạnh `Xru_Code/`.
+Đường dẫn tính từ `Xru_Code/`, trừ TUI nằm cạnh `Xru_Code/`.
 
-- Launcher: `Xru_Launcher/launcher.py`, `home/`, `kit/`, `mockups/`.
-- Gate ảnh: `Xru_Gate/gate_image/ui_screen/`, HTTP quyết định ở `Xru_Gate/gate_image/ui_clerk_desk/`.
-- Gate video: `Xru_Gate/gate_video/ui_screen/`.
+- Launcher / module UI: `Xru_Launcher/launcher.py`, `home/`, `kit/`, `mockups/`.
+- Gate ảnh: `Xru_Gate/gate_image/ui_screen/`, `ui_backend/`, `ui_clerk_desk/`.
+- Gate video: `Xru_Gate/gate_video/ui_screen/`, `ui_backend/`, `ui_clerk_desk/`.
 - Gate Dash: `Xru_Gate/ui_dashboard/`.
 - Label video: `Xru_Label/label_division_video/video_po_review_ui/`.
 - Crawler: `Xru_Crawler/ui_screen/`.
-- Lệnh bật/tắt UI: `../Xru_TUI/lib/xru/federal.sh`.
+- Bật/tắt: `../Xru_TUI/lib/xru/federal.sh`.
