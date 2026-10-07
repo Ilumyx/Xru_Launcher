@@ -45,6 +45,7 @@ File này giữ quyết định và việc đang làm để phiên sau nối ti�
 - Kiểm kết quả lưu và số liệu trên màn cùng nhau. Test xanh là bằng chứng, không thay việc kiểm màn thật.
 - Ảnh bàn giao phải chụp đúng trang, mở từng ảnh kiểm trước khi gửi.
 - Khi công việc có commit: báo commit, phép kiểm và phần chưa verify. Chưa push nếu PO chưa yêu cầu.
+- Commit trong repo Launcher dùng `Launcher Order <số>: <nội dung>`. Tra Git để nối tiếp số Order cao nhất của repo, gồm các commit `UI Order` từ tên repo cũ; không đánh lại lịch sử. Repo đã có `UI Order 1–3`, lần đầu dùng tên mới nối tiếp số 4.
 
 ## Việc đang chờ
 
