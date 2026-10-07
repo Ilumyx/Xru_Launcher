@@ -14,11 +14,11 @@ File này giữ quyết định và việc đang làm để phiên sau nối ti�
 
 ## Quyết định đã chốt
 
-### UI và CLI độc lập
+### Lõi và CLI độc lập với UI
 
 - XRU hướng tới vận hành bằng AI qua CLI. UI là một cách sử dụng song song dành cho PO; nghiệp vụ không được đòi hỏi mở UI hoặc Launcher mới chạy được.
-- UI chỉ trình bày dữ liệu và gửi yêu cầu qua CLI hoặc hợp đồng giao tiếp đã chốt. Quy tắc nghiệp vụ, kiểm tra và ghi dữ liệu thuộc lõi; UI không tự làm một bản nghiệp vụ khác.
-- UI không import mã lõi của land; lõi/CLI không import hoặc phụ thuộc UI. Import thư viện phục vụ UI và mã nội bộ UI không thuộc điều cấm này.
+- UI là lớp mỏng: trình bày dữ liệu và gọi nghiệp vụ có sẵn của chính land. UI được import các hàm đọc/ghi của lõi trong cùng land; không cần dựng API riêng hay gọi subprocess chỉ để tránh import. Quy tắc nghiệp vụ, kiểm tra và ghi dữ liệu vẫn thuộc lõi, không làm một bản nghiệp vụ khác trong UI.
+- Chiều phụ thuộc là UI → lõi. Lõi/CLI không import hoặc phụ thuộc UI. Giữa các land vẫn không cross-import.
 - Gỡ UI và Launcher ra thì lõi, CLI và dữ liệu vẫn vận hành bình thường. Khi kiểm ranh giới này, chạy nghiệp vụ qua CLI với UI vắng mặt.
 
 ### Mặt màn
@@ -47,7 +47,9 @@ File này giữ quyết định và việc đang làm để phiên sau nối ti�
 
 Đây là hiện trạng kiểm code ngày 07/10, không phải danh sách màn đã nghiệm thu.
 
-Kiểm các vùng UI hiện tại cho thấy Gate ảnh, Gate video, Label và Crawler vẫn có import mã lõi. Đây là chỗ lệch với quyết định độc lập vừa chốt, chưa được tách. Khả năng chạy CLI sau khi gỡ UI/Launcher chưa verify. Cần bàn phạm vi và hợp đồng giao tiếp trước khi đổi kiến trúc; không gộp việc tách này vào một sửa mặt màn.
+UI Gate ảnh, Gate video, Label và Crawler đang gọi hàm nghiệp vụ trong chính land của chúng. Điều này phù hợp chiều phụ thuộc UI → lõi; không phải việc cần tách hay lý do đổi kiến trúc.
+
+Kiểm ngày 07/10: 0 import trực tiếp từ lõi/CLI sang UI trong 285 file Python ngoài UI/tests của 5 vùng nghiệp vụ (Gate ảnh/video, Label video, Crawler ảnh/video). Khi chặn import các package UI, 3 lệnh `stats` của Gate ảnh/video và Label cùng 2 lệnh `--help` của Crawler source stats vẫn chạy. Đây là bằng chứng cho phạm vi đã thử, chưa phải kiểm toàn bộ nghiệp vụ khi gỡ thư mục UI thật.
 
 | Phần | Hiện trạng / việc tiếp theo |
 |---|---|
