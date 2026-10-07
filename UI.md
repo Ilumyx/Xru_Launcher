@@ -35,11 +35,11 @@ Lõi land ──► CLI ──► LLM
 
 ## Thứ tự
 
-Gate ảnh → Gate video → Gate Dash → Label → Crawler.
+Gate ảnh (xong) → Gate video + Crawler → Gate Dash → Label.
 
-Mỗi lane: Backend → màn trên 5050 → PO dùng thật → xoá ui_screen và server UI cũ của lane. Không giữ hai bản.
+Mỗi lane: Backend → màn trên 5050 → Codex kiểm chuỗi thao tác → xoá ui_screen và server UI cũ của lane trong cùng đợt. Không giữ hai bản. PO không thử tay từng lane (07/10); PO chỉ xem phần phức tạp.
 
-Lane 1 — Gate ảnh: Backend `Xru_Gate/gate_image/backend_service/` đọc/ghi qua clerk; màn `gate/image/` trên 5050 chỉ gọi HTTP. Đã kiểm trên dữ liệu thử và đọc dữ liệu thật. PO yêu cầu clean ngay, bỏ bước chờ dùng thật cho lần chuyển này: đã xoá các ngăn `gate_image/ui_*`, server và khai báo màn cũ; chưa chuyển Gate video/Dash.
+Lane 1 — Gate ảnh: Backend `Xru_Gate/gate_image/backend_service/` đọc/ghi qua clerk; màn `gate/image/` trên 5050 chỉ gọi HTTP. Đã xoá `gate_image/ui_*`. Claude soát 07/10: đạt (API = CLI = 548, không SQL thẳng, không tải lại trang).
 
 ## Còn mở (sửa khi chuyển lane, không vá màn cũ)
 
