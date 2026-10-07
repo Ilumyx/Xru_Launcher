@@ -53,11 +53,13 @@ Kiểm ngày 07/10: 0 import trực tiếp từ lõi/CLI sang UI trong 285 file 
 
 | Phần | Hiện trạng / việc tiếp theo |
 |---|---|
-| Gate ảnh | `9d288d1` đã thêm cập nhật tại chỗ. Cần xử lý việc lọc chỉ trong trang đã tải, kiểm sắp xếp/phân trang và giữ nhịp sau quyết định; chưa verify trọn chuỗi thao tác của bản này. |
-| Gate video | Quyết định và chọn video đã có cập nhật tại chỗ. Lọc/sắp xếp còn gửi form tải trang; đổi video thay vùng player/inspector và có nhánh tải lại trang. Cần hoàn thiện nhịp làm việc. |
-| Label | Sửa ô nhãn đã lưu tại chỗ. Chọn video trong hàng chờ, thêm/xóa protagonist còn đi sang trang hoặc POST rồi redirect. Cần hoàn thiện nhịp làm việc. |
-| Crawler | Chưa rà lại tương tác trong đợt này. Không tự đổi mặt hay chức năng khi sửa Gate/Label. |
-| Launcher / TUI | `Xru_TUI` đã trỏ đúng Launcher (`30caa7b`); `xru stop` đã xử lý cả server UI bật trực tiếp (`74bfe40`). Đã thử bật/tắt Launcher và hai Gate, kiểm các cổng đóng. |
+| Gate ảnh | Audit tái hiện nguồn có ảnh nhưng lọc ra trống; J chọn món bị ẩn, inspector/nút quyết định vẫn bật khi không có kết quả. Ưu tiên lọc/sort toàn hàng chờ và chọn đúng tập đang hiện. Link Watch còn dẫn mockup. |
+| Gate video | Audit tái hiện mất note/noise chưa lưu khi đổi clip rồi quay lại. Lọc/sort còn tải cả trang. Quyết định đã dùng fetch. |
+| Label | Phản hồi lưu toàn dòng có thể xóa draft ở ô khác (đã tái hiện bằng hàm thật/phản hồi mô phỏng). Chọn video từ trang hai làm sidebar về trang một (đã kiểm browser). Thêm/xóa protagonist còn redirect. |
+| Crawler | Màn thật mở được. Fixture đọc lỗi cho thấy dashboard giấu lane_errors thành số 0, donut thành 1. Cần hiển thị lỗi/thiếu dữ liệu đúng. |
+| Launcher / TUI | TUI start/stop đã sửa (`30caa7b`, `74bfe40`). Audit thêm: launcher.py stop có thể bỏ sót process chạy trực tiếp không phải trưởng group; đã tái hiện riêng, chưa sửa. |
+
+Audit 07/10: 100/100 test UI Gate + Label qua; các lỗi tương tác trên vẫn tồn tại. Báo cáo, phạm vi verify và ảnh ở `Xru_Code/.codex/evidence/ui-audit-20261007/audit.md`. Audit không sửa code UI/lõi hoặc ghi quyết định/nhãn vào dữ liệu PO.
 
 ## Chỗ bắt đầu đọc code
 
