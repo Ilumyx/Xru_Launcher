@@ -45,7 +45,8 @@ File này giữ quyết định và việc đang làm để phiên sau nối ti�
 - Kiểm kết quả lưu và số liệu trên màn cùng nhau. Test xanh là bằng chứng, không thay việc kiểm màn thật.
 - Ảnh bàn giao phải chụp đúng trang, mở từng ảnh kiểm trước khi gửi.
 - Khi công việc có commit: báo commit, phép kiểm và phần chưa verify. Chưa push nếu PO chưa yêu cầu.
-- Commit trong repo Launcher dùng `Launcher Order <số>: <nội dung>`. Tra Git để nối tiếp số Order cao nhất của repo, gồm các commit `UI Order` từ tên repo cũ; không đánh lại lịch sử. Repo đã có `UI Order 1–3`, lần đầu dùng tên mới nối tiếp số 4.
+- Commit trong repo Launcher dùng `Laucher Order <số>: <nội dung>` theo tiền tố PO chốt. Nối tiếp số có sẵn, gồm lịch sử `UI Order` và `Launcher Order`; không đánh lại lịch sử. Sau `Launcher Order 4` là `Laucher Order 5`.
+- Khi sửa UI trong repo land khác, dùng `Order UI <số>: <nội dung>` để phân biệt với Order gốc của land. Tra Git của chính repo đó và nối tiếp số Order cao nhất (cả Order gốc và Order UI), không bắt đầu một dãy UI riêng. Ví dụ Gate đang có `Order 32` thì commit UI tiếp theo là `Order UI 33`. Quy ước này áp dụng từ giờ, không đổi tên các commit cũ.
 
 ## Việc đang chờ
 
