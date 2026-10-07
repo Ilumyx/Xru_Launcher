@@ -277,6 +277,7 @@
 }
 
 .land-card:not(.is-idle):hover img { transform: scale(1.03); }
+.land-card img[hidden] { display: none; }
 
 /* Lớp tối nhẹ ở đáy để chữ đọc được trên mọi ảnh */
 .land-card::after {

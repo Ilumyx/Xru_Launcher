@@ -72,6 +72,7 @@ window.LauncherGlobe = (() => {
     const data = window.CONTINENTAL_DATA ? window.CONTINENTAL_DATA[continentId] : null;
     const panel = container ? container.querySelector('#globe-lands-panel') : document.getElementById('globe-lands-panel');
     if (!data || !panel) return;
+    if (panel.dataset.continent === continentId && panel.dataset.imageVersion === String(imgVersion)) return;
 
     const editTip = window.XRU_I18N ? window.XRU_I18N.t('edit_img_tip') : 'Đổi ảnh';
     const lands = data.lands || [];
@@ -81,7 +82,6 @@ window.LauncherGlobe = (() => {
         ${lands.map(land => {
           // Ảnh card = file trên đĩa (assets/sectors/<tên>.jpg, do Launcher lưu). Chưa có file thì ô xám.
           const imgSrc = land.image || sectorImg(land.name);
-          const isPlaceholder = false;
           // Link chính của card = module đầu tiên có URL thật ('#' = chưa có trang)
           const main = (land.mods || []).find(m => m.url && m.url !== '#');
           const href = main ? main.url : null;
@@ -89,8 +89,8 @@ window.LauncherGlobe = (() => {
           const tag = href ? 'a' : 'div';
           const attrs = href ? ` href="${href}"${external}` : '';
           return `
-            <${tag} class="land-card${href ? '' : ' is-idle'}${isPlaceholder ? ' is-empty' : ''}" data-land="${land.name}"${attrs}>
-              <img src="${imgSrc}" alt="" loading="lazy" onerror="this.closest('.land-card').classList.add('is-empty');this.remove()" />
+            <${tag} class="land-card is-empty${href ? '' : ' is-idle'}" data-land="${land.name}"${attrs}>
+              <img src="${imgSrc}" alt="" hidden onload="this.hidden=false;this.closest('.land-card').classList.remove('is-empty')" onerror="this.remove()" />
               <span class="land-code">${land.code}</span>
               <span class="land-edit" role="button" title="${editTip}" data-i18n-attr="title:edit_img_tip" onclick="event.preventDefault();event.stopPropagation();LauncherGlobe.changeLandImage('${land.name}')">✎</span>
               <span class="land-caption">
@@ -102,6 +102,8 @@ window.LauncherGlobe = (() => {
         }).join('')}
       </div>
     `;
+    panel.dataset.continent = continentId;
+    panel.dataset.imageVersion = String(imgVersion);
   }
 
   // ---------------- SỬA ẢNH CARD: upload + kéo + zoom ----------------
