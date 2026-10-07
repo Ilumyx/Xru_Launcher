@@ -1,4 +1,4 @@
-"""UI XRU: sảnh, Kit, Gate ảnh/video và Crawler; các lane khác đang chờ chuyển.
+"""UI XRU: sảnh, Kit, Gate ảnh/video/Dash và Crawler; các lane khác đang chờ chuyển.
 python3 launcher.py          # sảnh :5050
 python3 launcher.py start-apps  # bật các server màn cũ chưa chuyển
 python3 launcher.py stop        # chỉ tắt UI :5050, giữ Backend
@@ -30,7 +30,6 @@ LOGS = HERE / "logs"
 
 # Các server UI cũ chờ chuyển lane: khóa → (thư mục land, lệnh, cổng). Không import land.
 APPS = {
-    "gate-dashboard": ("Xru_Gate", ["python", "-m", "ui_dashboard.dashboard_web_app"], 5056),
     "label-video": ("Xru_Label", ["python", "-m", "label_division_video.video_po_review_ui.video_review_web_app"], 5057),
 }
 
@@ -42,8 +41,8 @@ DESTINATIONS = {
     '/gate': '/gate/image/',
     '/gate/image': '/gate/image/index.html',
     '/gate/video': '/gate/video/index.html',
-    '/gate/dash': 'http://127.0.0.1:5056/',
-    '/mockups/gate_dash.html': 'http://127.0.0.1:5056/',
+    '/gate/dash': '/gate/dash/index.html',
+    '/mockups/gate_dash.html': '/gate/dash/',
     '/label': 'http://127.0.0.1:5057/',
     '/label/video': 'http://127.0.0.1:5057/',
 }

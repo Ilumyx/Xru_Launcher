@@ -14,9 +14,9 @@ xru backend image stop
 xru backend image status       # READY khi API trả được dữ liệu
 ```
 
-`xru start` / `xru stop` chỉ bật/tắt UI :5050. Gate ảnh mở tại `/gate/image/`, video tại `/gate/video/?view=grid` hoặc `view=watch`, Crawler tại `/crawler/dash` và `/crawler/sources`; Backend chạy riêng: `python -m gate_image.backend_service.image_api` hoặc `python -m gate_video.backend_service.video_api` trong Xru_Gate, `python -m backend_service.source_api` trong Xru_Crawler. Hợp đồng ở `Xru_Gate/gate_image/backend_service/API.md`, `Xru_Gate/gate_video/backend_service/API.md` và `Xru_Crawler/backend_service/API.md`. Bật/tắt/status từng Backend qua `xru backend image|video|crawler start|stop|status`.
+`xru start` / `xru stop` chỉ bật/tắt UI :5050. Gate ảnh mở tại `/gate/image/`, video tại `/gate/video/?view=grid` hoặc `view=watch`, Gate Dash tại `/gate/dash/`, Crawler tại `/crawler/dash` và `/crawler/sources`; Backend chạy riêng: `python -m gate_image.backend_service.image_api` hoặc `python -m gate_video.backend_service.video_api` trong Xru_Gate, `python -m backend_service.source_api` trong Xru_Crawler. Hợp đồng ở `Xru_Gate/gate_image/backend_service/API.md`, `Xru_Gate/gate_video/backend_service/API.md` và `Xru_Crawler/backend_service/API.md`. Bật/tắt/status từng Backend qua `xru backend image|video|crawler start|stop|status`.
 
-Gate Dash và Label chưa chuyển: `python3 launcher.py start-apps` bật các server màn cũ; `stop-apps` tắt chúng và UI. Màn/server cũ của Gate ảnh, video và Crawler đã xoá. Ba Backend mới không nằm trong `start-apps` / `stop-apps`.
+Label chưa chuyển: `python3 launcher.py start-apps` bật các server màn cũ; `stop-apps` tắt chúng và UI. Màn/server cũ của Gate ảnh, video, Dash và Crawler đã xoá. Ba Backend mới không nằm trong `start-apps` / `stop-apps`.
 
 Mặc định chạy localhost. `--lan` mở server UI cho LAN; để dùng Backend từ máy khác phải cấu hình host và `--ui-origin` của Backend tương ứng. UI có `--port`, `--image-backend`, `--video-backend`, `--crawler-backend` để thử với dữ liệu riêng.
 
@@ -27,7 +27,7 @@ Mặc định chạy localhost. `--lan` mở server UI cho LAN; để dùng Back
 | `launcher.py`, `index.html` | Server 5050, trang chủ |
 | `kit/` | Thư viện gốc, xem tại `/kit/` |
 | `home/` | Quả cầu, menu trang chủ |
-| `gate/image/`, `gate/video/`, `crawler/` | Các màn chỉ gọi Backend qua HTTP |
+| `gate/image/`, `gate/video/`, `gate/dash/`, `crawler/` | Các màn chỉ gọi Backend qua HTTP |
 | `assets/` | `gu/` ảnh gu PO, `sectors/` ảnh ô sector |
 | `mockups/` | Bản nháp chưa làm thật |
 | `data/`, `tools/` | Số chụp Array (tĩnh, có ngày chụp) |

@@ -26,7 +26,6 @@ Lõi land ──► CLI ──► LLM
 | 5059 / 5058 | Backend Gate ảnh / video |
 | 5055 | Backend Crawler |
 | 5057 | UI Label cũ, thành Backend khi tới lượt |
-| 5056 | Bỏ khi Gate Dash về 5050 |
 
 ## Thao tác trong một màn
 
@@ -36,7 +35,7 @@ Lõi land ──► CLI ──► LLM
 
 ## Thứ tự
 
-Gate ảnh (xong) → Gate video + Crawler (xong đợt chuyển) → Gate Dash → Label.
+Gate ảnh (xong) → Gate video + Crawler (xong đợt chuyển) → Gate Dash (xong) → Label.
 
 Mỗi lane: Backend → màn trên 5050 → Codex kiểm chuỗi thao tác → xoá ui_screen và server UI cũ của lane trong cùng đợt. Không giữ hai bản. PO không thử tay từng lane (07/10); PO chỉ xem phần phức tạp.
 
@@ -46,9 +45,10 @@ Gate video: Backend `Xru_Gate/gate_video/backend_service/`, màn `gate/video/` t
 
 Crawler: Backend `Xru_Crawler/backend_service/` gọi reader trong `crawler_image/records/` và `crawler_video/records/`; màn `crawler/` trên 5050. Lane lỗi trả unknown/null, UI báo thiếu dữ liệu; zero thật vẫn là zero. Đã tự kiểm dash, lọc/tìm nguồn, đọc note/chi tiết và phục hồi lane lỗi; xoá `Xru_Crawler/ui_screen/` và server màn cũ. Crawler vẫn chỉ đọc, không thêm chức năng sửa nguồn.
 
+Gate Dash: màn `gate/dash/` trên 5050 đọc `/api/stats` từ Backend ảnh 5059 và video 5058, không gọi CLI. Giữ số và nghĩa cũ; NONE = chưa có kết luận máy, không phải sạch. Lane không trả dữ liệu thì báo đang tắt/chưa có số; lane còn lại vẫn đọc được. Đã đối chiếu số tổng/trạng thái/nguồn với hai API và kiểm tắt từng Backend rồi phục hồi. Đã xoá màn, test và server Dash cũ.
+
 ## Còn mở (sửa khi chuyển lane, không vá màn cũ)
 
-- Gate Dash: đang gọi CLI `stats`. NONE = máy chưa kết luận, không phải sạch.
 - Label: thêm/xoá protagonist còn redirect; lưu dòng xoá draft ô khác; chọn video trang 2 nhảy về trang 1.
 
 ## Commit

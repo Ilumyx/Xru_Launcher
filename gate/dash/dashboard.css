@@ -1,0 +1,66 @@
+/* ==========================================================================
+   GATE DASH — số thật. Sidebar chọn phạm vi nguồn · phễu: hồ sơ đang ở cửa nào · máy chấm điểm.
+   Màu: xám là mặc định. Đỏ (--warn) chỉ cho hàng chờ và chỗ máy yếu nhất.
+   ========================================================================== */
+/* Khung: sidebar nguồn (kit/sidebar/sidebar.css) + vùng số liệu cuộn riêng */
+.gd-shell { display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); height: calc(100vh / var(--ui-zoom)); min-width: 0; transition: grid-template-columns 0.2s ease; }
+.gd-stage { min-width: 0; overflow-y: auto; padding: 28px 36px; scrollbar-width: thin; scrollbar-color: var(--m-6) transparent; }
+.gd-stage a { text-decoration: none; color: var(--fg-dim); }
+.gd-stage a:hover { color: var(--fg-strong); }
+.gd-label { font: 11px var(--font-mono); letter-spacing: .08em; color: var(--fg-dim); }
+.gd-section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; margin-bottom: 20px; }
+.gd-section-head h2 { font-size: 18px; font-weight: 500; color: var(--fg-strong); }
+.gd-block { border-top: 1px solid var(--hairline); padding-top: 26px; margin-top: 34px; }
+
+/* Nút chọn Video / Ảnh (đổi cả trang) và nút tab nhỏ */
+.gd-kind, .gd-tabs { display: flex; gap: 2px; padding: 3px; background: var(--m-2); border: 1px solid var(--hairline); border-radius: 4px; }
+.gd-kind button, .gd-tabs button { border: 0; background: none; color: var(--fg-dim); padding: 6px 14px; border-radius: 2px; font: 13px var(--font-sans); cursor: pointer; }
+.gd-kind button[aria-pressed="true"], .gd-tabs button[aria-pressed="true"] { background: var(--m-5); color: var(--fg-strong); }
+
+/* 1. Phễu */
+.gd-funnel { padding: 26px 0 0; }
+.gd-funnel-cols { display: grid; grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr)); }
+.gd-step { padding: 0 24px; }
+.gd-step:first-child { padding-left: 0; }
+.gd-step + .gd-step { border-left: 1px solid var(--hairline); }
+.gd-step b { display: block; margin: 12px 0 8px; font: 500 40px/1 var(--font-mono); letter-spacing: -.06em; color: var(--fg-strong); }
+.gd-step.is-wait b { color: var(--warn); }
+.gd-step p { font-size: 13px; color: var(--fg-dim); min-height: 1.5em; }
+.gd-step small { display: block; margin-top: 4px; font: 11px var(--font-mono); color: var(--fg-faint); }
+.gd-flow { margin-top: 26px; }
+.gd-flow > div { display: flex; gap: 2px; height: 6px; margin-top: 10px; }
+.gd-flow i { display: block; min-width: 2px; }
+.f-WAITING_PO { background: var(--warn); }
+.f-MACHINE_FLAGGED { background: var(--m-13); }
+.f-DETAINED { background: var(--m-10); }
+.f-ACCEPT_APPROVED { background: var(--m-14); }
+.f-PURGE_APPROVED { background: var(--m-7); }
+
+.gd-note { margin-top: 14px; max-width: 900px; font-size: 13px; line-height: 1.6; color: var(--fg-dim); }
+/* Thanh nhỏ dưới dòng nguồn (Gate Dash: độ sạch) */
+.gd-mini { display: block; height: 2px; margin-top: 6px; background: var(--m-4); }
+.gd-mini s { display: block; height: 100%; background: var(--m-11); }
+.gd-mini.is-thin s { background: var(--m-7); }
+
+/* 2. Máy soi */
+.gd-machine-line { font-size: 15px; color: var(--fg-dim); margin-bottom: 18px; }
+.gd-machine-line b { font: 500 15px var(--font-mono); color: var(--fg-strong); }
+.gd-findings i { display: block; height: 4px; background: var(--m-4); }
+.gd-findings s { display: block; height: 100%; background: var(--m-12); }
+.gd-findings > div { display: grid; grid-template-columns: 160px minmax(0, 1fr) 70px; align-items: center; gap: 18px; padding: 9px 0; border-bottom: 1px solid var(--hairline); }
+.gd-findings span { font-size: 14px; color: var(--fg); }
+.gd-findings b { font: 14px var(--font-mono); text-align: right; font-weight: 400; color: var(--fg-strong); }
+
+@media (max-width: 1100px) {
+
+  .gd-step b { font-size: 30px; }
+}
+@media (max-width: 760px) {
+  .gd-stage { padding: 24px 20px; }
+  .gd-funnel-cols { grid-template-columns: 1fr 1fr; row-gap: 20px; }
+  .gd-step { padding: 0 16px; }
+  .gd-step:nth-child(odd) { padding-left: 0; border-left: 0; }
+}
+
+#gd-status:empty {display:none;}
+#gd-status.is-error {color:var(--warn);}
