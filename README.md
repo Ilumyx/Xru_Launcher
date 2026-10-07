@@ -10,11 +10,11 @@ Màn của land do land tự phục vụ; sảnh mở link trực tiếp. Thứ 
 
 ```bash
 python3 launcher.py          # http://127.0.0.1:5050   (--lan: mở cho cả mạng LAN, xem trên điện thoại)
-python3 launcher.py start-apps  # bật Crawler, Gate ảnh/video, Label
+python3 launcher.py start-apps  # bật Crawler, Gate ảnh/video/Dash, Label
 python3 launcher.py stop     # tắt sảnh + các app đã bật
 ```
 
-- `/` trang chủ. Các ô sector mở thẳng Crawler :5055, Gate :5059/:5058, Label :5057. Link cũ `/<land>/<module>` chỉ chuyển hướng.
+- `/` trang chủ. Các ô sector mở thẳng Crawler :5055, Gate :5059/:5058/:5056, Label :5057. Link cũ `/<land>/<module>` chỉ chuyển hướng.
 - `xru start` bật sảnh và các màn; `xru stop` tắt toàn bộ. Server UI đọc Kit trên ổ đĩa nên tắt riêng server :5050 không làm mất khung của màn đang chạy.
 - `APPS` giữ lệnh khởi động UI cho TUI, không import code land. Server sảnh không có nút Start hay endpoint bật app.
 
@@ -26,8 +26,8 @@ python3 launcher.py stop     # tắt sảnh + các app đã bật
 | `kit/` | **Thư viện gốc** (màu, icon, rail, đầu trang, sidebar, cài đặt, song ngữ). Mục lục: `kit/README.md`, xem tận mắt: `/kit/` |
 | `home/` | Riêng trang chủ: quả cầu (`home/globe/`), dữ liệu lục địa (`launcher.js`), menu rail trang chủ |
 | `assets/` | Ảnh: `gu/` (ảnh gu của PO), `sectors/` (ảnh ô sector trang chủ, lưu qua nút ✎) |
-| `mockups/` | Bản nháp Gate / Array. Tới lượt land nào thì chuyển về land đó. Gate Dash ở đây chạy số thật. (Crawler đã về land: `Xru_Crawler/ui_screen/`.) |
-| `data/`, `tools/` | Số chụp (Gate, Array) + tool chụp |
+| `mockups/` | Bản nháp Gate / Array. Tới lượt land nào thì chuyển về land đó. Gate Dash đã về `Xru_Gate/ui_dashboard/`. (Crawler đã về land: `Xru_Crawler/ui_screen/`.) |
+| `data/`, `tools/` | Số chụp Array + tool chụp |
 
 ## Array snapshot
 
@@ -38,17 +38,9 @@ Regenerate (PC Array must be up; key is read from `XRU_Data/federal_keys/ai/xru_
 python3 tools/array_snapshot.py
 ```
 
-## Gate snapshot
+## Gate Dash
 
-`data/gate_snapshot.js` = số thật của Gate, chụp bằng lệnh đọc `stats` của Gate (gọi CLI, không import code Gate):
-
-```bash
-python3 tools/gate_snapshot.py
-```
-
-## Cần từ lõi
-
-- **Gate** (`stats`): `by_source[].machine.by_outcome` + `findings`; `machine_vs_po` theo loại cờ và theo nguồn (`right`, `false_flag`, `miss`); ngày thêm nguồn.
+Gate phục vụ Dash tại :5056 (`Xru_Gate/ui_dashboard/`), đọc số qua CLI `stats` của hai làn. Màn tự đọc lại mỗi 15 giây khi đang mở. Link cũ `/gate/dash` và `/mockups/gate_dash.html` chuyển sang server Gate.
 
 ## Rules
 

@@ -129,7 +129,7 @@ const CONTINENTAL_DATA = {
         mods: [
           { label: 'Duyệt ảnh', url: 'http://127.0.0.1:5059/' },
           { label: 'Duyệt video', url: 'http://127.0.0.1:5058/' },
-          { label: 'Gate Dash', url: '/mockups/gate_dash.html' }
+          { label: 'Gate Dash', url: 'http://127.0.0.1:5056/' }
         ],
         ago: 'Vừa xong',
         status: '● SẴN SÀNG',

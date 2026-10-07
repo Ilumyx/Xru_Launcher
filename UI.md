@@ -62,16 +62,17 @@ Kiểm ngày 07/10: 0 import trực tiếp từ lõi/CLI sang UI trong 285 file 
 | Phần | Hiện trạng / việc tiếp theo |
 |---|---|
 | Gate ảnh | Đã bỏ phím J theo yêu cầu PO. Lỗi audit về lọc chỉ một trang, phím điều hướng chọn món bị ẩn và inspector/nút quyết định còn bật khi không có kết quả vẫn cần sửa. Ưu tiên lọc/sort toàn hàng chờ và chọn đúng tập đang hiện. Link Watch đã dẫn màn video thật. |
+| Gate Dash | Đã bỏ bản chụp tĩnh; đọc lại số hiện tại. NONE là chưa có kết luận ghi trong trường máy, không phải đã soi sạch. Tỷ lệ nhận tính từ trạng thái nhận/giữ/hủy, không gọi là tỷ lệ duyệt riêng PO. Không có số đúng/sai và máy theo nguồn thì báo chưa có. |
 | Gate video | Audit tái hiện mất note/noise chưa lưu khi đổi clip rồi quay lại. Lọc/sort còn tải cả trang. Quyết định đã dùng fetch. |
 | Label | Phản hồi lưu toàn dòng có thể xóa draft ở ô khác (đã tái hiện bằng hàm thật/phản hồi mô phỏng). Chọn video từ trang hai làm sidebar về trang một (đã kiểm browser). Thêm/xóa protagonist còn redirect. |
 | Crawler | Màn thật mở được. Fixture đọc lỗi cho thấy dashboard giấu lane_errors thành số 0, donut thành 1. Cần hiển thị lỗi/thiếu dữ liệu đúng. |
-| Launcher / TUI | TUI start/stop đã sửa (`30caa7b`, `74bfe40`). Đã sửa avatar IL mất click sau khi rail vẽ lại; TUI cập nhật trạng thái dịch vụ ngay sau bật/tắt, `xru start` bật sảnh và bốn server UI để các link trực tiếp dùng được; lỗi khởi động trả exit 1. Đã sửa stop tách PID sảnh khỏi group app. |
+| Launcher / TUI | TUI start/stop đã sửa (`30caa7b`, `74bfe40`). Đã sửa avatar IL mất click sau khi rail vẽ lại; TUI cập nhật trạng thái dịch vụ ngay sau bật/tắt, `xru start` bật sảnh và năm server UI để các link trực tiếp dùng được; lỗi khởi động trả exit 1. Đã sửa stop tách PID sảnh khỏi group app. |
 
 Audit 07/10: 100/100 test UI Gate + Label qua; các lỗi tương tác trên vẫn tồn tại. Báo cáo, phạm vi verify và ảnh ở `Xru_Code/.codex/evidence/ui-audit-20261007/audit.md`. Audit không sửa code UI/lõi hoặc ghi quyết định/nhãn vào dữ liệu PO.
 
 Bug report avatar/TUI 07/10: avatar mở được sau 4 lần rail vẽ lại; bảng cài đặt mở lại được. Test TUI tương tác với tiến trình mô phỏng xác nhận header DOWN → READY trước khi tiếp tục, khởi động lỗi trả exit 1. Cách bật từng module trong vỏ được thay bằng `xru start` bật các màn độc lập. Evidence: `Xru_Code/.codex/evidence/avatar-tui-20261007/`.
 
-Chuyển sang màn độc lập 07/10: đã bỏ vỏ iframe, giấu rail và bridge đóng/mở. Cùng nút Kit dùng ở Gate ảnh, video, Dash và Label. Crawler mở trực tiếp tại :5055. Gate Dash còn là trang số chụp thuộc Launcher tại `/mockups/gate_dash.html`; chưa chuyển ownership sang land Gate. Bật/tắt toàn bộ qua TUI, dừng riêng server Launcher thì Gate/Label vẫn phục vụ khung từ ổ đĩa. Evidence và ảnh: `Xru_Code/.codex/evidence/standalone-ui-20261007/`.
+Chuyển sang màn độc lập 07/10: đã bỏ vỏ iframe, giấu rail và bridge đóng/mở. Cùng nút Kit dùng ở Gate ảnh, video, Dash và Label. Crawler mở trực tiếp tại :5055. Gate Dash thuộc `Xru_Gate/ui_dashboard/`, server riêng :5056, lấy số hiện tại qua CLI stats của hai làn và đọc lại mỗi 15 giây khi màn hiện. Không dùng bản chụp Launcher. Bật/tắt toàn bộ qua TUI, dừng riêng server Launcher thì Gate/Label vẫn phục vụ khung từ ổ đĩa. Evidence và ảnh: `Xru_Code/.codex/evidence/standalone-ui-20261007/`.
 
 ## Chỗ bắt đầu đọc code
 
@@ -80,6 +81,7 @@ Các đường dẫn tính từ `Xru_Code/`, trừ TUI nằm cạnh `Xru_Code/`.
 - Launcher: `Xru_Launcher/launcher.py`, `home/`, `kit/`, `mockups/`.
 - Gate ảnh: `Xru_Gate/gate_image/ui_screen/`, HTTP quyết định ở `Xru_Gate/gate_image/ui_clerk_desk/`.
 - Gate video: `Xru_Gate/gate_video/ui_screen/`.
+- Gate Dash: `Xru_Gate/ui_dashboard/`.
 - Label video: `Xru_Label/label_division_video/video_po_review_ui/`.
 - Crawler: `Xru_Crawler/ui_screen/`.
 - Lệnh bật/tắt UI: `../Xru_TUI/lib/xru/federal.sh`.

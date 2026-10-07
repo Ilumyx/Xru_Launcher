@@ -27,6 +27,7 @@ LOGS = HERE / "logs"
 # Lệnh bật UI cho TUI: khóa → (thư mục land, lệnh, cổng). Không import land.
 APPS = {
     "crawler-sources": ("Xru_Crawler", ["python", "-m", "ui_screen.source_board_app"], 5055),
+    "gate-dashboard": ("Xru_Gate", ["python", "-m", "ui_dashboard.dashboard_web_app"], 5056),
     "gate-image": ("Xru_Gate", ["python", "-m", "gate_image.ui_screen.image_review_web_app"], 5059),
     "gate-video": ("Xru_Gate", ["python", "-m", "gate_video.ui_screen.video_review_web_app"], 5058),
     "label-video": ("Xru_Label", ["python", "-m", "label_division_video.video_po_review_ui.video_review_web_app"], 5057),
@@ -40,7 +41,8 @@ DESTINATIONS = {
     '/gate': 'http://127.0.0.1:5059/',
     '/gate/image': 'http://127.0.0.1:5059/',
     '/gate/video': 'http://127.0.0.1:5058/',
-    '/gate/dash': '/mockups/gate_dash.html',
+    '/gate/dash': 'http://127.0.0.1:5056/',
+    '/mockups/gate_dash.html': 'http://127.0.0.1:5056/',
     '/label': 'http://127.0.0.1:5057/',
     '/label/video': 'http://127.0.0.1:5057/',
 }
