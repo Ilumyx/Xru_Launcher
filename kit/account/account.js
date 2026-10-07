@@ -218,11 +218,13 @@
     if (!ava) return;
     buildMenu();
     buildPanel();
-    ava.addEventListener('click', (e) => {
-      e.stopPropagation();
-      isMenuOpen() ? closeMenu() : openMenu();
-    });
     document.addEventListener('click', (e) => {
+      // Rail được vẽ lại khi áp cài đặt; avatar mới vẫn dùng xử lý click này.
+      if (e.target.closest('.user-avatar')) {
+        e.stopPropagation();
+        isMenuOpen() ? closeMenu() : openMenu();
+        return;
+      }
       if (isMenuOpen() && !menu.contains(e.target)) closeMenu();
     });
   });

@@ -60,9 +60,11 @@ Kiểm ngày 07/10: 0 import trực tiếp từ lõi/CLI sang UI trong 285 file 
 | Gate video | Audit tái hiện mất note/noise chưa lưu khi đổi clip rồi quay lại. Lọc/sort còn tải cả trang. Quyết định đã dùng fetch. |
 | Label | Phản hồi lưu toàn dòng có thể xóa draft ở ô khác (đã tái hiện bằng hàm thật/phản hồi mô phỏng). Chọn video từ trang hai làm sidebar về trang một (đã kiểm browser). Thêm/xóa protagonist còn redirect. |
 | Crawler | Màn thật mở được. Fixture đọc lỗi cho thấy dashboard giấu lane_errors thành số 0, donut thành 1. Cần hiển thị lỗi/thiếu dữ liệu đúng. |
-| Launcher / TUI | TUI start/stop đã sửa (`30caa7b`, `74bfe40`). Audit thêm: launcher.py stop có thể bỏ sót process chạy trực tiếp không phải trưởng group; đã tái hiện riêng, chưa sửa. |
+| Launcher / TUI | TUI start/stop đã sửa (`30caa7b`, `74bfe40`). Đã sửa avatar IL mất click sau khi rail vẽ lại; TUI cập nhật trạng thái dịch vụ ngay sau bật/tắt, mô tả rõ Bật chỉ bật Launcher và trả lỗi khi khởi động thất bại. Audit còn chờ: launcher.py stop có thể bỏ sót process chạy trực tiếp không phải trưởng group. |
 
 Audit 07/10: 100/100 test UI Gate + Label qua; các lỗi tương tác trên vẫn tồn tại. Báo cáo, phạm vi verify và ảnh ở `Xru_Code/.codex/evidence/ui-audit-20261007/audit.md`. Audit không sửa code UI/lõi hoặc ghi quyết định/nhãn vào dữ liệu PO.
+
+Bug report avatar/TUI 07/10: avatar mở được sau 4 lần rail vẽ lại; bảng cài đặt mở lại được. Test TUI tương tác với tiến trình mô phỏng xác nhận header DOWN → READY trước khi tiếp tục, khởi động lỗi trả exit 1. Launcher thật :5050 đang READY; Gate/Label đang tắt, được bật khi mở module trong Launcher. Evidence: `Xru_Code/.codex/evidence/avatar-tui-20261007/`.
 
 ## Chỗ bắt đầu đọc code
 
