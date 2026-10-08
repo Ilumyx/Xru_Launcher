@@ -45,6 +45,7 @@
     $('insp-img').hidden = true; $('insp-img').removeAttribute('src');
     for (const id of ['insp-title','insp-cap','insp-src','insp-res','insp-state','insp-lane','insp-num','insp-note']) $(id).textContent = '';
     $('po_note_input').value = '';
+    document.querySelector('.duplicate-evidence')?.remove();
     closePeek();
     controls();
   }
@@ -74,6 +75,21 @@
       const detail = await json('/api/assets/' + encodeURIComponent(page.items[index].xru_id));
       if (id !== detailId) return;
       saveDraft(); paintSelection(detail.item, index);
+      document.querySelector('.duplicate-evidence')?.remove();
+      const duplicate=detail.duplicate_inspection;
+      if(duplicate){
+        const section=element('section','duplicate-evidence');
+        section.append(element('p','insp-cap',duplicate.status==='COMPLETE'
+          ? (detail.related.length ? 'Nghi trùng · DINO · PO quyết định' : 'Trạm DINO đã chạy; không có cặp vượt ngưỡng')
+          : (duplicate.status==='ERROR' ? 'Trạm trùng chưa chạy xong · Grid/media lỗi; bằng chứng cũ nếu có vẫn giữ' : 'Ảnh này chưa được trạm trùng soi')));
+        for(const row of detail.related){
+          const link=element('a','insp-cap',row.xru_id+' · DINO '+row.similarity.toFixed(4));
+          link.href=backend+'/media/'+encodeURIComponent(row.xru_id);link.target='_blank';link.rel='noopener';
+          const image=document.createElement('img');image.src=backend+'/thumb/'+encodeURIComponent(row.xru_id);image.alt=row.xru_id;image.style.maxWidth='100%';image.loading='lazy';
+          link.append(image);section.append(link);
+        }
+        $('insp-cap').parentElement.after(section);
+      }
       if (detail.item.state !== view.state) { notice('Ảnh đã chuyển trạng thái. Đang đọc lại hàng chờ…'); await load(); }
     } catch (error) {
       if (id !== detailId) return;
