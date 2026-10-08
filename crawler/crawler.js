@@ -43,6 +43,12 @@
     pending: (a, b) => laneList([b]).reduce((x, l) => x + (l.urls_pending || 0), 0) - laneList([a]).reduce((x, l) => x + (l.urls_pending || 0), 0),
     recent: (a, b) => newest(b) - newest(a),
   };
+  // Bấm đầu cột Ảnh / Video: nhiều nhất trước, bấm lần nữa thì ít nhất trước. Nguồn chưa add lane đó luôn nằm cuối.
+  for (const lane of ['image', 'video']) {
+    const count = (s) => s.lanes[lane]?.assets;
+    SORT[lane] = (a, b) => (count(b) ?? -1) - (count(a) ?? -1);
+    SORT[lane + '_asc'] = (a, b) => (count(a) ?? Infinity) - (count(b) ?? Infinity);
+  }
 
   // URL giữ bộ lọc để Dash và Nguồn dùng chung.
   function keepFilters() {
@@ -164,6 +170,11 @@
 
   function renderSources(list) {
     const body = document.querySelector('[data-source-table] tbody');
+    document.querySelectorAll('[data-sort-lane]').forEach((th) => {
+      const lane = th.dataset.sortLane, on = f.sort.startsWith(lane);
+      th.classList.toggle('on', on);
+      th.dataset.arrow = on ? (f.sort.endsWith('_asc') ? '↑' : '↓') : '↕';
+    });
     body.innerHTML = list.map((s, i) => `<tr data-i="${i}"><td><div class="cr-name">${esc(s.name)}</div><div class="cr-loc">${esc(s.locator)}</div></td><td>${esc(platformName(s.platform))}</td><td><div class="cr-tags">${s.tags.map((t) => `<button type="button" class="cr-tag${f.tag.has(t) ? ' on' : ''}" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div></td><td>${laneCard(s.lanes.image)}</td><td>${laneCard(s.lanes.video)}</td></tr>`).join('');
     $('source-result-count').textContent = board.complete ? `${list.length} / ${sources.length} nguồn` : `${list.length} nguồn đã đọc được · tổng chưa xác định`;
     $('source-empty').hidden = list.length !== 0 || !board.complete;
@@ -181,6 +192,11 @@
     render();
   });
   $('cr-q').addEventListener('input', () => { f.q = $('cr-q').value.trim().toLocaleLowerCase('vi'); render(); });
+  document.querySelectorAll('[data-sort-lane]').forEach((th) => th.addEventListener('click', () => {
+    const lane = th.dataset.sortLane;
+    f.sort = f.sort === lane ? lane + '_asc' : lane;
+    $('cr-sort').value = f.sort; render();
+  }));
   $('cr-sort').value = f.sort;
   $('cr-sort').addEventListener('change', () => { f.sort = $('cr-sort').value; render(); });
   const dialog = $('source-detail');

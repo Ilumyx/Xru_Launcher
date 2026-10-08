@@ -65,6 +65,10 @@ a.rail-icon-btn { text-decoration: none; }
 .cr-table td { padding: 10px 12px; border-bottom: 1px solid var(--hairline); vertical-align: middle; font-size: 13px; }
 .cr-table th:first-child, .cr-table td:first-child { padding-left: 0; }
 .cr-table .c-name { width: 32%; } .cr-table .c-plat { width: 10%; } .cr-table .c-tag { width: 16%; } .cr-table .c-lane { width: 21%; }
+.cr-sortable { cursor: pointer; user-select: none; }
+.cr-sortable::after { content: ' ' attr(data-arrow); color: var(--fg-faint); }
+.cr-sortable:hover, .cr-sortable.on { color: var(--fg-strong); }
+.cr-sortable.on::after { color: var(--fg-strong); }
 .cr-name { color: var(--fg-strong); font-size: 15px; font-weight: 500; }
 .cr-loc { margin-top: 3px; max-width: 380px; font: 11px var(--font-mono); color: var(--fg-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cr-tags { display: flex; flex-wrap: wrap; gap: 4px; }
