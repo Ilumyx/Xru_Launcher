@@ -79,28 +79,34 @@
       `<div><span><i style="background:${SWATCH[Math.min(i, SWATCH.length - 1)]}"></i>${esc(platformName(p))}</span><b>${n(v)}</b><small>${((sum ? v / sum : 0) * 100).toFixed(1)}%</small></div>`).join('');
   }
 
+  // Mỗi nguồn hiện tên một lần; làn ảnh và video của nó là các dòng sát nhau ngay bên cạnh.
   function renderSources(board) {
     const table = document.querySelector('[data-source-table]'), body = table.querySelector('tbody');
     sourceComplete=board.complete;sourceRows=laneRows(board); const rows=sourceRows;
+    rows.forEach((r, i) => { r.i = i; });
     const stateText = (r) => (r.state === 'broken' ? 'Hỏng' : r.active ? 'Đang bật' : 'Đang tắt');
     const stateClass = (r) => (r.state === 'broken' ? 'cr-warn' : r.active ? 'cr-good' : 'cr-dim');
     const initials = (s) => s.replace(/[^\p{L}\p{N} ]/gu, '').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || '··';
-    body.innerHTML = rows.map((r, i) => `<tr data-i="${i}" data-status="${r.active ? 'on' : 'off'}"><td><span class="cr-source-icon">${esc(initials(r.name))}</span><button class="cr-source-button">${esc(r.name)}</button></td><td>${esc(platformName(r.platform))}</td><td>${LANE[r.lane]}</td><td><span class="cr-health ${stateClass(r)}">${stateText(r)}</span></td><td>${esc(r.tier || '—')}</td><td>${n(r.assets)}</td><td>${day(r.last_crawl_at)}</td></tr>`).join('');
+    const sources = board.rows.map((row) => rows.filter((r) => r.name === row.name && row.lanes[r.lane]));
 
-    const filters = [...document.querySelectorAll('[data-status-filter]')], search = $('source-search'), trs = [...body.rows];
+    const filters = [...document.querySelectorAll('[data-status-filter]')], search = $('source-search');
     const count = { all: rows.length, on: rows.filter((r) => r.active).length, off: rows.filter((r) => !r.active).length };
     const label = { all: 'Tất cả', on: 'Đang bật', off: 'Đang tắt' };
     for (const b of filters) b.textContent = `${label[b.dataset.statusFilter]} · ${sourceComplete?count[b.dataset.statusFilter]:'—'}`;
 
     function filter() {
       const q = search.value.trim().toLocaleLowerCase('vi');
-      let shown = 0;
-      for (const tr of body.querySelectorAll('tr')) {
-        tr.hidden = !(sourceStatus === 'all' || tr.dataset.status === sourceStatus) || !tr.textContent.toLocaleLowerCase('vi').includes(q);
-        if (!tr.hidden) shown++;
+      const keep = (r) => (sourceStatus === 'all' || (sourceStatus === 'on') === r.active)
+        && `${r.name} ${platformName(r.platform)} ${LANE[r.lane]}`.toLocaleLowerCase('vi').includes(q);
+      let shown = 0, html = '';
+      for (const lanes of sources) {
+        const seen = lanes.filter(keep);
+        shown += seen.length;
+        html += seen.map((r, k) => `<tr data-i="${r.i}" class="${k ? 'cr-lane-next' : 'cr-lane-first'}">${k ? '' : `<td rowspan="${seen.length}"><span class="cr-source-icon">${esc(initials(r.name))}</span><button class="cr-source-button">${esc(r.name)}</button></td><td rowspan="${seen.length}">${esc(platformName(r.platform))}</td>`}<td>${LANE[r.lane]}</td><td><span class="cr-health ${stateClass(r)}">${stateText(r)}</span></td><td>${esc(r.tier || '—')}</td><td>${n(r.assets)}</td><td>${day(r.last_crawl_at)}</td></tr>`).join('');
       }
+      body.innerHTML = html;
       for (const b of filters) b.setAttribute('aria-pressed', String(b.dataset.statusFilter === sourceStatus));
-      $('source-result-count').textContent = sourceComplete?`${shown} / ${body.rows.length} nguồn`:`${shown} nguồn đã đọc được · tổng chưa xác định`;
+      $('source-result-count').textContent = sourceComplete?`${shown} / ${rows.length} nguồn`:`${shown} nguồn đã đọc được · tổng chưa xác định`;
       $('source-empty').hidden = shown !== 0 || !sourceComplete;
     }
     if(!table.dataset.bound) {
@@ -110,9 +116,9 @@
 
     const dialog = $('source-detail');
     body.addEventListener('click', (e) => {
-      const btn = e.target.closest('.cr-source-button');
-      if (!btn) return;
-      const r = sourceRows[btn.closest('tr').dataset.i];
+      const tr = e.target.closest('tr');
+      if (!tr) return;
+      const r = sourceRows[tr.dataset.i];
       $('source-detail-name').textContent = r.name;
       $('source-detail-url').textContent = r.locator || '—';
       $('source-detail-kind').textContent = LANE[r.lane];

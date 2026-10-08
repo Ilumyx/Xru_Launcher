@@ -52,7 +52,12 @@ a.rail-icon-btn { text-decoration: none; }
 .cr-table td { padding: 14px 16px; border-bottom: 1px solid var(--hairline); }
 .cr-table th:first-child, .cr-table td:first-child { padding-left: 0; }
 .cr-table td:nth-last-child(-n+3), .cr-table th:nth-last-child(-n+3) { text-align: right; }
-.cr-table tbody tr:hover { background: var(--m-2); }
+.cr-table tbody tr { cursor: pointer; }
+.cr-table tbody tr:hover td:not([rowspan]) { background: var(--m-2); }
+.cr-table td[rowspan] { vertical-align: top; }
+.cr-table tr:has(+ .cr-lane-next) td:not([rowspan]) { border-bottom-color: transparent; padding-bottom: 6px; }
+.cr-table tr.cr-lane-next td { padding-top: 6px; }
+.cr-table tr.cr-lane-next td:first-child { padding-left: 16px; }
 .cr-source-button { border: 0; padding: 0; background: none; color: var(--fg-strong); text-align: left; font: 500 16px var(--font-sans); cursor: pointer; }
 .cr-source-button:hover { color: var(--accent); }
 .cr-source-icon { display: inline-grid; place-items: center; width: 32px; height: 32px; margin-right: 10px; background: var(--m-4); color: var(--fg-dim); font: 13px var(--font-mono); vertical-align: middle; }
