@@ -1,11 +1,11 @@
 // Mặt chép từ mockup Crawler (js/crawler.js); số thật lấy từ /api/board. Chỉ đọc.
-// Sidebar trái như Gate Dash: tất cả → nền tảng → nguồn. Phạm vi đang chọn nằm trên URL (?scope=) để Dash và Nguồn dùng chung.
+// Sidebar trái = lọc (lọc nhanh, platform, tag) và sắp xếp; bộ lọc nằm trên URL để Dash và Nguồn dùng chung.
 (() => {
-  let backend, board=null, allRows=[], sourceRows=[], sourceStatus=new URLSearchParams(location.search).get('status')||'all', disconnected=false;
-  let scope=new URLSearchParams(location.search).get('scope')||'all';
-  const open={};
+  let backend, board=null, sources=[], shown=[], disconnected=false;
+  const params=new URLSearchParams(location.search), list=(k)=>new Set((params.get(k)||'').split(',').filter(Boolean));
+  const f={ plat:list('plat'), tag:list('tag'), quick:params.get('quick')||'', sort:params.get('sort')||'issue', q:'' };
   const LANE = { image: 'Ảnh', video: 'Video' };
-  const PLATFORM = { facebook: 'Facebook', dvids: 'DVIDS', waralbum: 'War Album', reddit: 'Reddit', x: 'X', telegram: 'Telegram', rss: 'RSS' };
+  const PLATFORM = { facebook: 'Facebook', dvids: 'DVIDS', waralbum: 'War Album', reddit: 'Reddit', x: 'X', telegram: 'Telegram', youtube: 'YouTube', vk: 'VK', tiktok: 'TikTok', bilibili: 'Bilibili', direct: 'Direct' };
   const SWATCH = ['var(--accent)', 'var(--m-11)', 'var(--m-8)', 'var(--m-6)', 'var(--m-5)'];
   const $ = (id) => document.getElementById(id);
   const n = (v) => v == null ? '—' : Number(v).toLocaleString('en-US');
@@ -14,74 +14,86 @@
   const two = (v) => String(v).padStart(2, '0');
   const dm = (d) => `${two(d.getDate())}/${two(d.getMonth() + 1)}`;
   const day = (iso) => (iso ? `${dm(new Date(iso))}/${new Date(iso).getFullYear()}` : '—');
+  const ago = (iso) => (iso ? `${Math.max(0, Math.floor((Date.now() - new Date(iso)) / 864e5))} ngày` : '—');
   const isToday = (iso) => iso && new Date(iso).toDateString() === new Date().toDateString();
   const stateText = (r) => (r.state === 'broken' ? 'Hỏng' : r.active ? 'Đang bật' : 'Đang tắt');
-  const stateClass = (r) => (r.state === 'broken' ? 'cr-warn' : r.active ? 'cr-good' : 'cr-dim');
-  const sum = (rows, key) => rows.reduce((a, r) => a + (r[key] || 0), 0);
 
-  // Mỗi nguồn × mỗi làn thành một dòng.
-  function laneRows(data) {
-    const out = [];
-    for (const row of data.rows) {
-      for (const [lane, cell] of Object.entries(row.lanes)) out.push({ name: row.name, lane, ...cell, platform: cell.adapter });
-    }
-    return out;
+  // Một nguồn = một tên hiển thị; mỗi làn (ảnh/video) là một ô.
+  function toSources(data) {
+    return data.rows.map((row) => {
+      const lanes = Object.fromEntries(Object.entries(row.lanes).map(([lane, cell]) => [lane, { name: row.name, lane, ...cell, platform: cell.adapter }]));
+      const first = Object.values(lanes)[0];
+      return { name: row.name, tags: row.tags || [], lanes, platform: first.platform, locator: (first.locator || '').replace(/^https?:\/\/(www\.)?/, '').replace(/\/(reels|photos|videos)\/?$/, '') };
+    });
+  }
+  const laneList = (srcs) => srcs.flatMap((s) => Object.values(s.lanes));
+  const issue = (s) => Object.values(s.lanes).some((l) => l.state === 'broken' || (l.active && !l.urls_found));
+  const QUICK = { noimage: ['Thiếu ảnh', (s) => !s.lanes.image], novideo: ['Thiếu video', (s) => !s.lanes.video], issue: ['Có vấn đề', issue] };
+  function match(s, skip) {
+    if (f.q && !`${s.name} ${s.locator}`.toLocaleLowerCase('vi').includes(f.q)) return false;
+    if (skip !== 'plat' && f.plat.size && !f.plat.has(s.platform)) return false;
+    if (skip !== 'tag' && [...f.tag].some((t) => !s.tags.includes(t))) return false;
+    if (skip !== 'quick' && f.quick && !QUICK[f.quick][1](s)) return false;
+    return true;
+  }
+  const newest = (s) => Math.max(0, ...Object.values(s.lanes).map((l) => l.last_crawl_at ? +new Date(l.last_crawl_at) : 0));
+  const SORT = {
+    issue: null,
+    name: (a, b) => a.name.localeCompare(b.name),
+    pending: (a, b) => laneList([b]).reduce((x, l) => x + (l.urls_pending || 0), 0) - laneList([a]).reduce((x, l) => x + (l.urls_pending || 0), 0),
+    recent: (a, b) => newest(b) - newest(a),
+  };
+
+  // URL giữ bộ lọc để Dash và Nguồn dùng chung.
+  function keepFilters() {
+    const url = new URL(location.href), q = new URLSearchParams();
+    if (f.plat.size) q.set('plat', [...f.plat].join(','));
+    if (f.tag.size) q.set('tag', [...f.tag].join(','));
+    if (f.quick) q.set('quick', f.quick);
+    if (f.sort !== 'issue') q.set('sort', f.sort);
+    const qs = q.toString() ? '?' + q : '';
+    history.replaceState(null, '', url.pathname + qs);
+    document.querySelectorAll('[data-keep-scope], .rail a.rail-icon-btn').forEach((a) => { a.href = a.getAttribute('href').split('?')[0] + qs; });
+    return qs;
   }
 
-  // Phạm vi: "all" | "p:<nền tảng>" | "s:<nền tảng>:<tên nguồn>".
-  function inScope(r) {
-    if (scope === 'all') return true;
-    const [kind, platform, ...name] = scope.split(':');
-    return r.platform === platform && (kind === 'p' || r.name === name.join(':'));
-  }
-  function scopeTitle() {
-    if (scope === 'all') return 'TẤT CẢ NGUỒN';
-    const [kind, platform, ...name] = scope.split(':');
-    return kind === 'p' ? platformName(platform).toUpperCase() : name.join(':');
-  }
-  function keepScope() {
-    const q = scope === 'all' ? '' : `?scope=${encodeURIComponent(scope)}`;
-    document.querySelectorAll('[data-keep-scope], .rail a.rail-icon-btn').forEach((a) => { a.href = a.getAttribute('href').split('?')[0] + q; });
-    const url = new URL(location.href);
-    if (scope === 'all') url.searchParams.delete('scope'); else url.searchParams.set('scope', scope);
-    history.replaceState(null, '', url);
-  }
-
-  // Cây nguồn bên trái. Mỗi nguồn có thể có làn ảnh và làn video.
-  function renderTree() {
-    const q = $('cr-q').value.trim().toLocaleLowerCase('vi');
-    const groups = {};
-    for (const r of allRows) ((groups[r.platform] ||= {})[r.name] ||= []).push(r);
-    const order = Object.entries(groups).sort((a, b) => Object.keys(b[1]).length - Object.keys(a[1]).length);
-    const broken = (rows) => rows.filter((r) => r.state === 'broken').length;
-    const sub = (rows) => { const k = broken(rows); return `${n(sum(rows, 'assets'))} kiện${k ? ` · <span class="cr-warn">${k} hỏng</span>` : ''}`; };
-    const item = (key, name, subHtml, cls, arrow = '') =>
-      `<div class="side-item ${cls}${scope === key ? ' is-active' : ''}" data-scope="${esc(key)}"><span class="n">${arrow}</span><div><div class="t">${esc(name)}</div><div class="s">${subHtml}</div></div></div>`;
-    let html = item('all', 'Tất cả nguồn', `${n(new Set(allRows.map((r) => r.name)).size)} nguồn · ${sub(allRows)}`, 'is-all');
-    for (const [platform, sources] of order) {
-      const names = Object.keys(sources).filter((s) => !q || s.toLocaleLowerCase('vi').includes(q) || platformName(platform).toLocaleLowerCase('vi').includes(q));
-      if (!names.length) continue;
-      const rows = Object.values(sources).flat();
-      html += item(`p:${platform}`, platformName(platform), `${n(Object.keys(sources).length)} nguồn · ${sub(rows)}`, 'is-group', open[platform] === false && !q ? '▸' : '▾');
-      if (open[platform] === false && !q) continue;
-      html += names.map((s) => {
-        const lanes = sources[s];
-        const line = lanes.map((r) => `<span class="${r.state === 'broken' ? 'cr-warn' : r.active ? '' : 'cr-off'}">${LANE[r.lane]} ${n(r.assets)}</span>`).join(' · ');
-        return item(`s:${platform}:${s}`, s, line, 'is-child');
+  // Sidebar = lọc: vấn đề nhanh · platform · tag (tag cố định từ Crawler để thấy domain chưa có nguồn).
+  function renderFilters() {
+    const row = (attr, key, on, label, nums, empty) => `<button type="button" class="f-row${nums.length > 1 ? '' : ' plat'}${on ? ' on' : ''}${empty ? ' empty' : ''}" ${attr}="${esc(key)}"><span>${esc(label)}</span>${nums.join('')}</button>`;
+    const num = (v, warn) => `<b class="${warn ? 'gap' : ''}">${v}</b>`;
+    let html = '<div class="f-head"><span>LỌC NHANH</span></div>';
+    const qpool = sources.filter((s) => match(s, 'quick'));
+    html += Object.entries(QUICK).map(([k, [label, test]]) => { const c = qpool.filter(test).length; return row('data-quick', k, f.quick === k, label, [num(c, k !== 'noimage' && k !== 'novideo' ? c > 0 : false)], !c); }).join('');
+    const plats = {}; for (const s of sources.filter((s) => match(s, 'plat'))) plats[s.platform] = (plats[s.platform] || 0) + 1;
+    const known = [...new Set([...sources.map((s) => s.platform)])].sort((a, b) => (plats[b] || 0) - (plats[a] || 0));
+    html += '<div class="f-head"><span>PLATFORM</span></div>' + known.map((p) => row('data-plat', p, f.plat.has(p), platformName(p), [num(plats[p] || 0)], !plats[p])).join('');
+    const pool = sources.filter((s) => match(s, 'tag'));
+    const groups = { ...(board.tag_groups || {}) };
+    const extra = [...new Set(sources.flatMap((s) => s.tags))].filter((t) => !Object.values(groups).flat().includes(t));
+    if (extra.length) groups['Khác'] = extra;
+    html += '<div class="f-head"><span>TAG</span><span><span>NGUỒN</span><span>ẢNH</span><span>VIDEO</span></span></div>';
+    for (const [group, tags] of Object.entries(groups)) {
+      html += `<div class="f-sub">${esc(group)}</div>`;
+      html += tags.map((t) => {
+        const hit = pool.filter((s) => s.tags.includes(t)), img = hit.filter((s) => s.lanes.image).length, vid = hit.filter((s) => s.lanes.video).length;
+        return row('data-tag', t, f.tag.has(t), t, hit.length ? [num(hit.length), num(img, !img), num(vid, !vid)] : [num(0, true), '<b>—</b>', '<b>—</b>'], !hit.length);
       }).join('');
     }
-    $('cr-tree').innerHTML = html;
-    $('cr-count').textContent = n(new Set(allRows.map((r) => r.name)).size);
+    $('cr-filters').innerHTML = html;
+    $('cr-count').textContent = n(sources.length);
   }
 
   function render() {
     if (!board) return;
-    const rows = allRows.filter(inScope);
-    renderTree();
-    $('cr-scope').textContent = scopeTitle();
-    keepScope();
-    if ($('cr-chart')) renderDash(rows);
-    if (document.querySelector('[data-source-table]')) renderSources(rows);
+    shown = sources.filter((s) => match(s));
+    if (SORT[f.sort]) shown = [...shown].sort(SORT[f.sort]);
+    renderFilters();
+    keepFilters();
+    const chips = [...[...f.plat].map(platformName), ...f.tag, ...(f.quick ? [QUICK[f.quick][0]] : [])];
+    $('cr-active').textContent = chips.length ? 'Đang lọc: ' + chips.join(' + ') : '';
+    $('cr-clear').hidden = !chips.length;
+    if ($('cr-chart')) renderDash(laneList(shown));
+    if (document.querySelector('[data-source-table]')) renderSources(shown);
   }
 
   function renderDash(rows) {
@@ -141,49 +153,44 @@
   }
   const hiddenSeries = (key) => document.querySelector(`[data-chart-series="${key}"]`)?.getAttribute('aria-pressed') === 'false' ? ' hidden' : '';
 
-  // Mỗi nguồn hiện tên một lần; làn ảnh và video của nó là các dòng sát nhau ngay bên cạnh.
-  function renderSources(rows) {
-    const table = document.querySelector('[data-source-table]'), body = table.querySelector('tbody');
-    sourceRows = rows;
-    const initials = (s) => s.replace(/[^\p{L}\p{N} ]/gu, '').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || '··';
-    const sources = new Map();
-    rows.forEach((r, i) => { r.i = i; const key = `${r.platform}:${r.name}`; sources.set(key, [...(sources.get(key) || []), r]); });
+  // Ô một làn: hạng · đã tải / URL đã quét · thanh tỷ lệ · bao lâu chưa nhận mới.
+  function laneCard(l) {
+    if (!l) return '<div class="cr-card missing">+ Chưa add</div>';
+    const nodisc = l.active && !l.urls_found, pct = l.urls_found ? Math.min(100, (l.assets / l.urls_found) * 100) : 0;
+    const cls = l.state === 'broken' ? 'broken' : !l.active ? 'off' : nodisc ? 'nodisc' : '';
+    const st = l.state === 'broken' ? `hỏng · ${ago(l.last_crawl_at)}` : !l.active ? `tắt · ${ago(l.last_crawl_at)}` : nodisc ? 'chưa discovery' : ago(l.last_crawl_at);
+    return `<button type="button" class="cr-card ${cls}" data-lane="${l.lane}"><span class="tier">${esc(l.tier || '–')}</span><span class="num">${n(l.assets)} <small>/ ${n(l.urls_found)}</small></span><span class="bar"><i style="width:${pct}%"></i></span><span class="st">${st}${l.urls_pending ? ` · <span class="pend">${n(l.urls_pending)} chờ</span>` : ''}</span></button>`;
+  }
 
-    const filters = [...document.querySelectorAll('[data-status-filter]')];
-    const count = { all: rows.length, on: rows.filter((r) => r.active).length, off: rows.filter((r) => !r.active).length };
-    const label = { all: 'Tất cả', on: 'Đang bật', off: 'Đang tắt' };
-    for (const b of filters) b.textContent = `${label[b.dataset.statusFilter]} · ${board.complete?count[b.dataset.statusFilter]:'—'}`;
-
-    const keep = (r) => sourceStatus === 'all' || (sourceStatus === 'on') === r.active;
-    let shown = 0, html = '';
-    for (const lanes of sources.values()) {
-      const seen = lanes.filter(keep);
-      shown += seen.length;
-      html += seen.map((r, k) => `<tr data-i="${r.i}" class="${k ? 'cr-lane-next' : 'cr-lane-first'}">${k ? '' : `<td rowspan="${seen.length}"><span class="cr-source-icon">${esc(initials(r.name))}</span><button class="cr-source-button">${esc(r.name)}</button></td>`}<td>${LANE[r.lane]}</td><td><span class="cr-health ${stateClass(r)}">${stateText(r)}</span></td><td>${n(r.urls_found)}</td><td>${n(r.assets)}</td><td class="${r.urls_pending ? 'cr-warn' : ''}">${n(r.urls_pending)}</td><td>${day(r.last_crawl_at)}</td></tr>`).join('');
-    }
-    body.innerHTML = html;
-    for (const b of filters) b.setAttribute('aria-pressed', String(b.dataset.statusFilter === sourceStatus));
-    $('source-result-count').textContent = board.complete?`${shown} / ${rows.length} làn nguồn`:`${shown} làn đã đọc được · tổng chưa xác định`;
-    $('source-empty').hidden = shown !== 0 || !board.complete;
+  function renderSources(list) {
+    const body = document.querySelector('[data-source-table] tbody');
+    body.innerHTML = list.map((s, i) => `<tr data-i="${i}"><td><div class="cr-name">${esc(s.name)}</div><div class="cr-loc">${esc(s.locator)}</div></td><td>${esc(platformName(s.platform))}</td><td><div class="cr-tags">${s.tags.map((t) => `<button type="button" class="cr-tag${f.tag.has(t) ? ' on' : ''}" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div></td><td>${laneCard(s.lanes.image)}</td><td>${laneCard(s.lanes.video)}</td></tr>`).join('');
+    $('source-result-count').textContent = board.complete ? `${list.length} / ${sources.length} nguồn` : `${list.length} nguồn đã đọc được · tổng chưa xác định`;
+    $('source-empty').hidden = list.length !== 0 || !board.complete;
   }
 
   // Sự kiện gắn một lần.
-  $('cr-q').addEventListener('input', renderTree);
-  $('cr-tree').addEventListener('click', (e) => {
-    const el = e.target.closest('[data-scope]');
+  const flip = (set, v) => (set.has(v) ? set.delete(v) : set.add(v));
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('[data-plat],[data-tag],[data-quick],#cr-clear');
     if (!el) return;
-    const key = el.dataset.scope;
-    if (el.classList.contains('is-group') && e.target.classList.contains('n')) { const p = key.slice(2); open[p] = open[p] === false; renderTree(); return; }
-    scope = key; render();
+    if (el.id === 'cr-clear') { f.plat.clear(); f.tag.clear(); f.quick = ''; }
+    else if (el.dataset.plat) flip(f.plat, el.dataset.plat);
+    else if (el.dataset.tag) flip(f.tag, el.dataset.tag);
+    else f.quick = f.quick === el.dataset.quick ? '' : el.dataset.quick;
+    render();
   });
-  for (const b of document.querySelectorAll('[data-status-filter]')) b.addEventListener('click', () => { sourceStatus = b.dataset.statusFilter; render(); });
+  $('cr-q').addEventListener('input', () => { f.q = $('cr-q').value.trim().toLocaleLowerCase('vi'); render(); });
+  $('cr-sort').value = f.sort;
+  $('cr-sort').addEventListener('change', () => { f.sort = $('cr-sort').value; render(); });
   const dialog = $('source-detail');
   if (dialog) {
     document.querySelector('[data-source-table] tbody').addEventListener('click', (e) => {
       const tr = e.target.closest('tr');
-      if (!tr) return;
-      const r = sourceRows[tr.dataset.i];
-      $('source-detail-name').textContent = r.name;
+      if (!tr || e.target.closest('[data-tag]')) return;
+      const s = shown[tr.dataset.i], card = e.target.closest('[data-lane]');
+      const r = card ? s.lanes[card.dataset.lane] : Object.values(s.lanes)[0];
+      $('source-detail-name').textContent = s.name;
       $('source-detail-url').textContent = r.locator || '—';
       $('source-detail-kind').textContent = LANE[r.lane];
       $('source-detail-state').textContent = stateText(r);
@@ -209,7 +216,7 @@
   }
   window.addEventListener('keydown', (event) => {
     if (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(document.activeElement.tagName) || document.querySelector('dialog[open]')) return;
-    const q = scope === 'all' ? '' : `?scope=${encodeURIComponent(scope)}`;
+    const q = keepFilters();
     if (event.key === '1') location.href = '/crawler/dash' + q;
     if (event.key === '2') location.href = '/crawler/sources' + q;
   });
@@ -219,7 +226,7 @@
     try {
       const r=await fetch(backend+'/api/board',{cache:'no-store',signal:AbortSignal.timeout(20000)}), data=await r.json();
       if(!Array.isArray(data.rows)) throw Error(data.error||'Backend chưa trả được dữ liệu.');
-      board=data; allRows=laneRows(data);
+      board=data; sources=toSources(data);
       render();
       const failures=Object.entries(data.lane_errors).map(([lane,reason])=>`${LANE[lane]}: ${reason}`);
       error(failures.length?'THIẾU DỮ LIỆU — '+failures.join(' · '):'');disconnected=!data.complete;
