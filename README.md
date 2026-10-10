@@ -10,6 +10,7 @@ python3 launcher.py stop        # chỉ tắt UI, giữ Backend và CLI
 xru backend image start        # Backend Gate ảnh :5059
 xru backend video start        # Backend Gate video :5058
 xru backend crawler start      # Backend Crawler :5055
+xru backend label start        # Backend Label video :5057
 xru backend image stop
 xru backend image status       # READY khi API trả được dữ liệu
 ```
@@ -17,12 +18,6 @@ xru backend image status       # READY khi API trả được dữ liệu
 `xru start` / `xru stop` chỉ bật/tắt UI :5050. Gate ảnh mở tại `/gate/image/`, video tại `/gate/video/?view=grid` hoặc `view=watch`, Gate Dash tại `/gate/dash/`, Crawler tại `/crawler/dash` và `/crawler/sources`, Label tại `/label/video/`; Backend chạy riêng: `python -m gate_image.ui_backend_service.image_api` hoặc `python -m gate_video.ui_backend_service.video_api` trong Xru_Gate, `python -m ui_backend_service.source_api` trong Xru_Crawler, `python -m label_division_video.backend_service.label_api` trong Xru_Label. Hợp đồng ở `Xru_Gate/gate_image/ui_backend_service/API.md`, `Xru_Gate/gate_video/ui_backend_service/API.md`, `Xru_Crawler/ui_backend_service/API.md` và `Xru_Label/label_division_video/backend_service/API.md`. Bật/tắt/status từng Backend qua `xru backend image|video|crawler|label start|stop|status`.
 
 Mặc định chạy localhost. `--lan` mở server UI cho LAN; để dùng Backend từ máy khác phải cấu hình host và `--ui-origin` của Backend tương ứng. UI có `--port`, `--image-backend`, `--video-backend`, `--crawler-backend`, `--label-backend` để thử với dữ liệu riêng.
-
-## Label tạm ẩn (ORDER V5-2)
-
-`ui_availability.json` đang đặt `"label": false`. Sảnh ẩn card Division; URL Label cũ về sảnh. TUI ẩn dòng trạng thái và menu Label, không dò cổng hoặc chạy Backend Label. Code cửa và màn vẫn giữ nguyên.
-
-Khi PO cho mở lại sau Label V5: đổi duy nhất `"label": true` trong file này, tải lại sảnh và mở lại TUI. Khi đó mới dùng `xru backend label start`. `xru start` chỉ bật UI, không bật Backend.
 
 ## Thư mục
 

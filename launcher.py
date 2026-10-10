@@ -13,7 +13,7 @@ import sys
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse, unquote
+from urllib.parse import parse_qs, urlparse
 
 HERE = Path(__file__).resolve().parent
 PORT = 5050
@@ -22,13 +22,6 @@ VIDEO_BACKEND = "http://127.0.0.1:5058"
 CRAWLER_BACKEND = "http://127.0.0.1:5055"
 LABEL_BACKEND = "http://127.0.0.1:5057"
 LOGS = HERE / "logs"
-
-
-def label_enabled() -> bool:
-    try:
-        return json.loads((HERE / 'ui_availability.json').read_text()).get('label') is True
-    except (OSError, ValueError):
-        return False
 
 # Giữ link cũ dưới dạng chuyển hướng; không tạo vỏ hay nhúng màn.
 DESTINATIONS = {
@@ -76,12 +69,7 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self) -> None:
-        path = unquote(urlparse(self.path).path)
-        if (path.rstrip('/') == '/label' or path.startswith('/label/')) and not label_enabled():
-            self.send_response(302)
-            self.send_header('Location', '/')
-            self.end_headers()
-            return
+        path = urlparse(self.path).path
         if path == '/ui-config':
             return self._send(200, json.dumps({'image_backend': IMAGE_BACKEND, 'video_backend': VIDEO_BACKEND, 'crawler_backend': CRAWLER_BACKEND, 'label_backend': LABEL_BACKEND}), 'application/json')
         destination = DESTINATIONS.get(path.rstrip('/'))

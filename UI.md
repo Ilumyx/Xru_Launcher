@@ -25,7 +25,7 @@ Lõi land ──► CLI ──► LLM
 | 5050 | UI: sảnh, Kit, mọi màn |
 | 5059 / 5058 | Backend Gate ảnh / video |
 | 5055 | Backend Crawler |
-| 5057 | Label tạm ẩn, chờ V5 |
+| 5057 | Backend Label video |
 
 ## Thao tác trong một màn
 
@@ -58,7 +58,3 @@ Không còn mục mở từ đợt chuyển.
 - Repo Launcher: `Laucher Order <số>: …`, nối tiếp số cũ.
 - Repo land: `Order UI <số>: …`, nối tiếp số Order cao nhất của repo đó.
 - Báo commit, phép kiểm, phần chưa kiểm. Không push khi PO chưa bảo.
-
-## ORDER V5-2 — 10/10/2026
-
-Label V4 đã dừng; cửa Label tạm ẩn cho tới lệnh PO mở lại. Một công tắc `ui_availability.json`: `label=false` ẩn card Division, chuyển URL Label cũ về sảnh, ẩn menu/trạng thái/lệnh Backend Label trong TUI. Không xoá code màn hoặc cửa. Đổi `label=true`, tải lại sảnh và mở lại TUI khi Label V5 sẵn sàng. `xru start` chỉ bật UI.

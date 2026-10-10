@@ -151,7 +151,6 @@ const CONTINENTAL_DATA = {
       {
         code: 'SECTOR-4',
         name: 'Division',
-        availability: 'label',
         tagline: 'Bầy AI gán nhãn & Định danh thực thể (Labeling platoon)',
         image: '',
         mods: [
@@ -349,10 +348,13 @@ window.addEventListener('keydown', (e) => {
 });
 
 // Khởi chạy mặc định lúc nạp trang
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const response = await fetch('/ui_availability.json', {cache: 'no-store'});
-    window.XRU_UI_AVAILABILITY = response.ok ? await response.json() : {};
-  } catch { window.XRU_UI_AVAILABILITY = {}; }
-  switchContinent(new URLSearchParams(location.search).get('continent') || 'eurasia');
+document.addEventListener('DOMContentLoaded', () => {
+  switchContinent('eurasia');
 });
+
+
+// Mở thẳng một lục địa từ link ở trang khác, vd. index.html?continent=euruska
+(() => {
+  const c = new URLSearchParams(location.search).get('continent');
+  if (c && typeof switchContinent === 'function') switchContinent(c);
+})();
