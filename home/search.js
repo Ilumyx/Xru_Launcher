@@ -4,7 +4,7 @@
 // ==========================================================================
 function goArray(q) {
   q = (q || '').trim();
-  window.location.href = q ? `mockups/array_search.html?q=${encodeURIComponent(q)}` : 'mockups/array_search.html';
+  window.location.href = q ? `array/index.html?q=${encodeURIComponent(q)}` : 'array/index.html';
 }
 
 window.addEventListener('keydown', (e) => {

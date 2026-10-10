@@ -2,7 +2,7 @@
 window.XRU_RAILS = {
   launcher: {
     label: 'rail_fed_continents', home: 'index.html?continent=xru', homeTip: 'rail_overview_tip',
-    groups: [[{ key: 'array', href: 'mockups/array_search.html', icon: 'search', tip: 'rail_array_tip' }],
+    groups: [[{ key: 'array', href: 'array/index.html', icon: 'search', tip: 'rail_array_tip' }],
              [{ key: 'kit', href: 'kit/index.html', icon: 'table', tip: 'XRU Kit' }]],
   },
 };

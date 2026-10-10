@@ -32,7 +32,6 @@ DESTINATIONS = {
     '/gate/image': '/gate/image/index.html',
     '/gate/video': '/gate/video/index.html',
     '/gate/dash': '/gate/dash/index.html',
-    '/mockups/gate_dash.html': '/gate/dash/',
     '/label': '/label/video/index.html',
     '/label/video': '/label/video/index.html',
 }

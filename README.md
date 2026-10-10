@@ -28,7 +28,7 @@ Mặc định chạy localhost. `--lan` mở server UI cho LAN; để dùng Back
 | `home/` | Quả cầu, menu trang chủ |
 | `gate/image/`, `gate/video/`, `gate/dash/`, `crawler/`, `label/video/` | Các màn chỉ gọi Backend qua HTTP |
 | `assets/` | `gu/` ảnh gu PO, `sectors/` ảnh ô sector |
-| `mockups/` | Bản nháp chưa làm thật |
+| `array/` | Màn Array (tra cứu, đọc bản chụp `data/array_snapshot.js`) |
 | `data/`, `tools/` | Số chụp Array (tĩnh, có ngày chụp) |
 
 ## Kit
