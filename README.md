@@ -5,14 +5,10 @@ Module UI rời của XRU: sảnh, Kit, các màn. Quyết định và việc: [
 ## Chạy
 
 ```bash
-python3 launcher.py             # http://127.0.0.1:5050  (--lan: mở cho mạng LAN)
-python3 launcher.py stop        # chỉ tắt UI, giữ Backend và CLI
-xru backend image start        # Backend Gate ảnh :5059
-xru backend video start        # Backend Gate video :5058
-xru backend crawler start      # Backend Crawler :5055
-xru backend label start        # Backend Label video :5057
-xru backend image stop
-xru backend image status       # READY khi API trả được dữ liệu
+xru start                       # bật UI :5050 + 4 Backend (ảnh :5059, video :5058, Crawler :5055, Label :5057)
+xru stop                        # tắt hết
+xru backend image status        # READY khi API trả được dữ liệu; dùng cho máy, từng lane
+python3 launcher.py --lan       # chỉ UI, mở cho mạng LAN
 ```
 
 `xru start` / `xru stop` chỉ bật/tắt UI :5050. Gate ảnh mở tại `/gate/image/`, video tại `/gate/video/?view=grid` hoặc `view=watch`, Gate Dash tại `/gate/dash/`, Crawler tại `/crawler/dash` và `/crawler/sources`, Label tại `/label/video/`; Backend chạy riêng: `python -m gate_image.ui_backend_service.image_api` hoặc `python -m gate_video.ui_backend_service.video_api` trong Xru_Gate, `python -m ui_backend_service.source_api` trong Xru_Crawler, `python -m label_division_video.backend_service.label_api` trong Xru_Label. Hợp đồng ở `Xru_Gate/gate_image/ui_backend_service/API.md`, `Xru_Gate/gate_video/ui_backend_service/API.md`, `Xru_Crawler/ui_backend_service/API.md` và `Xru_Label/label_division_video/backend_service/API.md`. Bật/tắt/status từng Backend qua `xru backend image|video|crawler|label start|stop|status`.
