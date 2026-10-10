@@ -75,7 +75,7 @@ window.LauncherGlobe = (() => {
     if (panel.dataset.continent === continentId && panel.dataset.imageVersion === String(imgVersion)) return;
 
     const editTip = window.XRU_I18N ? window.XRU_I18N.t('edit_img_tip') : 'Đổi ảnh';
-    const lands = data.lands || [];
+    const lands = (data.lands || []).filter(land => !land.availability || window.XRU_UI_AVAILABILITY?.[land.availability] === true);
     panel.innerHTML = `
       <div class="lands-panel-head">${continentId.toUpperCase()}</div>
       <div class="lands-list">
