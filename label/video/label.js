@@ -199,11 +199,7 @@
     $('d-id').textContent = item.xru_id;
     $('d-source').textContent = `${item.source_name} / ${item.source_lane}`;
     $('d-domain').textContent = item.primary_domain || '—';
-    $('d-note').textContent = item.po_note || '—';
     $('d-claim').textContent = row?.claimed_by || '—';
-    $('d-aspect').textContent = item.gate.aspect;
-    $('d-noise').textContent = item.gate.noise ? 'y' : 'n';
-    $('d-wm').textContent = item.gate.watermark ? 'y' : 'n';
     paintProgress(item.progress);
   }
 
@@ -224,8 +220,6 @@
     const box = $('stage-frames');
     if (!s || !s.frame_count) { box.innerHTML = `<div class="stage-none">${esc(t('lb_no_frames'))}</div>`; return; }
     const id = encodeURIComponent(item.xru_id);
-    const [w, h] = String(item.gate.aspect).split(':').map(Number);
-    box.style.setProperty('--frame-ratio', w > 0 && h > 0 ? `${w} / ${h}` : '9 / 16');
     box.dataset.seg = n;
     box.innerHTML = Array.from({ length: s.frame_count }, (_, i) => {
       const k = i + 1, ts = s.frame_timestamps[i];
@@ -233,6 +227,12 @@
         <img loading="lazy" decoding="async" alt="" src="${backend}/thumb/${id}/${n}/${k}">
         <span class="f-num">${pad(k)}</span>${ts != null ? `<span class="f-t">T+${(ts / 1000).toFixed(2)}s</span>` : ''}</button>`;
     }).join('');
+    $$('img', box).forEach((img) => img.addEventListener('load', () => {
+      if (!img.naturalWidth || !img.naturalHeight) return;
+      const button = img.closest('.frame');
+      button.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
+      if (stage.dataset.mode === 'frames' && button.classList.contains('is-selected')) chooseFrame(button);
+    }));
   }
 
   function chooseFrame(button) {
@@ -462,7 +462,7 @@
         if (player && target !== player) { e.preventDefault(); if (player.paused) { setMode('video'); player.play(); } else player.pause(); }
         break;
       case 'f': setMode('frames'); break;
-      case 'v': if (player) setMode('video'); break;
+      case 'v': if (player) { setMode('video'); player.play().catch((err) => say(err.message, 'error')); } break;
       case 'j': if (i < list.length - 1) select(list[i + 1].segment_number, { seek: true }); break;
       case 'k': if (i > 0) select(list[i - 1].segment_number, { seek: true }); break;
     }

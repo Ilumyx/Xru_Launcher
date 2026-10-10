@@ -80,7 +80,7 @@ kbd { margin-left: 4px; padding: 0 4px; background: var(--m-4); border-radius: 2
 .stage[data-mode="video"] .stage-frames { display: none; }
 .stage-none { display: grid; place-items: center; width: 100%; height: 100%; font: 11px var(--font-mono); color: var(--fg-faint); }
 
-.frame { position: relative; flex: none; height: 100%; aspect-ratio: var(--frame-ratio, 9 / 16); padding: 0; background: #000; border: 1px solid var(--hairline); cursor: zoom-in; }
+.frame { position: relative; flex: none; height: 100%; aspect-ratio: auto; padding: 0; background: #000; border: 1px solid var(--hairline); cursor: zoom-in; }
 .frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .frame:hover { border-color: var(--hairline-hi); }
 .frame.is-selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
