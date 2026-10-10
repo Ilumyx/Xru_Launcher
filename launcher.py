@@ -1,6 +1,6 @@
 """UI XRU: sảnh, Kit, Gate ảnh/video/Dash, Crawler và Label. Mọi màn chỉ gọi Backend qua HTTP.
 python3 launcher.py          # sảnh :5050
-python3 launcher.py stop     # chỉ tắt UI :5050, giữ Backend
+python3 launcher.py stop     # tắt UI :5050 (Backend tắt bằng xru stop)
 Không import code của land. Chỉ dùng thư viện chuẩn Python.
 """
 
