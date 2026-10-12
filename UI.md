@@ -43,7 +43,7 @@ Lane 1 — Gate ảnh: Backend `Xru_Gate/gate_image/ui_backend_service/` đọc/
 
 Gate video: Backend `Xru_Gate/gate_video/ui_backend_service/`, màn `gate/video/` trên 5050. Đã chuyển SQL về clerk; hàng chờ/count/facet cùng snapshot, lọc/sort trước phân trang. Draft note/Noise/Watermark giữ theo clip; thao tác tại chỗ. Chân trang ghi đúng phím; phím quyết định dùng được sau bấm button/link. Quay lại cửa sổ khi Backend đang đọc bình thường không vẽ lại inspector/player, giữ con trỏ và thời điểm video. Đã tự kiểm chuỗi trên fixture, xoá `gate_video/ui_*` và server màn cũ.
 
-Crawler: Backend `Xru_Crawler/ui_backend_service/` gọi reader trong `crawler_image/clerk_ledger/` và `crawler_video/clerk_ledger/`; màn `crawler/` trên 5050. Lane lỗi trả unknown/null, UI báo thiếu dữ liệu; zero thật vẫn là zero. Đã tự kiểm dash, lọc/tìm nguồn, đọc note/chi tiết và phục hồi lane lỗi; xoá `Xru_Crawler/ui_screen/` và server màn cũ. Crawler vẫn chỉ đọc, không thêm chức năng sửa nguồn.
+Crawler: Backend `Xru_Crawler/ui_backend_service/` gọi reader trong `lanes/image/clerk_ledger/` và `lanes/video/clerk_ledger/`; màn `crawler/` trên 5050. Lane lỗi trả unknown/null, UI báo thiếu dữ liệu; zero thật vẫn là zero. Đã tự kiểm dash, lọc/tìm nguồn, đọc note/chi tiết và phục hồi lane lỗi; xoá `Xru_Crawler/ui_screen/` và server màn cũ. Crawler vẫn chỉ đọc, không thêm chức năng sửa nguồn.
 
 Gate Dash: màn `gate/dash/` trên 5050 đọc `/api/stats` từ Backend ảnh 5059 và video 5058, không gọi CLI. Giữ số và nghĩa cũ; NONE = chưa có kết luận máy, không phải sạch. Lane không trả dữ liệu thì báo đang tắt/chưa có số; lane còn lại vẫn đọc được. Đã đối chiếu số tổng/trạng thái/nguồn với hai API và kiểm tắt từng Backend rồi phục hồi. Đã xoá màn, test và server Dash cũ.
 
