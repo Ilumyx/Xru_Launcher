@@ -1,9 +1,9 @@
 // Mặt chép từ mockup Crawler (js/crawler.js); số thật lấy từ /api/board. Chỉ đọc.
-// Sidebar trái = lọc (lọc nhanh, platform, tag) và sắp xếp; bộ lọc nằm trên URL để Dash và Nguồn dùng chung.
+// Sidebar trái = lọc (lọc nhanh, platform) và sắp xếp; bộ lọc nằm trên URL để Dash và Nguồn dùng chung.
 (() => {
   let backend, board=null, sources=[], shown=[], disconnected=false;
   const params=new URLSearchParams(location.search), list=(k)=>new Set((params.get(k)||'').split(',').filter(Boolean));
-  const f={ plat:list('plat'), tag:list('tag'), quick:params.get('quick')||'', sort:params.get('sort')||'issue', q:'' };
+  const f={ plat:list('plat'), quick:params.get('quick')||'', sort:params.get('sort')||'issue', q:'' };
   const PLATFORM = { facebook: 'Facebook', dvids: 'DVIDS', waralbum: 'War Album', reddit: 'Reddit', x: 'X', telegram: 'Telegram', youtube: 'YouTube', vk: 'VK', tiktok: 'TikTok', bilibili: 'Bilibili', direct: 'Direct' };
   const SWATCH = ['var(--accent)', 'var(--m-11)', 'var(--m-8)', 'var(--m-6)', 'var(--m-5)'];
   const $ = (id) => document.getElementById(id);
@@ -15,17 +15,15 @@
   const day = (iso) => (iso ? `${dm(new Date(iso))}/${new Date(iso).getFullYear()}` : '—');
   const ago = (iso) => (iso ? `${Math.max(0, Math.floor((Date.now() - new Date(iso)) / 864e5))} ngày` : '—');
   const isToday = (iso) => iso && new Date(iso).toDateString() === new Date().toDateString();
-  const stateText = (r) => (r.state === 'broken' ? 'Hỏng' : r.enabled ? 'Đang bật' : 'Đang tắt');
 
   // Một dòng là một cụm; ảnh/video chỉ là số khai sinh theo loại.
-  const toSources = (data) => data.rows.map((row) => ({ ...row, name: row.display_name }));
+  const toSources = (data) => data.rows.map((row) => ({ ...row, name: row.platform === 'dvids' ? row.display_name.replace(/^DVIDS\s*[—–-]\s*/i, '') : row.display_name }));
   const issue = (s) => s.state === 'broken';
   const QUICK = { issue: ['Có vấn đề', issue] };
   if (!(f.quick in QUICK)) f.quick = '';
   function match(s, skip) {
-    if (f.q && !`${s.name} ${s.link} ${s.cluster_key} ${s.platform}`.toLocaleLowerCase('vi').includes(f.q)) return false;
+    if (f.q && !`${s.name} ${s.platform}`.toLocaleLowerCase('vi').includes(f.q)) return false;
     if (skip !== 'plat' && f.plat.size && !f.plat.has(s.platform)) return false;
-    if (skip !== 'tag' && [...f.tag].some((t) => !s.tags.includes(t))) return false;
     if (skip !== 'quick' && f.quick && !QUICK[f.quick][1](s)) return false;
     return true;
   }
@@ -47,7 +45,6 @@
   function keepFilters() {
     const url = new URL(location.href), q = new URLSearchParams();
     if (f.plat.size) q.set('plat', [...f.plat].join(','));
-    if (f.tag.size) q.set('tag', [...f.tag].join(','));
     if (f.quick) q.set('quick', f.quick);
     if (f.sort !== 'issue') q.set('sort', f.sort);
     const qs = q.toString() ? '?' + q : '';
@@ -56,28 +53,16 @@
     return qs;
   }
 
-  // Sidebar = lọc: vấn đề nhanh · platform · tag (tag cố định từ Crawler để thấy domain chưa có nguồn).
+  // Sidebar = lọc vấn đề và nền tảng.
   function renderFilters() {
-    const row = (attr, key, on, label, nums, empty) => `<button type="button" class="f-row${nums.length > 1 ? '' : ' plat'}${on ? ' on' : ''}${empty ? ' empty' : ''}" ${attr}="${esc(key)}"><span>${esc(label)}</span>${nums.join('')}</button>`;
+    const row = (attr, key, on, label, count, empty) => `<button type="button" class="f-row${on ? ' on' : ''}${empty ? ' empty' : ''}" ${attr}="${esc(key)}"><span>${esc(label)}</span>${count}</button>`;
     const num = (v, warn) => `<b class="${warn ? 'gap' : ''}">${v}</b>`;
     let html = '<div class="f-head"><span>LỌC NHANH</span></div>';
     const qpool = sources.filter((s) => match(s, 'quick'));
-    html += Object.entries(QUICK).map(([k, [label, test]]) => { const c = qpool.filter(test).length; return row('data-quick', k, f.quick === k, label, [num(c, c > 0)], !c); }).join('');
+    html += Object.entries(QUICK).map(([k, [label, test]]) => { const c = qpool.filter(test).length; return row('data-quick', k, f.quick === k, label, num(c, c > 0), !c); }).join('');
     const plats = {}; for (const s of sources.filter((s) => match(s, 'plat'))) plats[s.platform] = (plats[s.platform] || 0) + 1;
     const known = [...new Set([...sources.map((s) => s.platform)])].sort((a, b) => (plats[b] || 0) - (plats[a] || 0));
-    html += '<div class="f-head"><span>PLATFORM</span></div>' + known.map((p) => row('data-plat', p, f.plat.has(p), platformName(p), [num(plats[p] || 0)], !plats[p])).join('');
-    const pool = sources.filter((s) => match(s, 'tag'));
-    const groups = { ...(board.tag_groups || {}) };
-    const extra = [...new Set(sources.flatMap((s) => s.tags))].filter((t) => !Object.values(groups).flat().includes(t));
-    if (extra.length) groups['Khác'] = extra;
-    html += '<div class="f-head"><span>TAG</span><span><span>NGUỒN</span><span>ẢNH</span><span>VIDEO</span></span></div>';
-    for (const [group, tags] of Object.entries(groups)) {
-      html += `<div class="f-sub">${esc(group)}</div>`;
-      html += tags.map((t) => {
-        const hit = pool.filter((s) => s.tags.includes(t)), img = hit.reduce((n, s) => n + s.images, 0), vid = hit.reduce((n, s) => n + s.videos, 0);
-        return row('data-tag', t, f.tag.has(t), t, hit.length ? [num(hit.length), num(img, !img), num(vid, !vid)] : [num(0, true), '<b>—</b>', '<b>—</b>'], !hit.length);
-      }).join('');
-    }
+    html += '<div class="f-head"><span>PLATFORM</span></div>' + known.map((p) => row('data-plat', p, f.plat.has(p), platformName(p), num(plats[p] || 0), !plats[p])).join('');
     $('cr-filters').innerHTML = html;
     $('cr-count').textContent = n(sources.length);
   }
@@ -88,7 +73,7 @@
     if (SORT[f.sort]) shown = [...shown].sort(SORT[f.sort]);
     renderFilters();
     keepFilters();
-    const chips = [...[...f.plat].map(platformName), ...f.tag, ...(f.quick ? [QUICK[f.quick][0]] : [])];
+    const chips = [...[...f.plat].map(platformName), ...(f.quick ? [QUICK[f.quick][0]] : [])];
     $('cr-active').textContent = chips.length ? 'Đang lọc: ' + chips.join(' + ') : '';
     $('cr-clear').hidden = !chips.length;
     if ($('cr-chart')) renderDash(shown);
@@ -153,7 +138,9 @@
   const hiddenSeries = (key) => document.querySelector(`[data-chart-series="${key}"]`)?.getAttribute('aria-pressed') === 'false' ? ' hidden' : '';
 
   function mediaCard(s, kind) {
-    return `<button type="button" class="cr-card ${s.state === 'broken' ? 'broken' : !s.enabled ? 'off' : ''}"><span class="num">${n(s[kind === 'image' ? 'images' : 'videos'])}</span><span class="st">${esc(stateText(s))}</span></button>`;
+    const born = s[kind === 'image' ? 'images' : 'videos'], total = s[kind + '_total'];
+    const number = (value) => value == null ? '—' : Number(value);
+    return `<button type="button" class="cr-card ${s.state === 'broken' ? 'broken' : !s.enabled ? 'off' : ''}"><span class="num">${number(born)}/${number(total)}</span></button>`;
   }
 
   function renderSources(list) {
@@ -163,7 +150,7 @@
       th.classList.toggle('on', on);
       th.dataset.arrow = on ? (f.sort.endsWith('_asc') ? '↑' : '↓') : '↕';
     });
-    body.innerHTML = list.map((s, i) => `<tr data-i="${i}"><td><div class="cr-name">${esc(s.name)}</div><div class="cr-loc">${esc(s.link)}</div></td><td>${esc(platformName(s.platform))}</td><td><div class="cr-tags">${s.tags.map((t) => `<button type="button" class="cr-tag${f.tag.has(t) ? ' on' : ''}" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div></td><td>${mediaCard(s, 'image')}</td><td>${mediaCard(s, 'video')}</td></tr>`).join('');
+    body.innerHTML = list.map((s, i) => `<tr data-i="${i}"><td><div class="cr-name">${esc(s.name)}</div></td><td>${esc(platformName(s.platform))}</td><td>${mediaCard(s, 'image')}</td><td>${mediaCard(s, 'video')}</td></tr>`).join('');
     $('source-result-count').textContent = board.complete ? `${list.length} / ${sources.length} nguồn` : `${list.length} nguồn đã đọc được · tổng chưa xác định`;
     $('source-empty').hidden = list.length !== 0 || !board.complete;
   }
@@ -171,11 +158,10 @@
   // Sự kiện gắn một lần.
   const flip = (set, v) => (set.has(v) ? set.delete(v) : set.add(v));
   document.addEventListener('click', (e) => {
-    const el = e.target.closest('[data-plat],[data-tag],[data-quick],#cr-clear');
+    const el = e.target.closest('[data-plat],[data-quick],#cr-clear');
     if (!el) return;
-    if (el.id === 'cr-clear') { f.plat.clear(); f.tag.clear(); f.quick = ''; }
+    if (el.id === 'cr-clear') { f.plat.clear(); f.quick = ''; }
     else if (el.dataset.plat) flip(f.plat, el.dataset.plat);
-    else if (el.dataset.tag) flip(f.tag, el.dataset.tag);
     else f.quick = f.quick === el.dataset.quick ? '' : el.dataset.quick;
     render();
   });
@@ -191,11 +177,9 @@
   if (dialog) {
     document.querySelector('[data-source-table] tbody').addEventListener('click', (e) => {
       const tr = e.target.closest('tr');
-      if (!tr || e.target.closest('[data-tag]')) return;
+      if (!tr) return;
       const r = shown[tr.dataset.i];
       $('source-detail-name').textContent = r.name;
-      $('source-detail-link').textContent = r.link;
-      $('source-detail-state').textContent = stateText(r);
       $('source-detail-platform').textContent = platformName(r.platform);
       $('source-detail-found').textContent = n(r.links_found);
       $('source-detail-assets').textContent = `${n(r.images)} ảnh · ${n(r.videos)} video`;
