@@ -150,7 +150,7 @@
       th.classList.toggle('on', on);
       th.dataset.arrow = on ? (f.sort.endsWith('_asc') ? '↑' : '↓') : '↕';
     });
-    body.innerHTML = list.map((s, i) => `<tr data-i="${i}"><td><div class="cr-name">${esc(s.name)}</div></td><td>${esc(platformName(s.platform))}</td><td>${mediaCard(s, 'image')}</td><td>${mediaCard(s, 'video')}</td></tr>`).join('');
+    body.innerHTML = list.map((s, i) => `<tr data-i="${i}"><td><div class="cr-name">${esc(s.name)}</div></td><td>${esc(platformName(s.platform))}</td><td>${mediaCard(s, 'image')}</td><td>${mediaCard(s, 'video')}</td><td class="cr-date">${day(s.last_born_at)}</td></tr>`).join('');
     $('source-result-count').textContent = board.complete ? `${list.length} / ${sources.length} nguồn` : `${list.length} nguồn đã đọc được · tổng chưa xác định`;
     $('source-empty').hidden = list.length !== 0 || !board.complete;
   }
