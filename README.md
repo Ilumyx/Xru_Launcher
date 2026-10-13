@@ -11,7 +11,7 @@ xru backend image status        # READY khi API trả được dữ liệu; dùn
 python3 launcher.py --lan       # chỉ UI, mở cho mạng LAN
 ```
 
-`xru start` / `xru stop` chỉ bật/tắt UI :5050. Gate ảnh mở tại `/gate/image/`, video tại `/gate/video/?view=grid` hoặc `view=watch`, Gate Dash tại `/gate/dash/`, Crawler tại `/crawler/dash` và `/crawler/sources`, Label tại `/label/video/`; Backend chạy riêng: `python -m gate_image.ui_backend_service.image_api` hoặc `python -m gate_video.ui_backend_service.video_api` trong Xru_Gate, `python -m ui_backend_service.source_api` trong Xru_Crawler, `python -m label_division_video.backend_service.label_api` trong Xru_Label. Hợp đồng ở `Xru_Gate/gate_image/ui_backend_service/API.md`, `Xru_Gate/gate_video/ui_backend_service/API.md`, `Xru_Crawler/ui_backend_service/API.md` và `Xru_Label/label_division_video/backend_service/API.md`. Bật/tắt/status từng Backend qua `xru backend image|video|crawler|label start|stop|status`.
+`xru start` / `xru stop` bật/tắt UI :5050 cùng bốn Backend. Gate ảnh mở tại `/gate/image/`, video tại `/gate/video/?view=grid` hoặc `view=watch`, Gate Dash tại `/gate/dash/`, Crawler tại `/crawler/dash` và `/crawler/sources`, Label tại `/label/video/`; Backend chạy riêng: `python -m gate_image.ui_backend_service.image_api` hoặc `python -m gate_video.ui_backend_service.video_api` trong Xru_Gate, `python -m ui_backend_service.source_api` trong Xru_Crawler, `python -m label_division_video.backend_service.label_api` trong Xru_Label. Hợp đồng ở `Xru_Gate/gate_image/ui_backend_service/API.md`, `Xru_Gate/gate_video/ui_backend_service/API.md`, `Xru_Crawler/ui_backend_service/API.md` và `Xru_Label/label_division_video/backend_service/API.md`. Bật/tắt/status từng Backend qua `xru backend image|video|crawler|label start|stop|status`.
 
 Mặc định chạy localhost. `--lan` mở server UI cho LAN; để dùng Backend từ máy khác phải cấu hình host và `--ui-origin` của Backend tương ứng. UI có `--port`, `--image-backend`, `--video-backend`, `--crawler-backend`, `--label-backend` để thử với dữ liệu riêng.
 
@@ -43,3 +43,7 @@ Kit không biết land nào có màn gì. Một món vào Kit khi đã có ở �
 | Hai thứ tiếng | `kit/i18n/i18n.js` | `data-i18n`, đủ `vi` + `en`, English mặc định. Chữ riêng của màn nạp bằng `XRU_I18N.add`. |
 
 Thêm profile: chép `graphite.css`, đổi tên và `data-profile`; thêm `@import` trong `tokens.css`; thêm vào `PROFILES` trong `account/account.js`.
+
+## Crawler
+
+`/crawler/dash` và `/crawler/sources` gọi Backend :5055 qua `/api/board`. Mỗi dòng Nguồn là một cụm trong heart.db; cột ẢNH/VIDEO là số khai sinh từ clerk.db, không có làn hay Hạng. Dashboard hôm nay/7 ngày theo born_at, múi giờ Asia/Ho_Chi_Minh. Lọc nền tảng/tag/vấn đề, tìm/sort và xem chi tiết tại chỗ; note/tag/bật tắt chỉ đọc từ config cụm. Thiếu sổ báo chưa có số; không thay unknown bằng zero. Hợp đồng: Xru_Crawler/ui_backend_service/API.md.

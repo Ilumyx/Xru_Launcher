@@ -4,7 +4,6 @@
   let backend, board=null, sources=[], shown=[], disconnected=false;
   const params=new URLSearchParams(location.search), list=(k)=>new Set((params.get(k)||'').split(',').filter(Boolean));
   const f={ plat:list('plat'), tag:list('tag'), quick:params.get('quick')||'', sort:params.get('sort')||'issue', q:'' };
-  const LANE = { image: 'Ảnh', video: 'Video' };
   const PLATFORM = { facebook: 'Facebook', dvids: 'DVIDS', waralbum: 'War Album', reddit: 'Reddit', x: 'X', telegram: 'Telegram', youtube: 'YouTube', vk: 'VK', tiktok: 'TikTok', bilibili: 'Bilibili', direct: 'Direct' };
   const SWATCH = ['var(--accent)', 'var(--m-11)', 'var(--m-8)', 'var(--m-6)', 'var(--m-5)'];
   const $ = (id) => document.getElementById(id);
@@ -16,38 +15,32 @@
   const day = (iso) => (iso ? `${dm(new Date(iso))}/${new Date(iso).getFullYear()}` : '—');
   const ago = (iso) => (iso ? `${Math.max(0, Math.floor((Date.now() - new Date(iso)) / 864e5))} ngày` : '—');
   const isToday = (iso) => iso && new Date(iso).toDateString() === new Date().toDateString();
-  const stateText = (r) => (r.state === 'broken' ? 'Hỏng' : r.active ? 'Đang bật' : 'Đang tắt');
+  const stateText = (r) => (r.state === 'broken' ? 'Hỏng' : r.enabled ? 'Đang bật' : 'Đang tắt');
 
-  // Một nguồn = một tên hiển thị; mỗi làn (ảnh/video) là một ô.
-  function toSources(data) {
-    return data.rows.map((row) => {
-      const lanes = Object.fromEntries(Object.entries(row.lanes).map(([lane, cell]) => [lane, { name: row.name, lane, ...cell, platform: cell.adapter }]));
-      const first = Object.values(lanes)[0];
-      return { name: row.name, tags: row.tags || [], lanes, platform: first.platform, locator: (first.locator || '').replace(/^https?:\/\/(www\.)?/, '').replace(/\/(reels|photos|videos)\/?$/, '') };
-    });
-  }
-  const laneList = (srcs) => srcs.flatMap((s) => Object.values(s.lanes));
-  const issue = (s) => Object.values(s.lanes).some((l) => l.state === 'broken' || (l.active && !l.urls_found));
-  const QUICK = { noimage: ['Thiếu ảnh', (s) => !s.lanes.image], novideo: ['Thiếu video', (s) => !s.lanes.video], issue: ['Có vấn đề', issue] };
+  // Một dòng là một cụm; ảnh/video chỉ là số khai sinh theo loại.
+  const toSources = (data) => data.rows.map((row) => ({ ...row, name: row.cluster_key }));
+  const issue = (s) => s.state === 'broken' || (s.enabled && !s.links_found);
+  const QUICK = { issue: ['Có vấn đề', issue] };
+  if (!(f.quick in QUICK)) f.quick = '';
   function match(s, skip) {
-    if (f.q && !`${s.name} ${s.locator}`.toLocaleLowerCase('vi').includes(f.q)) return false;
+    if (f.q && !`${s.name} ${s.platform}`.toLocaleLowerCase('vi').includes(f.q)) return false;
     if (skip !== 'plat' && f.plat.size && !f.plat.has(s.platform)) return false;
     if (skip !== 'tag' && [...f.tag].some((t) => !s.tags.includes(t))) return false;
     if (skip !== 'quick' && f.quick && !QUICK[f.quick][1](s)) return false;
     return true;
   }
-  const newest = (s) => Math.max(0, ...Object.values(s.lanes).map((l) => l.last_crawl_at ? +new Date(l.last_crawl_at) : 0));
+  const newest = (s) => s.last_born_at ? +new Date(s.last_born_at) : 0;
   const SORT = {
     issue: null,
     name: (a, b) => a.name.localeCompare(b.name),
-    pending: (a, b) => laneList([b]).reduce((x, l) => x + (l.urls_pending || 0), 0) - laneList([a]).reduce((x, l) => x + (l.urls_pending || 0), 0),
+    pending: (a, b) => b.links_pending - a.links_pending,
     recent: (a, b) => newest(b) - newest(a),
   };
-  // Bấm đầu cột Ảnh / Video: nhiều nhất trước, bấm lần nữa thì ít nhất trước. Nguồn chưa add lane đó luôn nằm cuối.
-  for (const lane of ['image', 'video']) {
-    const count = (s) => s.lanes[lane]?.assets;
-    SORT[lane] = (a, b) => (count(b) ?? -1) - (count(a) ?? -1);
-    SORT[lane + '_asc'] = (a, b) => (count(a) ?? Infinity) - (count(b) ?? Infinity);
+  // Bấm đầu cột Ảnh / Video: sắp số khai sinh; chưa có món là 0.
+  for (const kind of ['image', 'video']) {
+    const count = (s) => s[kind === 'image' ? 'images' : 'videos'];
+    SORT[kind] = (a, b) => (count(b) ?? -1) - (count(a) ?? -1);
+    SORT[kind + '_asc'] = (a, b) => (count(a) ?? Infinity) - (count(b) ?? Infinity);
   }
 
   // URL giữ bộ lọc để Dash và Nguồn dùng chung.
@@ -69,7 +62,7 @@
     const num = (v, warn) => `<b class="${warn ? 'gap' : ''}">${v}</b>`;
     let html = '<div class="f-head"><span>LỌC NHANH</span></div>';
     const qpool = sources.filter((s) => match(s, 'quick'));
-    html += Object.entries(QUICK).map(([k, [label, test]]) => { const c = qpool.filter(test).length; return row('data-quick', k, f.quick === k, label, [num(c, k !== 'noimage' && k !== 'novideo' ? c > 0 : false)], !c); }).join('');
+    html += Object.entries(QUICK).map(([k, [label, test]]) => { const c = qpool.filter(test).length; return row('data-quick', k, f.quick === k, label, [num(c, c > 0)], !c); }).join('');
     const plats = {}; for (const s of sources.filter((s) => match(s, 'plat'))) plats[s.platform] = (plats[s.platform] || 0) + 1;
     const known = [...new Set([...sources.map((s) => s.platform)])].sort((a, b) => (plats[b] || 0) - (plats[a] || 0));
     html += '<div class="f-head"><span>PLATFORM</span></div>' + known.map((p) => row('data-plat', p, f.plat.has(p), platformName(p), [num(plats[p] || 0)], !plats[p])).join('');
@@ -81,7 +74,7 @@
     for (const [group, tags] of Object.entries(groups)) {
       html += `<div class="f-sub">${esc(group)}</div>`;
       html += tags.map((t) => {
-        const hit = pool.filter((s) => s.tags.includes(t)), img = hit.filter((s) => s.lanes.image).length, vid = hit.filter((s) => s.lanes.video).length;
+        const hit = pool.filter((s) => s.tags.includes(t)), img = hit.reduce((n, s) => n + s.images, 0), vid = hit.reduce((n, s) => n + s.videos, 0);
         return row('data-tag', t, f.tag.has(t), t, hit.length ? [num(hit.length), num(img, !img), num(vid, !vid)] : [num(0, true), '<b>—</b>', '<b>—</b>'], !hit.length);
       }).join('');
     }
@@ -98,7 +91,7 @@
     const chips = [...[...f.plat].map(platformName), ...f.tag, ...(f.quick ? [QUICK[f.quick][0]] : [])];
     $('cr-active').textContent = chips.length ? 'Đang lọc: ' + chips.join(' + ') : '';
     $('cr-clear').hidden = !chips.length;
-    if ($('cr-chart')) renderDash(laneList(shown));
+    if ($('cr-chart')) renderDash(shown);
     if (document.querySelector('[data-source-table]')) renderSources(shown);
   }
 
@@ -108,9 +101,9 @@
       for(const id of ['m-today-split','m-off','m-total-split','m-latest-src']) $(id).textContent='';
       $('cr-chart').replaceChildren();$('cr-platforms').replaceChildren();$('cr-donut').style.background='var(--panel)';return;
     }
-    const last = (lane) => rows.filter((r) => r.lane === lane).reduce((a, r) => a + (r.by_day.at(-1) || 0), 0);
-    const total = (lane) => rows.filter((r) => r.lane === lane).reduce((a, r) => a + r.assets, 0);
-    const on = rows.filter((r) => r.active).length, all = rows.length;
+    const last = (kind) => rows.reduce((a, r) => a + r.by_day[kind].at(-1), 0);
+    const total = (kind) => rows.reduce((a, r) => a + r[kind === 'image' ? 'images' : 'videos'], 0);
+    const on = rows.filter((r) => r.enabled).length, all = rows.length;
 
     $('m-today').textContent = n(last('image') + last('video'));
     $('m-today-split').textContent = `${n(last('image'))} ảnh · ${n(last('video'))} video`;
@@ -118,20 +111,20 @@
     $('m-off').textContent = `${all - on} nguồn đang tắt`;
     $('m-total').textContent = n(total('image') + total('video'));
     $('m-total-split').textContent = `${n(total('image'))} ảnh · ${n(total('video'))} video`;
-    const latest = rows.filter((r) => r.last_crawl_at).sort((a, b) => new Date(b.last_crawl_at) - new Date(a.last_crawl_at))[0];
+    const latest = rows.filter((r) => r.last_born_at).sort((a, b) => new Date(b.last_born_at) - new Date(a.last_born_at))[0];
     $('m-latest').textContent='—';$('m-latest-src').textContent='';
     if (latest) {
-      const t = new Date(latest.last_crawl_at);
-      $('m-latest').textContent = isToday(latest.last_crawl_at)
+      const t = new Date(latest.last_born_at);
+      $('m-latest').textContent = isToday(latest.last_born_at)
         ? `${two(t.getHours())}:${two(t.getMinutes())}`
         : dm(t);
-      $('m-latest-src').textContent = `${latest.name} · ${LANE[latest.lane]}`;
+      $('m-latest-src').textContent = latest.name;
     }
 
     // Biểu đồ: cùng khung toạ độ với mockup (x 48→678, y 330→32).
     const days = board.days;
     if(days.length) {
-    const perDay = (lane) => days.map((_, i) => rows.filter((r) => r.lane === lane).reduce((a, r) => a + (r.by_day[i] || 0), 0));
+    const perDay = (kind) => days.map((_, i) => rows.reduce((a, r) => a + r.by_day[kind][i], 0));
     const img = perDay('image'), vid = perDay('video'), tot = img.map((v, i) => v + vid[i]);
     const step = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000].find((v) => v * 3 >= Math.max(...tot, 1)) || 10000;
     const max = step * 3, X = (i) => 48 + i * (630 / Math.max(days.length - 1, 1)), Y = (v) => 330 - (v / max) * 298;
@@ -159,23 +152,18 @@
   }
   const hiddenSeries = (key) => document.querySelector(`[data-chart-series="${key}"]`)?.getAttribute('aria-pressed') === 'false' ? ' hidden' : '';
 
-  // Ô một làn: hạng · đã tải / URL đã quét · thanh tỷ lệ · bao lâu chưa nhận mới.
-  function laneCard(l) {
-    if (!l) return '<div class="cr-card missing">+ Chưa add</div>';
-    const nodisc = l.active && !l.urls_found, pct = l.urls_found ? Math.min(100, (l.assets / l.urls_found) * 100) : 0;
-    const cls = l.state === 'broken' ? 'broken' : !l.active ? 'off' : nodisc ? 'nodisc' : '';
-    const st = l.state === 'broken' ? `hỏng · ${ago(l.last_crawl_at)}` : !l.active ? `tắt · ${ago(l.last_crawl_at)}` : nodisc ? 'chưa discovery' : ago(l.last_crawl_at);
-    return `<button type="button" class="cr-card ${cls}" data-lane="${l.lane}"><span class="tier">${esc(l.tier || '–')}</span><span class="num">${n(l.assets)} <small>/ ${n(l.urls_found)}</small></span><span class="bar"><i style="width:${pct}%"></i></span><span class="st">${st}${l.urls_pending ? ` · <span class="pend">${n(l.urls_pending)} chờ</span>` : ''}</span></button>`;
+  function mediaCard(s, kind) {
+    return `<button type="button" class="cr-card ${s.state === 'broken' ? 'broken' : !s.enabled ? 'off' : ''}"><span class="num">${n(s[kind === 'image' ? 'images' : 'videos'])}</span><span class="st">${esc(stateText(s))}</span></button>`;
   }
 
   function renderSources(list) {
     const body = document.querySelector('[data-source-table] tbody');
-    document.querySelectorAll('[data-sort-lane]').forEach((th) => {
-      const lane = th.dataset.sortLane, on = f.sort.startsWith(lane);
+    document.querySelectorAll('[data-sort-media]').forEach((th) => {
+      const kind = th.dataset.sortMedia, on = f.sort.startsWith(kind);
       th.classList.toggle('on', on);
       th.dataset.arrow = on ? (f.sort.endsWith('_asc') ? '↑' : '↓') : '↕';
     });
-    body.innerHTML = list.map((s, i) => `<tr data-i="${i}"><td><div class="cr-name">${esc(s.name)}</div><div class="cr-loc">${esc(s.locator)}</div></td><td>${esc(platformName(s.platform))}</td><td><div class="cr-tags">${s.tags.map((t) => `<button type="button" class="cr-tag${f.tag.has(t) ? ' on' : ''}" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div></td><td>${laneCard(s.lanes.image)}</td><td>${laneCard(s.lanes.video)}</td></tr>`).join('');
+    body.innerHTML = list.map((s, i) => `<tr data-i="${i}"><td><div class="cr-name">${esc(s.name)}</div><div class="cr-loc">${esc(stateText(s))}</div></td><td>${esc(platformName(s.platform))}</td><td><div class="cr-tags">${s.tags.map((t) => `<button type="button" class="cr-tag${f.tag.has(t) ? ' on' : ''}" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div></td><td>${mediaCard(s, 'image')}</td><td>${mediaCard(s, 'video')}</td></tr>`).join('');
     $('source-result-count').textContent = board.complete ? `${list.length} / ${sources.length} nguồn` : `${list.length} nguồn đã đọc được · tổng chưa xác định`;
     $('source-empty').hidden = list.length !== 0 || !board.complete;
   }
@@ -192,9 +180,9 @@
     render();
   });
   $('cr-q').addEventListener('input', () => { f.q = $('cr-q').value.trim().toLocaleLowerCase('vi'); render(); });
-  document.querySelectorAll('[data-sort-lane]').forEach((th) => th.addEventListener('click', () => {
-    const lane = th.dataset.sortLane;
-    f.sort = f.sort === lane ? lane + '_asc' : lane;
+  document.querySelectorAll('[data-sort-media]').forEach((th) => th.addEventListener('click', () => {
+    const kind = th.dataset.sortMedia;
+    f.sort = f.sort === kind ? kind + '_asc' : kind;
     $('cr-sort').value = f.sort; render();
   }));
   $('cr-sort').value = f.sort;
@@ -204,20 +192,17 @@
     document.querySelector('[data-source-table] tbody').addEventListener('click', (e) => {
       const tr = e.target.closest('tr');
       if (!tr || e.target.closest('[data-tag]')) return;
-      const s = shown[tr.dataset.i], card = e.target.closest('[data-lane]');
-      const r = card ? s.lanes[card.dataset.lane] : Object.values(s.lanes)[0];
-      $('source-detail-name').textContent = s.name;
-      $('source-detail-url').textContent = r.locator || '—';
-      $('source-detail-kind').textContent = LANE[r.lane];
+      const r = shown[tr.dataset.i];
+      $('source-detail-name').textContent = r.name;
+      $('source-detail-cluster').textContent = r.cluster_key;
       $('source-detail-state').textContent = stateText(r);
       $('source-detail-platform').textContent = platformName(r.platform);
-      $('source-detail-tier').textContent = r.tier || '—';
-      $('source-detail-found').textContent = n(r.urls_found);
-      $('source-detail-assets').textContent = n(r.assets);
-      $('source-detail-pending').textContent = n(r.urls_pending);
-      $('source-detail-last').textContent = day(r.last_crawl_at);
-      $('source-detail-error').textContent = r.error ? `${r.error.short} (${day(r.error.at)})` : '—';
-      $('source-detail-note').textContent = r.po_note || '—';
+      $('source-detail-found').textContent = n(r.links_found);
+      $('source-detail-assets').textContent = `${n(r.images)} ảnh · ${n(r.videos)} video`;
+      $('source-detail-pending').textContent = n(r.links_pending);
+      $('source-detail-last').textContent = day(r.last_born_at);
+      $('source-detail-error').textContent = r.last_error ? `${r.last_error.reason}: ${r.last_error.detail} (${day(r.last_error.at)})` : '—';
+      $('source-detail-note').textContent = r.note || '—';
       dialog.showModal();
     });
     $('source-detail-close').addEventListener('click', () => dialog.close());
@@ -244,7 +229,7 @@
       if(!Array.isArray(data.rows)) throw Error(data.error||'Backend chưa trả được dữ liệu.');
       board=data; sources=toSources(data);
       render();
-      const failures=Object.entries(data.lane_errors).map(([lane,reason])=>`${LANE[lane]}: ${reason}`);
+      const failures=Object.values(data.errors);
       error(failures.length?'THIẾU DỮ LIỆU — '+failures.join(' · '):'');disconnected=!data.complete;
     } catch(e) { disconnected=true;error('BACKEND CRAWLER ĐANG TẮT HOẶC ĐỌC LỖI — số đang hiện chưa được cập nhật. '+e.message); }
   }

@@ -64,19 +64,18 @@ a.rail-icon-btn { text-decoration: none; }
 .cr-table th { padding: 10px 12px; font: 11px var(--font-mono); letter-spacing: .06em; color: var(--fg-dim); border-bottom: 1px solid var(--hairline-hi); }
 .cr-table td { padding: 10px 12px; border-bottom: 1px solid var(--hairline); vertical-align: middle; font-size: 13px; }
 .cr-table th:first-child, .cr-table td:first-child { padding-left: 0; }
-.cr-table .c-name { width: 32%; } .cr-table .c-plat { width: 10%; } .cr-table .c-tag { width: 16%; } .cr-table .c-lane { width: 21%; }
+.cr-table .c-name { width: 32%; } .cr-table .c-plat { width: 10%; } .cr-table .c-tag { width: 16%; } .cr-table .c-media { width: 21%; }
 .cr-sortable { cursor: pointer; user-select: none; }
 .cr-sortable::after { content: ' ' attr(data-arrow); color: var(--fg-faint); }
 .cr-sortable:hover, .cr-sortable.on { color: var(--fg-strong); }
 .cr-sortable.on::after { color: var(--fg-strong); }
-.cr-name { color: var(--fg-strong); font-size: 15px; font-weight: 500; }
+.cr-name { color: var(--fg-strong); font-size: 15px; font-weight: 500; overflow-wrap: anywhere; }
 .cr-loc { margin-top: 3px; max-width: 380px; font: 11px var(--font-mono); color: var(--fg-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cr-tags { display: flex; flex-wrap: wrap; gap: 4px; }
 .cr-tag { padding: 2px 7px; background: var(--m-4); border: 0; font: 11px var(--font-mono); color: var(--fg); cursor: pointer; }
 .cr-tag:hover, .cr-tag.on { background: var(--m-7); color: var(--fg-strong); }
 .cr-card { display: grid; grid-template-columns: auto 1fr; gap: 6px 8px; width: 100%; min-height: 62px; padding: 9px 12px; background: var(--m-2); border: 1px solid var(--hairline); color: var(--fg); text-align: left; font: inherit; cursor: pointer; }
 .cr-card:hover { border-color: var(--hairline-hi); }
-.cr-card .tier { font: 600 12px var(--font-mono); }
 .cr-card .num { text-align: right; font: 12px var(--font-mono); }
 .cr-card .num small { color: var(--fg-faint); font-size: 12px; }
 .cr-card .bar { grid-column: 1 / -1; height: 3px; background: var(--m-5); }
