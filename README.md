@@ -46,4 +46,4 @@ Thêm profile: chép `graphite.css`, đổi tên và `data-profile`; thêm `@imp
 
 ## Crawler
 
-`/crawler/dash` và `/crawler/sources` gọi Backend :5055 qua `/api/board`. Mỗi dòng Nguồn là một cụm trong heart.db; cột ẢNH/VIDEO là số khai sinh từ clerk.db, không có làn hay Hạng. Dashboard hôm nay/7 ngày theo born_at, múi giờ Asia/Ho_Chi_Minh. Lọc nền tảng/tag/vấn đề, tìm/sort và xem chi tiết tại chỗ; note/tag/bật tắt chỉ đọc từ config cụm. Thiếu sổ báo chưa có số; không thay unknown bằng zero. Hợp đồng: Xru_Crawler/ui_backend_service/API.md.
+`/crawler/dash` và `/crawler/sources` gọi Backend :5055 qua `/api/board`. Mỗi dòng Nguồn là một cụm trong heart.db, tên từ alias đã xác minh (ví dụ tankersofficial), khoá chuẩn để dòng phụ khi khác tên. Trùng SHA/Ctrl+C/bảo chờ không báo Hỏng; link bị từ chối trùng đã ra khỏi chờ. cột ẢNH/VIDEO là số khai sinh từ clerk.db, không có làn hay Hạng. Dashboard hôm nay/7 ngày theo born_at, múi giờ Asia/Ho_Chi_Minh. Lọc nền tảng/tag/vấn đề, tìm/sort và xem chi tiết tại chỗ; note/tag/bật tắt chỉ đọc từ config cụm. Thiếu sổ báo chưa có số; không thay unknown bằng zero. Hợp đồng: Xru_Crawler/ui_backend_service/API.md.

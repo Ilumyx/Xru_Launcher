@@ -18,12 +18,12 @@
   const stateText = (r) => (r.state === 'broken' ? 'Hỏng' : r.enabled ? 'Đang bật' : 'Đang tắt');
 
   // Một dòng là một cụm; ảnh/video chỉ là số khai sinh theo loại.
-  const toSources = (data) => data.rows.map((row) => ({ ...row, name: row.cluster_key }));
+  const toSources = (data) => data.rows.map((row) => ({ ...row, name: row.display_name }));
   const issue = (s) => s.state === 'broken' || (s.enabled && !s.links_found);
   const QUICK = { issue: ['Có vấn đề', issue] };
   if (!(f.quick in QUICK)) f.quick = '';
   function match(s, skip) {
-    if (f.q && !`${s.name} ${s.platform}`.toLocaleLowerCase('vi').includes(f.q)) return false;
+    if (f.q && !`${s.name} ${s.cluster_key} ${s.platform}`.toLocaleLowerCase('vi').includes(f.q)) return false;
     if (skip !== 'plat' && f.plat.size && !f.plat.has(s.platform)) return false;
     if (skip !== 'tag' && [...f.tag].some((t) => !s.tags.includes(t))) return false;
     if (skip !== 'quick' && f.quick && !QUICK[f.quick][1](s)) return false;
@@ -163,7 +163,7 @@
       th.classList.toggle('on', on);
       th.dataset.arrow = on ? (f.sort.endsWith('_asc') ? '↑' : '↓') : '↕';
     });
-    body.innerHTML = list.map((s, i) => `<tr data-i="${i}"><td><div class="cr-name">${esc(s.name)}</div><div class="cr-loc">${esc(stateText(s))}</div></td><td>${esc(platformName(s.platform))}</td><td><div class="cr-tags">${s.tags.map((t) => `<button type="button" class="cr-tag${f.tag.has(t) ? ' on' : ''}" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div></td><td>${mediaCard(s, 'image')}</td><td>${mediaCard(s, 'video')}</td></tr>`).join('');
+    body.innerHTML = list.map((s, i) => `<tr data-i="${i}"><td><div class="cr-name">${esc(s.name)}</div><div class="cr-loc">${esc(s.name === s.cluster_key ? stateText(s) : s.cluster_key)}</div></td><td>${esc(platformName(s.platform))}</td><td><div class="cr-tags">${s.tags.map((t) => `<button type="button" class="cr-tag${f.tag.has(t) ? ' on' : ''}" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div></td><td>${mediaCard(s, 'image')}</td><td>${mediaCard(s, 'video')}</td></tr>`).join('');
     $('source-result-count').textContent = board.complete ? `${list.length} / ${sources.length} nguồn` : `${list.length} nguồn đã đọc được · tổng chưa xác định`;
     $('source-empty').hidden = list.length !== 0 || !board.complete;
   }
