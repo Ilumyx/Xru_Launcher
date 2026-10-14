@@ -26,9 +26,20 @@
   <main class="cr-stage">
     <header class="page-head"><div class="page-title"><a href="/?continent=eurasia">EURASIA</a><span>/</span><a href="/crawler/dash" data-keep-scope>CRAWLER</a><span>/</span><h1>NGUỒN</h1></div><div class="cr-active"><span id="cr-active"></span><button type="button" id="cr-clear" hidden>Bỏ lọc</button></div></header><div id="cr-error" role="alert" hidden></div>
 
-    <div class="cr-table-wrap"><table class="cr-table" data-source-table><thead><tr><th class="c-name">CỤM</th><th class="c-plat cr-sortable" data-sort-col="platform">PLATFORM</th><th class="c-media cr-sortable" data-sort-col="image">ẢNH</th><th class="c-media cr-sortable" data-sort-col="video">VIDEO</th><th class="c-date cr-sortable" data-sort-col="recent">NGÀY CÀO CUỐI</th></tr></thead><tbody></tbody></table></div><div class="cr-empty" id="source-empty" hidden>Không có nguồn phù hợp.</div><p class="cr-label" id="source-result-count" style="margin-top:20px"></p><dialog class="cr-dialog" id="source-detail" aria-labelledby="source-detail-name"><header><h2 id="source-detail-name"></h2><button id="source-detail-close" aria-label="Đóng chi tiết">Đóng ×</button></header><dl><dt>Nền tảng</dt><dd id="source-detail-platform"></dd><dt>Link đã tìm</dt><dd id="source-detail-found"></dd><dt>Đã sinh</dt><dd id="source-detail-assets"></dd><dt>Link chờ</dt><dd id="source-detail-pending"></dd><dt>Nhận mới</dt><dd id="source-detail-last"></dd><dt>Lỗi gần nhất</dt><dd id="source-detail-error"></dd><dt>Ghi chú PO</dt><dd id="source-detail-note"></dd></dl></dialog>
+    <div class="cr-table-wrap"><table class="cr-table" data-source-table><thead><tr><th class="c-name">CỤM</th><th class="c-plat cr-sortable" data-sort-col="platform">PLATFORM</th><th class="c-media cr-sortable" data-sort-col="image">ẢNH</th><th class="c-media cr-sortable" data-sort-col="video">VIDEO</th><th class="c-date cr-sortable" data-sort-col="recent">NGÀY CÀO CUỐI</th></tr></thead><tbody></tbody></table></div><div class="cr-empty" id="source-empty" hidden>Không có nguồn phù hợp.</div><p class="cr-label" id="source-result-count" style="margin-top:20px"></p>
     <footer class="page-foot"><div class="key-hints"><span><span class="key">1</span> Dashboard</span><span><span class="key">2</span> Nguồn</span><span><span class="key">ESC</span> Sảnh</span></div><div id="cr-foot">CHỈ ĐỌC · ẢNH + VIDEO</div></footer>
   </main>
   </div>
+  <aside class="cr-detail" id="source-detail" hidden aria-labelledby="source-detail-name">
+    <header class="cr-detail-head"><div><p class="cr-detail-plat" id="source-detail-platform"></p><h2 id="source-detail-name"></h2><p class="cr-detail-sub" id="source-detail-sub"></p></div><button type="button" id="source-detail-close" aria-label="Đóng chi tiết">×</button></header>
+    <div class="cr-detail-body">
+      <section class="cr-detail-media" id="source-detail-media"></section>
+      <section id="source-detail-note-wrap"><h3>Ghi chú</h3><p id="source-detail-note"></p></section>
+      <section id="source-detail-shots-wrap"><h3>Ảnh chụp</h3><div class="cr-shots" id="source-detail-shots"></div></section>
+      <section><h3>Số liệu</h3><dl class="cr-detail-facts"><dt>Link đã tìm</dt><dd id="source-detail-found"></dd><dt>Link chờ</dt><dd id="source-detail-pending"></dd><dt>Nhận mới</dt><dd id="source-detail-last"></dd><dt>Lỗi gần nhất</dt><dd id="source-detail-error"></dd></dl></section>
+      <a class="cr-detail-link" id="source-detail-link" target="_blank" rel="noopener noreferrer">Mở nguồn ↗</a>
+    </div>
+  </aside>
 </div>
+<dialog class="cr-shot-view" id="shot-view"><img id="shot-view-img" alt=""></dialog>
 </div><script src="crawler.js"></script></body></html>

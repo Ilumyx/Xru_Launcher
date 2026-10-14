@@ -84,6 +84,7 @@
     $('cr-clear').hidden = !chips.length;
     if ($('cr-chart')) renderDash(shown);
     if (document.querySelector('[data-source-table]')) renderSources(shown);
+    if (detail && picked) showDetail(sources.find((r) => `${r.platform}|${r.cluster_key}` === picked) || null);
   }
 
   function renderDash(rows) {
@@ -182,25 +183,92 @@
   }));
   $('cr-sort').value = f.sort;
   $('cr-sort').addEventListener('change', () => { f.sort = $('cr-sort').value; render(); });
-  const dialog = $('source-detail');
-  if (dialog) {
+  // Sidebar phải: chi tiết nguồn đang chọn. Bấm dòng khác thì đổi, bấm lại dòng đó hoặc × thì đóng.
+  const detail = $('source-detail');
+  let picked = null;
+  function showDetail(r) {
+    picked = r ? `${r.platform}|${r.cluster_key}` : null;
+    detail.hidden = !r;
+    document.querySelector('.cr-ws').classList.toggle('has-detail', !!r);
+    document.querySelectorAll('[data-source-table] tbody tr').forEach((tr) => tr.classList.toggle('picked', !!r && shown[tr.dataset.i] === r));
+    if (!r) return;
+    $('source-detail-platform').innerHTML = `<span class="p-${esc(r.platform)}">${esc(platformName(r.platform))}</span>`;
+    $('source-detail-name').innerHTML = `${esc(r.name)} <span class="cr-flags">${flags(r)}</span>`;
+    $('source-detail-sub').innerHTML = [r.waiting ? '<span class="cr-wait">WAITING</span>' : '', !r.enabled ? '<span class="cr-off">ĐANG TẮT</span>' : ''].join('');
+    const media = r.media || {};
+    $('source-detail-media').innerHTML = ['image', 'video'].map((kind) => {
+      const m = media[kind] || {}, born = r[kind === 'image' ? 'images' : 'videos'], total = r[kind + '_total'], on = r[kind + '_enabled'] !== false;
+      return `<div class="cr-detail-kind${on ? '' : ' off'}"><div class="cr-detail-kind-head"><span>${kind === 'image' ? 'ẢNH' : 'VIDEO'}</span>${m.tier ? `<b class="cr-tier t-${esc(m.tier)}">${esc(m.tier)}</b>` : ''}</div><p class="num">${n(born)}<small>/${n(total)}</small>${on ? '' : ' <small>· tắt</small>'}</p>${m.note ? `<p class="cr-detail-kind-note">${esc(m.note)}</p>` : ''}</div>`;
+    }).join('');
+    $('source-detail-note').textContent = r.note || '';
+    $('source-detail-note-wrap').hidden = !r.note;
+    const shots = r.shots || [];
+    $('source-detail-shots').innerHTML = shots.map((name) => `<button type="button" class="cr-shot" data-shot="${esc(name)}"><img loading="lazy" src="${backend}/api/shots/${encodeURIComponent(name)}" alt=""></button>`).join('');
+    $('source-detail-shots-wrap').hidden = !shots.length;
+    $('source-detail-found').textContent = n(r.links_found);
+    $('source-detail-pending').textContent = n(r.links_pending);
+    $('source-detail-last').textContent = day(r.last_born_at);
+    $('source-detail-error').textContent = r.last_error ? `${r.last_error.reason}: ${r.last_error.detail} (${day(r.last_error.at)})` : '—';
+    const link = sourceUrl(r);
+    $('source-detail-link').hidden = !link;
+    if (link) $('source-detail-link').href = link;
+  }
+  // Link mở được trên trình duyệt; từ khoá DVIDS thì mở trang tìm kiếm.
+  function sourceUrl(r) {
+    const first = String(r.link || '').split(' · ')[0];
+    if (/^https?:\/\//.test(first)) return first;
+    if (r.platform === 'dvids') return 'https://www.dvidshub.net/search/?q=' + encodeURIComponent(first);
+    if (r.platform === 'telegram') return 'https://t.me/' + encodeURIComponent(first);
+    return '';
+  }
+  if (detail) {
     document.querySelector('[data-source-table] tbody').addEventListener('click', (e) => {
       const tr = e.target.closest('tr');
       if (!tr) return;
       const r = shown[tr.dataset.i];
-      $('source-detail-name').textContent = r.name;
-      $('source-detail-platform').textContent = platformName(r.platform);
-      $('source-detail-found').textContent = n(r.links_found);
-      $('source-detail-assets').textContent = `${n(r.images)} ảnh · ${n(r.videos)} video`;
-      $('source-detail-pending').textContent = n(r.links_pending);
-      $('source-detail-last').textContent = day(r.last_born_at);
-      $('source-detail-error').textContent = r.last_error ? `${r.last_error.reason}: ${r.last_error.detail} (${day(r.last_error.at)})` : '—';
-      const media = r.media || {}, graded = ['image', 'video'].filter((k) => media[k]).map((k) => `${k === 'image' ? 'Ảnh' : 'Video'} ${media[k].tier || ''}: ${media[k].note || ''}`);
-      $('source-detail-note').textContent = [r.note, ...graded].filter(Boolean).join(' · ') || '—';
-      dialog.showModal();
+      showDetail(picked === `${r.platform}|${r.cluster_key}` ? null : r);
     });
-    $('source-detail-close').addEventListener('click', () => dialog.close());
+    $('source-detail-close').addEventListener('click', () => showDetail(null));
+    const view = $('shot-view');
+    $('source-detail-shots').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-shot]');
+      if (!b) return;
+      $('shot-view-img').src = b.querySelector('img').src;
+      view.showModal();
+    });
+    view.addEventListener('click', () => view.close());
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !view.open && !detail.hidden) { e.stopPropagation(); showDetail(null); } }, true);
   }
+
+  // Kéo mép để giãn sidebar trái và sidebar phải; bấm đúp về mặc định. Nhớ theo trình duyệt.
+  function grip(side) {
+    const ws = document.querySelector('.cr-ws');
+    if (!ws || (side === 'right' && !detail)) return;
+    const KEY = 'xru-crawler-' + side + '-w', VAR = side === 'left' ? '--cr-side' : '--cr-detail';
+    const MIN = side === 'left' ? 200 : 320, MAX = side === 'left' ? 480 : 900;
+    const set = (w) => { if (w == null) ws.style.removeProperty(VAR); else ws.style.setProperty(VAR, Math.round(Math.max(MIN, Math.min(MAX, w))) + 'px'); };
+    try { const saved = +localStorage.getItem(KEY); if (saved) set(saved); } catch { /* không nhớ được thì dùng mặc định */ }
+    const el = document.createElement('div');
+    el.className = 'cr-grip ' + side;
+    el.title = 'Kéo để giãn · bấm đúp để về mặc định';
+    ws.appendChild(el);
+    el.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      document.body.classList.add('is-gripping');
+      const move = (ev) => {
+        const r = ws.getBoundingClientRect(), scale = r.width / ws.offsetWidth;
+        set(side === 'left' ? (ev.clientX - r.left) / scale : (r.right - ev.clientX) / scale);
+      };
+      const up = () => {
+        document.body.classList.remove('is-gripping');
+        window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up);
+        try { localStorage.setItem(KEY, parseInt(ws.style.getPropertyValue(VAR)) || ''); } catch { /* bỏ qua */ }
+      };
+      window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
+    });
+    el.addEventListener('dblclick', () => { set(null); try { localStorage.removeItem(KEY); } catch { /* bỏ qua */ } });
+  }
+  grip('left'); grip('right');
 
   for (const button of document.querySelectorAll('[data-chart-series]')) {
     button.addEventListener('click', () => {
