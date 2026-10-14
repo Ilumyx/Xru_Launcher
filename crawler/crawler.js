@@ -17,7 +17,10 @@
   const isToday = (iso) => iso && new Date(iso).toDateString() === new Date().toDateString();
 
   // Một dòng là một cụm; ảnh/video chỉ là số khai sinh theo loại.
-  const toSources = (data) => data.rows.map((row) => ({ ...row, name: row.platform === 'dvids' ? row.display_name.replace(/^DVIDS\s*[—–-]\s*/i, '') : row.display_name }));
+  const toSources = (data) => data.rows.map((row) => ({ ...row, name: row.display_name }));
+  // Cờ lấy từ tag quốc gia trong nhãn nguồn; tag không hiện thành chip.
+  const FLAG = { US: '🇺🇸', UK: '🇬🇧', Germany: '🇩🇪', France: '🇫🇷', Poland: '🇵🇱', Australia: '🇦🇺', Japan: '🇯🇵', Korea: '🇰🇷', Taiwan: '🇹🇼', China: '🇨🇳', Russia: '🇷🇺', USSR: '☭', Ukraine: '🇺🇦', Israel: '🇮🇱', NATO: '✪' };
+  const flags = (s) => (s.tags || []).filter((t) => FLAG[t]).map((t) => `<i title="${esc(t)}">${FLAG[t]}</i>`).join('');
   const issue = (s) => s.state === 'broken';
   const QUICK = { issue: ['Có vấn đề', issue] };
   if (!(f.quick in QUICK)) f.quick = '';
@@ -140,7 +143,8 @@
   function mediaCard(s, kind) {
     const born = s[kind === 'image' ? 'images' : 'videos'], total = s[kind + '_total'];
     const number = (value) => value == null ? '—' : Number(value);
-    return `<button type="button" class="cr-card ${s.state === 'broken' ? 'broken' : !s.enabled ? 'off' : ''}"><span class="num">${number(born)}/${number(total)}</span></button>`;
+    const fill = total ? Math.min(100, born / total * 100) : 0;
+    return `<button type="button" class="cr-card ${s.state === 'broken' ? 'broken' : ''}"><span class="num">${number(born)}<small>/${number(total)}</small></span><span class="cr-bar"><i style="width:${fill}%"></i></span></button>`;
   }
 
   function renderSources(list) {
@@ -150,7 +154,7 @@
       th.classList.toggle('on', on);
       th.dataset.arrow = on ? (f.sort.endsWith('_asc') ? '↑' : '↓') : '↕';
     });
-    body.innerHTML = list.map((s, i) => `<tr data-i="${i}"><td><div class="cr-name">${esc(s.name)}</div></td><td>${esc(platformName(s.platform))}</td><td>${mediaCard(s, 'image')}</td><td>${mediaCard(s, 'video')}</td><td class="cr-date">${day(s.last_born_at)}</td></tr>`).join('');
+    body.innerHTML = list.map((s, i) => `<tr data-i="${i}" class="${s.enabled ? '' : 'off'}"><td><div class="cr-name"><span class="cr-mark p-${esc(s.platform)}"></span>${esc(s.name)}<span class="cr-flags">${flags(s)}</span></div></td><td class="cr-plat p-${esc(s.platform)}">${esc(platformName(s.platform))}</td><td>${mediaCard(s, 'image')}</td><td>${mediaCard(s, 'video')}</td><td class="cr-date">${day(s.last_born_at)}</td></tr>`).join('');
     $('source-result-count').textContent = board.complete ? `${list.length} / ${sources.length} nguồn` : `${list.length} nguồn đã đọc được · tổng chưa xác định`;
     $('source-empty').hidden = list.length !== 0 || !board.complete;
   }
