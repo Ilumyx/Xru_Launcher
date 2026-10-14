@@ -19,7 +19,7 @@
   // Một dòng là một cụm; ảnh/video chỉ là số khai sinh theo loại.
   const toSources = (data) => data.rows.map((row) => ({ ...row, name: row.display_name }));
   // Cờ lấy từ tag quốc gia trong nhãn nguồn; tag không hiện thành chip.
-  const FLAG = { US: '🇺🇸', UK: '🇬🇧', Germany: '🇩🇪', France: '🇫🇷', Poland: '🇵🇱', Australia: '🇦🇺', Japan: '🇯🇵', Korea: '🇰🇷', Taiwan: '🇹🇼', China: '🇨🇳', Russia: '🇷🇺', USSR: '☭', Ukraine: '🇺🇦', Israel: '🇮🇱', NATO: '✪' };
+  const FLAG = { US: '🇺🇸', UK: '🇬🇧', Germany: '🇩🇪', France: '🇫🇷', Poland: '🇵🇱', Australia: '🇦🇺', Japan: '🇯🇵', Korea: '🇰🇷', Taiwan: '🇹🇼', Thailand: '🇹🇭', China: '🇨🇳', Russia: '🇷🇺', USSR: '☭', Ukraine: '🇺🇦', Israel: '🇮🇱', NATO: '✪' };
   const flags = (s) => (s.tags || []).filter((t) => FLAG[t]).map((t) => `<i title="${esc(t)}">${FLAG[t]}</i>`).join('');
   const issue = (s) => s.state === 'broken';
   const QUICK = { issue: ['Có vấn đề', issue], waiting: ['Waiting', (s) => s.waiting] };
