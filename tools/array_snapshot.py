@@ -2,7 +2,7 @@
 import json, urllib.request
 from pathlib import Path
 
-cfg = json.load(open('/home/ilumyx/XRU/Xru_Code/XRU_Data/federal_keys/ai/xru_array.json'))
+cfg = json.load(open('/home/ilumyx/XRU/Xru_Code/XRU_Data/xru_federal/keys/ai/xru_array.json'))
 BASE = cfg['base_url']
 HDR = {'Authorization': f"Bearer {cfg['api_key']}", 'Content-Type': 'application/json'}
 OUT = Path(__file__).resolve().parent.parent / 'data' / 'array_snapshot.js'
