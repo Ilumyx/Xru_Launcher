@@ -194,3 +194,9 @@ html.sidebar-hidden .cr-grip.left { display: none; }
 .cr-table td.cr-date { font: 12px var(--font-mono); color: var(--fg-dim); white-space: nowrap; }
 
 .cr-table tr:not(.off) .cr-card.off { opacity: .28; }
+
+.cr-op { display: block; margin-top: 5px; color: var(--fg-dim); font: 10px var(--font-mono); line-height: 1.4; }
+.cr-pause { color: var(--warn); }
+.cr-op-detail { font-size: 12px; line-height: 1.5; }
+.cr-op-detail dt { margin-top: 8px; color: var(--fg-dim); }
+.cr-op-detail dd { margin: 0; overflow-wrap: anywhere; }

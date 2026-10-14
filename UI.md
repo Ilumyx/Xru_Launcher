@@ -58,3 +58,5 @@ Không còn mục mở từ đợt chuyển.
 - Repo Launcher: `Laucher Order <số>: …`, nối tiếp số cũ.
 - Repo land: `Order UI <số>: …`, nối tiếp số Order cao nhất của repo đó.
 - Báo commit, phép kiểm, phần chưa kiểm. Không push khi PO chưa bảo.
+
+Crawler Order 118: UI và CLI board dùng cùng bảng số từ phòng Lỗi & số liệu của Crawler. Từng ô ảnh/video hiện đã sinh/tổng (nguồn không tự khai: đã thấy+), số chờ/đáy, scout cuối/thêm/độ lệch tổng, run cuối và hôm nay/7 ngày, [E] theo loại, giờ nghỉ/chờ. Sidebar mỗi loại hiện đủ 7 câu cùng thời gian bắt đầu/kết thúc. Tổng/giờ cũ chưa có bằng chứng giữ chưa biết; không lấy giờ nâng cấp làm lịch sử. CLI chỉ còn scout/run/board/orders.
