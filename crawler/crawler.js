@@ -36,8 +36,11 @@
     name: (a, b) => a.name.localeCompare(b.name),
     pending: (a, b) => b.links_pending - a.links_pending,
     recent: (a, b) => newest(b) - newest(a),
+    recent_asc: (a, b) => (newest(a) || Infinity) - (newest(b) || Infinity),
+    platform: (a, b) => platformName(a.platform).localeCompare(platformName(b.platform)) || a.name.localeCompare(b.name),
+    platform_asc: (a, b) => platformName(b.platform).localeCompare(platformName(a.platform)) || a.name.localeCompare(b.name),
   };
-  // Bấm đầu cột Ảnh / Video: sắp số khai sinh; chưa có món là 0.
+  // Bấm đầu cột Platform / Ảnh / Video / Ngày: bấm lần nữa để đảo chiều.
   for (const kind of ['image', 'video']) {
     const count = (s) => s[kind === 'image' ? 'images' : 'videos'];
     SORT[kind] = (a, b) => (count(b) ?? -1) - (count(a) ?? -1);
@@ -149,8 +152,8 @@
 
   function renderSources(list) {
     const body = document.querySelector('[data-source-table] tbody');
-    document.querySelectorAll('[data-sort-media]').forEach((th) => {
-      const kind = th.dataset.sortMedia, on = f.sort.startsWith(kind);
+    document.querySelectorAll('[data-sort-col]').forEach((th) => {
+      const kind = th.dataset.sortCol, on = f.sort === kind || f.sort === kind + '_asc';
       th.classList.toggle('on', on);
       th.dataset.arrow = on ? (f.sort.endsWith('_asc') ? '↑' : '↓') : '↕';
     });
@@ -170,8 +173,8 @@
     render();
   });
   $('cr-q').addEventListener('input', () => { f.q = $('cr-q').value.trim().toLocaleLowerCase('vi'); render(); });
-  document.querySelectorAll('[data-sort-media]').forEach((th) => th.addEventListener('click', () => {
-    const kind = th.dataset.sortMedia;
+  document.querySelectorAll('[data-sort-col]').forEach((th) => th.addEventListener('click', () => {
+    const kind = th.dataset.sortCol;
     f.sort = f.sort === kind ? kind + '_asc' : kind;
     $('cr-sort').value = f.sort; render();
   }));
