@@ -143,11 +143,13 @@
   }
   const hiddenSeries = (key) => document.querySelector(`[data-chart-series="${key}"]`)?.getAttribute('aria-pressed') === 'false' ? ' hidden' : '';
 
+  // Hạng PO chấm riêng cho ảnh/video (labels.json → media), hiện ở góc ô; rê chuột xem ghi chú.
+  const tier = (s, kind) => { const m = (s.media || {})[kind]; return m && m.tier ? `<b class="cr-tier t-${esc(m.tier)}" title="${esc(m.note || '')}">${esc(m.tier)}</b>` : ''; };
   function mediaCard(s, kind) {
     const born = s[kind === 'image' ? 'images' : 'videos'], total = s[kind + '_total'];
     const number = (value) => value == null ? '—' : Number(value);
     const fill = total ? Math.min(100, born / total * 100) : 0;
-    return `<button type="button" class="cr-card ${s.state === 'broken' ? 'broken' : born ? '' : 'none'}"><span class="num">${number(born)}<small>/${number(total)}</small></span><span class="cr-bar"><i style="width:${fill}%"></i></span></button>`;
+    return `<button type="button" class="cr-card ${s.state === 'broken' ? 'broken' : born ? '' : 'none'}"><span class="num">${number(born)}<small>/${number(total)}</small></span>${tier(s, kind)}<span class="cr-bar"><i style="width:${fill}%"></i></span></button>`;
   }
 
   function renderSources(list) {
@@ -193,7 +195,8 @@
       $('source-detail-pending').textContent = n(r.links_pending);
       $('source-detail-last').textContent = day(r.last_born_at);
       $('source-detail-error').textContent = r.last_error ? `${r.last_error.reason}: ${r.last_error.detail} (${day(r.last_error.at)})` : '—';
-      $('source-detail-note').textContent = r.note || '—';
+      const media = r.media || {}, graded = ['image', 'video'].filter((k) => media[k]).map((k) => `${k === 'image' ? 'Ảnh' : 'Video'} ${media[k].tier || ''}: ${media[k].note || ''}`);
+      $('source-detail-note').textContent = [r.note, ...graded].filter(Boolean).join(' · ') || '—';
       dialog.showModal();
     });
     $('source-detail-close').addEventListener('click', () => dialog.close());
