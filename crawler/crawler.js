@@ -144,7 +144,9 @@
   const hiddenSeries = (key) => document.querySelector(`[data-chart-series="${key}"]`)?.getAttribute('aria-pressed') === 'false' ? ' hidden' : '';
 
   function mediaCard(s, kind) {
-    const born = s[kind === 'image' ? 'images' : 'videos'], total = s[kind + '_total'];
+    // Chưa đụng tới (chưa dò, chưa sinh, chưa biết tổng) thì —/—; 0 chỉ hiện khi đã có gì đó từ nguồn.
+    const untouched = !s.links_found && !s.assets && s.image_total == null && s.video_total == null;
+    const born = untouched ? null : s[kind === 'image' ? 'images' : 'videos'], total = s[kind + '_total'];
     const number = (value) => value == null ? '—' : Number(value);
     const fill = total ? Math.min(100, born / total * 100) : 0;
     return `<button type="button" class="cr-card ${s.state === 'broken' ? 'broken' : born ? '' : 'none'}"><span class="num">${number(born)}<small>/${number(total)}</small></span><span class="cr-bar"><i style="width:${fill}%"></i></span></button>`;
