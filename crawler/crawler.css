@@ -138,6 +138,7 @@ html.sidebar-hidden .cr-grip.left { display: none; }
 .cr-bar i { display: block; height: 100%; min-width: 0; background: var(--accent); }
 .cr-card:focus-visible { outline: 1px solid var(--fg-dim); outline-offset: 4px; }
 .cr-card.broken { color: var(--warn); }
+.cr-err { margin-left: 6px; font: 600 12px var(--font-mono); font-style: normal; color: var(--warn); }
 /* Chưa có món nào thì ô tối, có rồi mới sáng. */
 .cr-health { font: 13px var(--font-mono); }
 .cr-health::before { content: ''; display: inline-block; width: 5px; height: 5px; background: currentColor; border-radius: 50%; margin-right: 7px; }

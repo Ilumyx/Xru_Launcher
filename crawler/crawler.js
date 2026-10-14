@@ -147,10 +147,13 @@
   // Hạng PO chấm riêng cho ảnh/video (labels.json → media), hiện ở góc ô; rê chuột xem ghi chú.
   const tier = (s, kind) => { const m = (s.media || {})[kind]; return m && m.tier ? `<b class="cr-tier t-${esc(m.tier)}" title="${esc(m.note || '')}">${esc(m.tier)}</b>` : ''; };
   function mediaCard(s, kind) {
-    const born = s[kind === 'image' ? 'images' : 'videos'], total = s[kind + '_total'];
+    const born = s[kind === 'image' ? 'images' : 'videos'], total = s[kind + '_total'], found = s[kind + '_found'] || 0;
     const number = (value) => value == null ? '—' : Number(value);
+    // Chưa biết tổng mà đã dò được ít nhiều thì hiện "300+": đã thấy 300, còn nữa.
+    const after = total != null ? number(total) : found ? found + '+' : '—';
     const fill = total ? Math.min(100, born / total * 100) : 0;
-    return `<button type="button" class="cr-card ${!s[kind + '_enabled'] ? 'off' : s.state === 'broken' ? 'broken' : ''}"><span class="num">${number(born)}<small>/${number(total)}</small></span>${tier(s, kind)}<span class="cr-bar"><i style="width:${fill}%"></i></span></button>`;
+    const error = (s.errors || {})[kind];
+    return `<button type="button" class="cr-card ${!s[kind + '_enabled'] ? 'off' : error ? 'broken' : ''}"><span class="num">${number(born)}<small>/${after}</small>${error ? '<em class="cr-err" title="Lỗi thật sau lần sinh gần nhất · scout/run lại để đi tiếp từ dấu trang">[E]</em>' : ''}</span>${tier(s, kind)}<span class="cr-bar"><i style="width:${fill}%"></i></span></button>`;
   }
 
   function renderSources(list) {
