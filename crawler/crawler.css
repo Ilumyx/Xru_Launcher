@@ -69,6 +69,7 @@ a.rail-icon-btn { text-decoration: none; }
 .cr-name { display: flex; align-items: center; gap: 12px; color: var(--fg-strong); font-size: 20px; font-weight: 500; line-height: 1.3; }
 .cr-flags { display: inline-flex; gap: 4px; font-size: 17px; font-style: normal; }
 .cr-flags i { font-style: normal; }
+.cr-wait { font: 500 10px var(--font-mono); letter-spacing: .08em; color: var(--hold); border: 1px solid currentColor; padding: 2px 6px; opacity: .8; }
 /* Mỗi nền tảng một màu: vạch trước tên và chữ cột Platform. */
 .cr-mark { flex: none; width: 4px; height: 22px; border-radius: 2px; background: var(--plat); }
 .p-facebook { --plat: #4c8dff; } .p-dvids { --plat: #b5a46a; } .p-waralbum { --plat: #c9645a; } .p-telegram { --plat: #3fb6e8; } .p-direct { --plat: #9a9a9a; }
