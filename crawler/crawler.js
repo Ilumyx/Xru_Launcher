@@ -160,7 +160,7 @@
       th.classList.toggle('on', on);
       th.dataset.arrow = on ? (f.sort.endsWith('_asc') ? '↑' : '↓') : '↕';
     });
-    body.innerHTML = list.map((s, i) => `<tr data-i="${i}" class="${s.enabled ? '' : 'off'}"><td><div class="cr-name"><span class="cr-mark p-${esc(s.platform)}"></span>${esc(s.name)}<span class="cr-flags">${flags(s)}</span>${s.waiting ? '<span class="cr-wait">WAITING</span>' : ''}</div></td><td class="cr-plat p-${esc(s.platform)}">${esc(platformName(s.platform))}</td><td>${mediaCard(s, 'image')}</td><td>${mediaCard(s, 'video')}</td><td class="cr-date">${day(s.last_born_at)}</td></tr>`).join('');
+    body.innerHTML = list.map((s, i) => `<tr data-i="${i}" class="${s.enabled ? '' : 'off'}"><td class="cr-plat p-${esc(s.platform)}">${esc(platformName(s.platform))}</td><td><div class="cr-name"><span class="cr-mark p-${esc(s.platform)}"></span>${esc(s.name)}<span class="cr-flags">${flags(s)}</span>${s.waiting ? '<span class="cr-wait">WAITING</span>' : ''}</div></td><td>${mediaCard(s, 'image')}</td><td>${mediaCard(s, 'video')}</td><td class="cr-date">${day(s.last_born_at)}</td></tr>`).join('');
     $('source-result-count').textContent = board.complete ? `${list.length} / ${sources.length} nguồn` : `${list.length} nguồn đã đọc được · tổng chưa xác định`;
     $('source-empty').hidden = list.length !== 0 || !board.complete;
   }
