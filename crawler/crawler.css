@@ -1,13 +1,14 @@
 /* Crawler: standalone dashboard, followed by sources and activity. */
 a.rail-icon-btn { text-decoration: none; }
-.cr-ws { --cr-detail: 420px; position: relative; display: grid; grid-template-columns: var(--cr-side, var(--side-w)) minmax(0, 1fr); height: calc(100vh / var(--ui-zoom)); min-width: 0; transition: grid-template-columns .2s ease; }
-html.sidebar-hidden .cr-ws { --cr-side: 0px; }
-.cr-ws.has-detail { grid-template-columns: var(--cr-side, var(--side-w)) minmax(0, 1fr) var(--cr-detail); }
+.cr-ws { --cr-detail: 420px; --cr-side-now: var(--cr-side, var(--side-w)); position: relative; display: grid; grid-template-columns: var(--cr-side-now) minmax(0, 1fr); height: calc(100vh / var(--ui-zoom)); min-width: 0; transition: grid-template-columns .2s ease; }
+/* Bề ngang đã kéo nằm ở --cr-side (inline); ẩn sidebar thì cột về 0 mà vẫn nhớ bề ngang cũ. */
+html.sidebar-hidden .cr-ws { --cr-side-now: 0px; }
+.cr-ws.has-detail { grid-template-columns: var(--cr-side-now) minmax(0, 1fr) var(--cr-detail); }
 body.is-gripping { cursor: col-resize; user-select: none; }
 body.is-gripping .cr-ws { transition: none; }
 /* Mép kéo giãn của hai sidebar. */
 .cr-grip { position: absolute; top: 0; bottom: 0; width: 10px; z-index: 5; cursor: col-resize; }
-.cr-grip.left { left: calc(var(--cr-side, var(--side-w)) - 5px); }
+.cr-grip.left { left: calc(var(--cr-side-now) - 5px); }
 .cr-grip.right { right: calc(var(--cr-detail) - 5px); display: none; }
 .cr-ws.has-detail .cr-grip.right { display: block; }
 html.sidebar-hidden .cr-grip.left { display: none; }
