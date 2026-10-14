@@ -152,3 +152,5 @@ a.rail-icon-btn { text-decoration: none; }
 [hidden] { display:none !important; }
 
 .cr-date { font: 13px var(--font-mono); color: var(--fg-dim); white-space: nowrap; }
+
+.cr-table tr:not(.off) .cr-card.off { opacity: .28; }

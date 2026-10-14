@@ -149,7 +149,7 @@
     const born = s[kind === 'image' ? 'images' : 'videos'], total = s[kind + '_total'];
     const number = (value) => value == null ? '—' : Number(value);
     const fill = total ? Math.min(100, born / total * 100) : 0;
-    return `<button type="button" class="cr-card ${s.state === 'broken' ? 'broken' : born ? '' : 'none'}"><span class="num">${number(born)}<small>/${number(total)}</small></span>${tier(s, kind)}<span class="cr-bar"><i style="width:${fill}%"></i></span></button>`;
+    return `<button type="button" class="cr-card ${!s[kind + '_enabled'] ? 'off' : s.state === 'broken' ? 'broken' : born ? '' : 'none'}"><span class="num">${number(born)}<small>/${number(total)}</small></span>${tier(s, kind)}<span class="cr-bar"><i style="width:${fill}%"></i></span></button>`;
   }
 
   function renderSources(list) {
