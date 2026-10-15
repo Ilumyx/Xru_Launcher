@@ -1,0 +1,118 @@
+/* Màn Nguồn Crawler theo bản vẽ PO. Chỉ 4 màu: thang xám, đỏ (cần nhìn), xanh (đang cào). Không vàng/cam, không màu theo nền tảng. */
+body.src {
+  --c0: #0b0b0b; --c1: #141413; --c2: #1c1c1b; --c3: #2a2a28; --c4: #44443f; --c5: #6f6f6a; --c6: #8c8c87; --c7: #b5b4ae; --c8: #ecebe6;
+  --red-bg: #d93a2b; --red: #ff6450; --red-line: #5a1a15; --green: #4fc27a; --green-line: #1f4a2e;
+  --bg: var(--c0); --hairline: var(--c2); --hairline-hi: var(--c3); --fg-strong: var(--c8); --fg: var(--c7); --fg-dim: var(--c6); --fg-faint: var(--c5);
+  background: var(--c0); font-family: 'Barlow', var(--font-sans);
+}
+a.rail-icon-btn { text-decoration: none; }
+.src-ws { position: relative; display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); height: calc(100vh / var(--ui-zoom)); min-width: 0; transition: grid-template-columns .2s ease; }
+.src .side { background: var(--c0); border-right-color: var(--c2); }
+.src .side-head { border-bottom-color: var(--c2); }
+.src .side-search, .src .side-field select { background: var(--c1); border-color: var(--c2); }
+.src .side-search { margin-bottom: 12px; }
+.src-scroll { min-width: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--c3) transparent; }
+.src-main { padding: 28px 32px; min-width: 0; }
+.src .page-head { border-bottom-color: var(--c2); }
+.src-stamp { font: 11px var(--font-mono); letter-spacing: .06em; color: var(--c5); }
+#src-error { padding: 12px 0; color: var(--red); font: 12px var(--font-mono); }
+
+/* Sidebar: lọc nhanh + nền tảng + chú giải. */
+.f-head { padding: 18px 16px 8px; font: 11px var(--font-mono); letter-spacing: .08em; color: var(--c5); }
+.f-row { display: grid; grid-template-columns: minmax(0, 1fr) 36px; align-items: center; width: 100%; padding: 7px 16px; background: none; border: 0; color: var(--c7); font: 14px 'Barlow', var(--font-sans); text-align: left; cursor: pointer; }
+.f-row:hover { background: var(--c1); }
+.f-row.on { background: var(--c2); color: var(--c8); box-shadow: inset 2px 0 0 var(--c8); }
+.f-row b { font: 12px var(--font-mono); font-weight: 400; color: var(--c6); text-align: right; }
+.f-row b.red { color: var(--red); }
+.f-row.empty { color: var(--c5); }
+.src-legend { padding: 14px 16px 18px; border-top: 1px solid var(--c2); font: 11px/1.6 var(--font-mono); color: var(--c5); }
+.src-legend .dot { display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--red); vertical-align: 1px; }
+
+/* Dải 4 số tổng. */
+.src-totals { display: grid; grid-template-columns: repeat(4, 1fr); margin: 20px 0 18px; border: 1px solid var(--c2); }
+.src-totals div { padding: 14px 16px; }
+.src-totals div + div { border-left: 1px solid var(--c2); }
+.src-totals span { display: block; font: 11px var(--font-mono); letter-spacing: .08em; color: var(--c5); }
+.src-totals b { display: block; margin-top: 6px; font: 500 28px/1 var(--font-mono); color: var(--c8); }
+.src-totals b.red { color: var(--red); } .src-totals b.green { color: var(--green); } .src-totals b.dim { color: var(--c5); }
+
+/* Bảng: một nguồn một dòng, cao 36px. */
+.src-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid var(--c2); }
+.src-table th { height: 34px; padding: 0 8px; text-align: left; font: 11px var(--font-mono); font-weight: 400; letter-spacing: .08em; color: var(--c5); border-bottom: 1px solid var(--c3); white-space: nowrap; }
+.src-table th[data-sort] { cursor: pointer; user-select: none; }
+.src-table th[data-sort]:hover, .src-table th.on { color: var(--c8); }
+.src-table th.on::after { content: ' ' attr(data-arrow); }
+.src-table td { height: 36px; padding: 0 8px; border-bottom: 1px solid var(--c1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--c7); }
+.src-table .split { border-left: 1px solid var(--c2); }
+.src-table tr[data-id] { cursor: pointer; }
+.src-table tr[data-id]:hover td { background: var(--c1); }
+.src-table tr.picked td { background: var(--c2); }
+.src-table tr.off td { opacity: .4; }
+.src-table .nm { color: var(--c8); font-size: 15px; font-weight: 500; }
+.src-table .code { font: 12px var(--font-mono); color: var(--c6); }
+.src-table .age { font: 12px var(--font-mono); text-align: right; color: var(--c6); }
+.src-arm { display: block; width: 16px; height: 16px; margin: 0 auto; color: var(--c6); }
+.grp td { height: 34px; padding: 0 10px; background: var(--c1); font: 11px var(--font-mono); letter-spacing: .08em; color: var(--c6); cursor: pointer; user-select: none; }
+.grp td b { font-weight: 400; color: var(--c5); }
+.grp .chev { display: inline-block; width: 16px; }
+.grp.g-look td { color: var(--red); }
+.grp.g-run td { color: var(--green); }
+.grp:hover td { color: var(--c8); }
+.grp:focus-visible { outline: 1px solid var(--c8); outline-offset: -1px; }
+
+/* Ô media: [hạng] plan │ scout │ download. */
+.mc { display: grid; grid-template-columns: 20px repeat(3, minmax(44px, 52px)); justify-content: start; align-items: center; column-gap: 0; font: 12px var(--font-mono); }
+.mc > span { padding: 0 6px; text-align: right; border-left: 1px solid var(--c2); }
+.mc > span:first-of-type { margin-left: 8px; }
+.mc .plan { color: var(--c5); }
+.mc .scout { color: var(--c7); }
+.mc .down { color: var(--c8); }
+.mc .dim { color: var(--c4); }
+.mc .red { color: var(--red); }
+.mc.off { opacity: .35; }
+.tier { display: grid; place-items: center; width: 20px; height: 18px; border: 1px solid var(--c4); font: 600 11px var(--font-mono); color: var(--c8); }
+.tier.none { border-style: dashed; border-color: var(--c3); }
+.tier.t-A { color: var(--c8); border-color: var(--c7); }
+.tier.t-B { color: var(--c7); } .tier.t-C { color: var(--c6); } .tier.t-D { color: var(--c5); }
+.tier.t-F { color: var(--c4); text-decoration: line-through; border-color: var(--c3); }
+
+/* Badge: một trạng thái mỗi dòng. */
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 2px 7px; border: 1px solid var(--c3); font: 11px var(--font-mono); letter-spacing: .06em; color: var(--c6); }
+.b-stuck { background: var(--red-bg); border-color: var(--red-bg); color: #fff; }
+.b-wait, .b-stale, .b-scout { color: var(--red); border-color: var(--red-line); }
+.b-run { color: var(--green); border-color: var(--green-line); }
+.b-new { color: var(--c5); border-color: var(--c2); }
+.b-off { color: var(--c6); }
+.live { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: src-blink 1.6s ease-in-out infinite; }
+@keyframes src-blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+.red { color: var(--red); }
+.src-empty { padding: 40px; text-align: center; color: var(--c6); }
+
+/* Sidebar phải: chi tiết nguồn, đè lên bảng. */
+.src-detail { position: absolute; top: 0; right: 0; bottom: 0; z-index: 10; display: flex; flex-direction: column; width: min(440px, 92vw); background: var(--c0); border-left: 1px solid var(--c3); }
+.src-detail[hidden] { display: none; }
+.src-detail header { display: flex; justify-content: space-between; gap: 12px; padding: 22px 20px 16px; border-bottom: 1px solid var(--c2); }
+.src-detail h2 { font: 500 19px/1.3 'Barlow', var(--font-sans); color: var(--c8); }
+.src-detail header button { border: 0; background: none; color: var(--c6); font-size: 22px; line-height: 1; cursor: pointer; }
+.src-detail header button:hover { color: var(--c8); }
+.d-plat { margin-bottom: 6px; font: 11px var(--font-mono); letter-spacing: .08em; color: var(--c6); }
+.d-sub { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.d-sub .tag { padding: 2px 7px; background: var(--c2); font: 11px var(--font-mono); color: var(--c7); }
+.d-body { flex: 1; overflow-y: auto; padding: 16px 20px 28px; display: flex; flex-direction: column; gap: 18px; scrollbar-width: thin; scrollbar-color: var(--c3) transparent; }
+.d-body h3 { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font: 11px var(--font-mono); font-weight: 400; letter-spacing: .08em; color: var(--c6); }
+.d-kind { padding: 12px 14px; background: var(--c1); border: 1px solid var(--c2); }
+.d-kind.off { opacity: .45; }
+.d-nums { display: grid; grid-template-columns: repeat(4, 1fr); margin-bottom: 10px; }
+.d-nums span { display: block; font: 10px var(--font-mono); color: var(--c5); }
+.d-nums b { font: 500 16px var(--font-mono); color: var(--c8); }
+.d-kind dl, .d-facts { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 6px 10px; font: 12px var(--font-mono); }
+.d-kind dt, .d-facts dt { color: var(--c5); }
+.d-kind dd, .d-facts dd { color: var(--c7); overflow-wrap: anywhere; }
+.d-note { margin-top: 10px; font-size: 14px; line-height: 1.5; color: var(--c7); white-space: pre-line; }
+.d-shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.d-shots button { padding: 0; border: 1px solid var(--c2); background: var(--c1); cursor: zoom-in; }
+.d-shots img { display: block; width: 100%; height: auto; }
+.d-link { align-self: flex-start; font: 12px var(--font-mono); color: var(--c8); }
+.src-shot-view { margin: auto; padding: 0; border: 0; background: transparent; cursor: zoom-out; }
+.src-shot-view::backdrop { background: rgba(0, 0, 0, .85); }
+.src-shot-view img { display: block; max-width: calc(94vw / var(--ui-zoom)); max-height: calc(94vh / var(--ui-zoom)); }

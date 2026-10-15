@@ -1,5 +1,5 @@
 // Mặt chép từ mockup Crawler (js/crawler.js); số thật lấy từ /api/board. Chỉ đọc.
-// Sidebar trái = lọc (lọc nhanh, platform) và sắp xếp; bộ lọc nằm trên URL để Dash và Nguồn dùng chung.
+// Dash Crawler. Sidebar trái = lọc (lọc nhanh, platform) và sắp xếp; nền tảng nằm trên URL, dùng chung với màn Nguồn (sources.js).
 (() => {
   let backend, board=null, sources=[], shown=[], disconnected=false;
   const params=new URLSearchParams(location.search), list=(k)=>new Set((params.get(k)||'').split(',').filter(Boolean));
@@ -83,8 +83,6 @@
     $('cr-active').textContent = chips.length ? 'Đang lọc: ' + chips.join(' + ') : '';
     $('cr-clear').hidden = !chips.length;
     if ($('cr-chart')) renderDash(shown);
-    if (document.querySelector('[data-source-table]')) renderSources(shown);
-    if (detail && picked) showDetail(sources.find((r) => `${r.platform}|${r.cluster_key}` === picked) || null);
   }
 
   function renderDash(rows) {
@@ -144,39 +142,6 @@
   }
   const hiddenSeries = (key) => document.querySelector(`[data-chart-series="${key}"]`)?.getAttribute('aria-pressed') === 'false' ? ' hidden' : '';
 
-  // Hạng PO chấm riêng cho ảnh/video (labels.json → media), hiện ở góc ô; rê chuột xem ghi chú.
-  const tier = (s, kind) => { const m = (s.media || {})[kind]; return m && m.tier ? `<b class="cr-tier t-${esc(m.tier)}" title="${esc(m.note || '')}">${esc(m.tier)}</b>` : ''; };
-  function operationLines(s, kind) {
-    const o = s.operations?.[kind];
-    if (!o) return '';
-    const when = r => r ? `${day(r.ended_at || r.started_at)}${r.state === 'running' ? ' · chạy' : ''}` : '—';
-    const until = o.rest_until || o.wait_until;
-    const pause = until ? `${o.rest_until ? 'Nghỉ' : 'Chờ'} tới ${new Date(until).toLocaleString('vi-VN')}` : 'Không nghỉ/chờ';
-    const delta = o.total_delta == null ? '—' : `${o.total_delta >= 0 ? '+' : ''}${o.total_delta}`;
-    return `<span class="cr-op">Chờ ${n(o.pending)} · ${o.bottom_reached ? 'Đã tới đáy' : 'Còn dò'}</span><span class="cr-op">Scout ${esc(when(o.last_scout))} · +${o.last_scout?.added ?? '—'} · Δ${delta}</span><span class="cr-op">Run ${esc(when(o.last_run))} · HN ${n(o.today)} / 7n ${n(o.new_7d)}</span>${until ? `<span class="cr-op cr-pause">${esc(pause)}</span>` : ''}`;
-  }
-  function mediaCard(s, kind) {
-    const born = s[kind === 'image' ? 'images' : 'videos'], total = s[kind + '_total'], found = s[kind + '_found'] || 0;
-    const number = (value) => value == null ? '—' : Number(value);
-    // Chưa biết tổng mà đã dò được ít nhiều thì hiện "300+": đã thấy 300, còn nữa.
-    const after = total != null ? number(total) : found + '+';
-    const fill = total ? Math.min(100, born / total * 100) : 0;
-    const error = (s.errors || {})[kind];
-    return `<button type="button" class="cr-card ${!s[kind + '_enabled'] ? 'off' : error ? 'broken' : ''}"><span class="num">${number(born)}<small>/${after}</small>${error ? '<em class="cr-err" title="Lỗi thật sau lần sinh gần nhất · scout/run lại để đi tiếp từ dấu trang">[E]</em>' : ''}</span>${tier(s, kind)}<span class="cr-bar"><i style="width:${fill}%"></i></span>${operationLines(s, kind)}</button>`;
-  }
-
-  function renderSources(list) {
-    const body = document.querySelector('[data-source-table] tbody');
-    document.querySelectorAll('[data-sort-col]').forEach((th) => {
-      const kind = th.dataset.sortCol, on = f.sort === kind || f.sort === kind + '_asc';
-      th.classList.toggle('on', on);
-      th.dataset.arrow = on ? (f.sort.endsWith('_asc') ? '↑' : '↓') : '↕';
-    });
-    body.innerHTML = list.map((s, i) => `<tr data-i="${i}" class="${s.enabled ? '' : 'off'}"><td class="cr-plat p-${esc(s.platform)}">${esc(platformName(s.platform))}</td><td><div class="cr-name"><span class="cr-mark p-${esc(s.platform)}"></span>${esc(s.name)}<span class="cr-flags">${flags(s)}</span>${s.waiting ? '<span class="cr-wait">WAITING</span>' : ''}</div></td><td>${mediaCard(s, 'image')}</td><td>${mediaCard(s, 'video')}</td><td class="cr-date">${day(s.last_born_at)}</td></tr>`).join('');
-    $('source-result-count').textContent = board.complete ? `${list.length} / ${sources.length} nguồn` : `${list.length} nguồn đã đọc được · tổng chưa xác định`;
-    $('source-empty').hidden = list.length !== 0 || !board.complete;
-  }
-
   // Sự kiện gắn một lần.
   const flip = (set, v) => (set.has(v) ? set.delete(v) : set.add(v));
   document.addEventListener('click', (e) => {
@@ -188,82 +153,13 @@
     render();
   });
   $('cr-q').addEventListener('input', () => { f.q = $('cr-q').value.trim().toLocaleLowerCase('vi'); render(); });
-  document.querySelectorAll('[data-sort-col]').forEach((th) => th.addEventListener('click', () => {
-    const kind = th.dataset.sortCol;
-    f.sort = f.sort === kind ? kind + '_asc' : kind;
-    $('cr-sort').value = f.sort; render();
-  }));
   $('cr-sort').value = f.sort;
   $('cr-sort').addEventListener('change', () => { f.sort = $('cr-sort').value; render(); });
-  // Sidebar phải: chi tiết nguồn đang chọn. Bấm dòng khác thì đổi, bấm lại dòng đó hoặc × thì đóng.
-  const detail = $('source-detail');
-  let picked = null;
-  function showDetail(r) {
-    picked = r ? `${r.platform}|${r.cluster_key}` : null;
-    detail.hidden = !r;
-    document.querySelector('.cr-ws').classList.toggle('has-detail', !!r);
-    document.querySelectorAll('[data-source-table] tbody tr').forEach((tr) => tr.classList.toggle('picked', !!r && shown[tr.dataset.i] === r));
-    if (!r) return;
-    $('source-detail-platform').innerHTML = `<span class="p-${esc(r.platform)}">${esc(platformName(r.platform))}</span>`;
-    $('source-detail-name').innerHTML = `${esc(r.name)} <span class="cr-flags">${flags(r)}</span>`;
-    $('source-detail-sub').innerHTML = [r.waiting ? '<span class="cr-wait">WAITING</span>' : '', !r.enabled ? '<span class="cr-off">ĐANG TẮT</span>' : ''].join('');
-    const media = r.media || {};
-    $('source-detail-media').innerHTML = ['image', 'video'].map((kind) => {
-      const m = media[kind] || {}, born = r[kind === 'image' ? 'images' : 'videos'], total = r[kind + '_total'], on = r[kind + '_enabled'] !== false;
-      const o = r.operations?.[kind] || {};
-      const totalText = o.total_exact ? n(o.total) : `${o.found ?? 0}+`;
-      const stamp = value => value ? new Date(value).toLocaleString('vi-VN') : '—';
-      const stateName = {running:'đang chạy',done:'đã xong',failed:'lỗi',interrupted:'đã ngắt',waiting_links:'cần scout thêm'};
-      const operation = value => value ? `${stamp(value.started_at)} → ${stamp(value.ended_at)} · ${stateName[value.state] || value.state} · ${value.directions.map(d => d === 'head' ? 'Đầu' : 'Đuôi').join('/') || 'không dò'}` : '—';
-      const delta = o.total_delta == null ? '—' : `${o.total_delta >= 0 ? '+' : ''}${o.total_delta}`;
-      return `<div class="cr-detail-kind${on ? '' : ' off'}"><div class="cr-detail-kind-head"><span>${kind === 'image' ? 'ẢNH' : 'VIDEO'} · ${on ? 'BẬT' : 'TẮT'}</span>${m.tier ? `<b class="cr-tier t-${esc(m.tier)}">${esc(m.tier)}</b>` : ''}</div><p class="num">${n(born)}<small>/${totalText}</small></p><dl class="cr-op-detail"><dt>Scout cuối</dt><dd>${esc(operation(o.last_scout))} · thêm ${o.last_scout?.added ?? '—'}</dd><dt>Tổng lần trước / lệch</dt><dd>${n(o.total_previous)} / ${delta}</dd><dt>Run cuối</dt><dd>${esc(operation(o.last_run))}</dd><dt>Hôm nay / 7 ngày</dt><dd>${n(o.today)} / ${n(o.new_7d)}</dd><dt>Chờ tải / Đáy</dt><dd>${n(o.pending)} / ${o.bottom_reached ? 'đã tới' : 'chưa tới'}</dd><dt>Lỗi thật</dt><dd>${o.error ? `[E] ${esc(o.last_error?.detail || o.last_error?.reason)}` : 'Không'}</dd><dt>Nghỉ / Chờ tới</dt><dd>${stamp(o.rest_until)} / ${stamp(o.wait_until)}</dd></dl>${m.note ? `<p class="cr-detail-kind-note">${esc(m.note)}</p>` : ''}</div>`;
-    }).join('');
-    $('source-detail-note').textContent = r.note || '';
-    $('source-detail-note-wrap').hidden = !r.note;
-    const shots = r.shots || [];
-    $('source-detail-shots').innerHTML = shots.map((name) => `<button type="button" class="cr-shot" data-shot="${esc(name)}"><img loading="lazy" src="${backend}/api/shots/${encodeURIComponent(name)}" alt=""></button>`).join('');
-    $('source-detail-shots-wrap').hidden = !shots.length;
-    $('source-detail-found').textContent = n(r.links_found);
-    $('source-detail-pending').textContent = n(r.links_pending);
-    $('source-detail-last').textContent = day(r.last_born_at);
-    $('source-detail-error').textContent = r.last_error ? `${r.last_error.reason}: ${r.last_error.detail} (${day(r.last_error.at)})` : '—';
-    const link = sourceUrl(r);
-    $('source-detail-link').hidden = !link;
-    if (link) $('source-detail-link').href = link;
-  }
-  // Link mở được trên trình duyệt; từ khoá DVIDS thì mở trang tìm kiếm.
-  function sourceUrl(r) {
-    const first = String(r.link || '').split(' · ')[0];
-    if (/^https?:\/\//.test(first)) return first;
-    if (r.platform === 'dvids') return 'https://www.dvidshub.net/search/?q=' + encodeURIComponent(first);
-    if (r.platform === 'telegram') return 'https://t.me/' + encodeURIComponent(first);
-    return '';
-  }
-  if (detail) {
-    document.querySelector('[data-source-table] tbody').addEventListener('click', (e) => {
-      const tr = e.target.closest('tr');
-      if (!tr) return;
-      const r = shown[tr.dataset.i];
-      showDetail(picked === `${r.platform}|${r.cluster_key}` ? null : r);
-    });
-    $('source-detail-close').addEventListener('click', () => showDetail(null));
-    const view = $('shot-view');
-    $('source-detail-shots').addEventListener('click', (e) => {
-      const b = e.target.closest('[data-shot]');
-      if (!b) return;
-      $('shot-view-img').src = b.querySelector('img').src;
-      view.showModal();
-    });
-    view.addEventListener('click', () => view.close());
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !view.open && !detail.hidden) { e.stopPropagation(); showDetail(null); } }, true);
-  }
-
-  // Kéo mép để giãn sidebar trái và sidebar phải; bấm đúp về mặc định. Nhớ theo trình duyệt.
+  // Kéo mép để giãn sidebar trái; bấm đúp về mặc định. Nhớ theo trình duyệt.
   function grip(side) {
     const ws = document.querySelector('.cr-ws');
-    if (!ws || (side === 'right' && !detail)) return;
-    const KEY = 'xru-crawler-' + side + '-w', VAR = side === 'left' ? '--cr-side' : '--cr-detail';
-    const MIN = side === 'left' ? 200 : 320, MAX = side === 'left' ? 480 : 900;
+    if (!ws) return;
+    const KEY = 'xru-crawler-' + side + '-w', VAR = '--cr-side', MIN = 200, MAX = 480;
     const set = (w) => { if (w == null) ws.style.removeProperty(VAR); else ws.style.setProperty(VAR, Math.round(Math.max(MIN, Math.min(MAX, w))) + 'px'); };
     try { const saved = +localStorage.getItem(KEY); if (saved) set(saved); } catch { /* không nhớ được thì dùng mặc định */ }
     const el = document.createElement('div');
@@ -286,7 +182,7 @@
     });
     el.addEventListener('dblclick', () => { set(null); try { localStorage.removeItem(KEY); } catch { /* bỏ qua */ } });
   }
-  grip('left'); grip('right');
+  grip('left');
 
   for (const button of document.querySelectorAll('[data-chart-series]')) {
     button.addEventListener('click', () => {

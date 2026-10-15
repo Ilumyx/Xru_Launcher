@@ -1,45 +1,58 @@
 <!doctype html>
-<!-- Mặt chép từ mockup PO đã duyệt: Xru_Launcher 544f36f^:mockups/crawler_sources.html. Số thật từ /api/board. -->
+<!-- Mặt theo bản vẽ PO: design/crawler_sources.html + design/ORDER_crawler_sources.md. Số thật từ /api/board. -->
 <html lang="vi">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>XRU Crawler — Nguồn đã thêm</title>
+  <title>XRU Crawler — Nguồn</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/kit/page/page.css"><link rel="stylesheet" href="/kit/sidebar/sidebar.css"><link rel="stylesheet" href="crawler.css">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/kit/page/page.css"><link rel="stylesheet" href="/kit/sidebar/sidebar.css"><link rel="stylesheet" href="sources.css">
   <link rel="stylesheet" href="/kit/account/account.css"><script src="/kit/i18n/i18n.js"></script><script src="/kit/account/account.js"></script><script src="/kit/sidebar/sidebar.js"></script>
   <script>window.XRU_RAILS = { crawler: { label: "Crawler", home: "/?continent=eurasia", homeTip: "Về sảnh (ESC)",
     groups: [[{ key: "dash", href: "/crawler/dash", icon: "bars", tip: "Dashboard" }, { key: "sources", href: "/crawler/sources", icon: "table", tip: "Nguồn" }]] } };</script>
 </head>
-<body><div class="shell">
+<body class="src"><div class="shell">
   <nav class="rail" data-rail="crawler" data-panel data-active="sources"></nav><script src="/kit/rail/rail.js"></script>
-<div class="cr-ws">
-  <aside class="side">
-    <div class="side-head">
-      <div class="side-count"><b id="cr-count">—</b><span>NGUỒN</span></div>
-      <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" id="cr-q" placeholder="Tên cụm hoặc nền tảng…" aria-label="Tìm nguồn"></label>
-      <div class="side-field"><label for="cr-sort">Sắp xếp</label><select id="cr-sort"><option value="issue">Có vấn đề trước</option><option value="name">Tên A → Z</option><option value="platform">Nguồn A → Z</option><option value="platform_asc">Nguồn Z → A</option><option value="pending">Chờ tải nhiều nhất</option><option value="recent">Ngày cào mới nhất</option><option value="recent_asc">Ngày cào cũ nhất</option><option value="image">Nhiều ảnh nhất</option><option value="image_asc">Ít ảnh nhất</option><option value="video">Nhiều video nhất</option><option value="video_asc">Ít video nhất</option></select></div>
+  <div class="src-ws">
+    <aside class="side">
+      <div class="side-head">
+        <div class="side-count"><b id="src-count">—</b><span>NGUỒN</span></div>
+        <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" id="src-q" placeholder="Tìm cụm…" aria-label="Tìm cụm"></label>
+        <div class="side-field"><label for="src-sort">Sắp xếp trong nhóm</label><select id="src-sort">
+          <option value="tier">Hạng cao trước</option><option value="name">Tên A → Z</option><option value="platform">Nền A → Z</option>
+          <option value="recent">Cào mới nhất</option><option value="recent_asc">Cào lâu nhất</option><option value="pending">Chờ tải nhiều nhất</option>
+          <option value="image">Nhiều ảnh nhất</option><option value="image_asc">Ít ảnh nhất</option><option value="video">Nhiều video nhất</option><option value="video_asc">Ít video nhất</option>
+        </select></div>
+      </div>
+      <div class="side-items" id="src-filters"></div>
+      <div class="src-legend">
+        <p><i class="dot"></i>scout đỏ = thiếu scout</p>
+        <p>Cũ khi chưa cào quá: A 3n · B 7n · C 14n · D 30n · chưa chấm 7n · F không tính</p>
+      </div>
+    </aside>
+    <div class="src-scroll">
+      <main class="src-main">
+        <header class="page-head"><div class="page-title"><a href="/?continent=eurasia">EURASIA</a><span>/</span><a href="/crawler/dash" data-keep>CRAWLER</a><span>/</span><h1>NGUỒN</h1></div><span class="src-stamp" id="src-stamp"></span></header>
+        <div id="src-error" role="alert" hidden></div>
+        <section class="src-totals" aria-label="Tổng theo nhóm">
+          <div><span>CẦN NHÌN</span><b class="red" id="t-look">—</b></div>
+          <div><span>ĐANG CÀO</span><b class="green" id="t-run">—</b></div>
+          <div><span>ỔN</span><b id="t-ok">—</b></div>
+          <div><span>CHƯA CÀO</span><b class="dim" id="t-new">—</b></div>
+        </section>
+        <table class="src-table">
+          <colgroup><col style="width:26px"><col style="width:240px"><col style="width:40px"><col style="width:56px"><col><col><col style="width:52px"><col style="width:116px"></colgroup>
+          <thead><tr><th></th><th data-sort="name">CỤM</th><th>NƯỚC</th><th data-sort="platform">NỀN</th><th data-sort="image">ẢNH</th><th data-sort="video" class="split">VIDEO</th><th data-sort="recent">CÀO</th><th>TRẠNG THÁI</th></tr></thead>
+          <tbody id="src-rows"></tbody>
+        </table>
+        <p class="src-empty" id="src-empty" hidden>Không có nguồn phù hợp.</p>
+        <footer class="page-foot"><div class="key-hints"><span><span class="key">1</span> Dashboard</span><span><span class="key">2</span> Nguồn</span><span><span class="key">ESC</span> Đóng chi tiết / Sảnh</span></div><div>CHỈ ĐỌC · ẢNH + VIDEO</div></footer>
+      </main>
     </div>
-    <div class="side-items" id="cr-filters"></div>
-  </aside>
-  <div class="cr-scroll">
-  <main class="cr-stage">
-    <header class="page-head"><div class="page-title"><a href="/?continent=eurasia">EURASIA</a><span>/</span><a href="/crawler/dash" data-keep-scope>CRAWLER</a><span>/</span><h1>NGUỒN</h1></div><div class="cr-active"><span id="cr-active"></span><button type="button" id="cr-clear" hidden>Bỏ lọc</button></div></header><div id="cr-error" role="alert" hidden></div>
-
-    <div class="cr-table-wrap"><table class="cr-table" data-source-table><thead><tr><th class="c-plat cr-sortable" data-sort-col="platform">PLATFORM</th><th class="c-name">CỤM</th><th class="c-media cr-sortable" data-sort-col="image">ẢNH</th><th class="c-media cr-sortable" data-sort-col="video">VIDEO</th><th class="c-date cr-sortable" data-sort-col="recent">NGÀY CÀO CUỐI</th></tr></thead><tbody></tbody></table></div><div class="cr-empty" id="source-empty" hidden>Không có nguồn phù hợp.</div><p class="cr-label" id="source-result-count" style="margin-top:20px"></p>
-    <footer class="page-foot"><div class="key-hints"><span><span class="key">1</span> Dashboard</span><span><span class="key">2</span> Nguồn</span><span><span class="key">ESC</span> Sảnh</span></div><div id="cr-foot">CHỈ ĐỌC · ẢNH + VIDEO</div></footer>
-  </main>
+    <aside class="src-detail" id="src-detail" hidden aria-labelledby="d-name">
+      <header><div><p class="d-plat" id="d-plat"></p><h2 id="d-name"></h2><p class="d-sub" id="d-sub"></p></div><button type="button" id="d-close" aria-label="Đóng chi tiết">×</button></header>
+      <div class="d-body" id="d-body"></div>
+    </aside>
   </div>
-  <aside class="cr-detail" id="source-detail" hidden aria-labelledby="source-detail-name">
-    <header class="cr-detail-head"><div><p class="cr-detail-plat" id="source-detail-platform"></p><h2 id="source-detail-name"></h2><p class="cr-detail-sub" id="source-detail-sub"></p></div><button type="button" id="source-detail-close" aria-label="Đóng chi tiết">×</button></header>
-    <div class="cr-detail-body">
-      <section class="cr-detail-media" id="source-detail-media"></section>
-      <section id="source-detail-note-wrap"><h3>Ghi chú</h3><p id="source-detail-note"></p></section>
-      <section id="source-detail-shots-wrap"><h3>Ảnh chụp</h3><div class="cr-shots" id="source-detail-shots"></div></section>
-      <section><h3>Số liệu</h3><dl class="cr-detail-facts"><dt>Link đã tìm</dt><dd id="source-detail-found"></dd><dt>Link chờ</dt><dd id="source-detail-pending"></dd><dt>Nhận mới</dt><dd id="source-detail-last"></dd><dt>Lỗi gần nhất</dt><dd id="source-detail-error"></dd></dl></section>
-      <a class="cr-detail-link" id="source-detail-link" target="_blank" rel="noopener noreferrer">Mở nguồn ↗</a>
-    </div>
-  </aside>
-</div>
-<dialog class="cr-shot-view" id="shot-view"><img id="shot-view-img" alt=""></dialog>
-</div><script src="crawler.js"></script></body></html>
+  <dialog class="src-shot-view" id="shot-view"><img id="shot-view-img" alt=""></dialog>
+</div><script src="sources.js"></script></body></html>
