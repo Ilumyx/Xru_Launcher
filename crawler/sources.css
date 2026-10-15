@@ -12,7 +12,7 @@ a.rail-icon-btn { text-decoration: none; }
 .src .side-search, .src .side-field select { background: var(--c1); border-color: var(--c2); }
 .src .side-search { margin-bottom: 12px; }
 .src-scroll { min-width: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--c3) transparent; }
-.src-main { padding: 28px 32px; min-width: 0; }
+.src-main { max-width: 1320px; margin: 0 auto; padding: 28px 32px; min-width: 0; }
 .src .page-head { border-bottom-color: var(--c2); }
 .src-stamp { font: 11px var(--font-mono); letter-spacing: .06em; color: var(--c5); }
 #src-error { padding: 12px 0; color: var(--red); font: 12px var(--font-mono); }
@@ -51,6 +51,7 @@ a.rail-icon-btn { text-decoration: none; }
 .src-table .nm { color: var(--c8); font-size: 15px; font-weight: 500; }
 .src-table .code { font: 12px var(--font-mono); color: var(--c6); }
 .src-table .age { font: 12px var(--font-mono); text-align: right; color: var(--c6); }
+.src-table th:nth-child(7) { text-align: right; }
 .src-arm { display: block; width: 16px; height: 16px; margin: 0 auto; color: var(--c6); }
 .grp td { height: 34px; padding: 0 10px; background: var(--c1); font: 11px var(--font-mono); letter-spacing: .08em; color: var(--c6); cursor: pointer; user-select: none; }
 .grp td b { font-weight: 400; color: var(--c5); }
@@ -61,7 +62,7 @@ a.rail-icon-btn { text-decoration: none; }
 .grp:focus-visible { outline: 1px solid var(--c8); outline-offset: -1px; }
 
 /* Ô media: [hạng] plan │ scout │ download. */
-.mc { display: grid; grid-template-columns: 20px repeat(3, minmax(44px, 52px)); justify-content: start; align-items: center; column-gap: 0; font: 12px var(--font-mono); }
+.mc { display: grid; grid-template-columns: 20px repeat(3, 64px); justify-content: start; align-items: center; column-gap: 0; font: 12px var(--font-mono); }
 .mc > span { padding: 0 6px; text-align: right; border-left: 1px solid var(--c2); }
 .mc > span:first-of-type { margin-left: 8px; }
 .mc .plan { color: var(--c5); }
