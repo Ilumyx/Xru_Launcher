@@ -75,6 +75,9 @@
     return true;
   }
 
+  // Scout chưa dò tới đáy thì thêm +: đã thấy 1,160 mà nguồn còn sâu.
+  const scoutText = (o) => n(o.found ?? 0) + (o.bottom_reached ? '' : '+');
+
   // Ô ảnh/video: [hạng] plan │ scout │ download. Không chữ chú thích; số chờ chỉ hiện ở chi tiết.
   function mediaCell(s, k) {
     const o = s.operations?.[k] || {}, m = (s.media || {})[k] || {};
@@ -82,7 +85,7 @@
     const tier = m.tier ? `<b class="tier t-${esc(m.tier)}" title="${esc(m.note || 'Hạng ' + m.tier)}">${esc(m.tier)}</b>` : '<b class="tier none" title="Chưa chấm"></b>';
     if (o.supported === false) return `<div class="mc off">${tier}<span class="dim">—</span><span class="dim">—</span><span class="dim">—</span></div>`;
     const plan = o.supports_count && o.total != null ? n(o.total) : '—';
-    const scout = never ? '—' : n(o.found ?? 0), down = never ? '—' : n(s[k === 'image' ? 'images' : 'videos']);
+    const scout = never ? '—' : scoutText(o), down = never ? '—' : n(s[k === 'image' ? 'images' : 'videos']);
     return `<div class="mc${on ? '' : ' off'}">${tier}<span class="plan${plan === '—' ? ' dim' : ''}">${plan}</span><span class="scout${noScout(s, k) && s.st[0] === 'scout' ? ' red' : ''}${never ? ' dim' : ''}">${scout}</span><span class="down${never ? ' dim' : ''}">${down}</span></div>`;
   }
 
@@ -161,7 +164,7 @@
       const delta = o.total_delta == null ? '—' : `${o.total_delta >= 0 ? '+' : ''}${n(o.total_delta)}`;
       const pause = o.rest_until ? `nghỉ tới ${stamp(o.rest_until)}` : o.wait_until ? `chờ tới ${stamp(o.wait_until)}` : 'không';
       return `<section class="d-kind${on ? '' : ' off'}"><h3>${k === 'image' ? 'ẢNH' : 'VIDEO'} · ${on ? 'BẬT' : 'TẮT'}${m.tier ? ` <b class="tier t-${esc(m.tier)}">${esc(m.tier)}</b>` : ''}</h3>
-        <div class="d-nums"><div><span>plan</span><b>${o.supports_count && o.total != null ? n(o.total) : '—'}</b></div><div><span>scout</span><b>${n(o.found)}</b></div><div><span>download</span><b>${n(s[k === 'image' ? 'images' : 'videos'])}</b></div><div><span>chờ</span><b>${n(o.pending)}</b></div></div>
+        <div class="d-nums"><div><span>plan</span><b>${o.supports_count && o.total != null ? n(o.total) : '—'}</b></div><div><span>scout</span><b>${o.found == null ? '—' : scoutText(o)}</b></div><div><span>download</span><b>${n(s[k === 'image' ? 'images' : 'videos'])}</b></div><div><span>chờ</span><b>${n(o.pending)}</b></div></div>
         <dl><dt>Scout cuối</dt><dd>${op(o.last_scout)}</dd><dt>Tổng lệch</dt><dd>${delta}${o.bottom_reached ? ' · đã tới đáy' : ''}</dd><dt>Run cuối</dt><dd>${op(o.last_run)}</dd><dt>Hôm nay · 7 ngày</dt><dd>${n(o.today)} · ${n(o.new_7d)}</dd><dt>Lỗi thật</dt><dd class="${o.error ? 'red' : ''}">${o.error ? esc(`[E] ${o.last_error?.reason || ''} ${o.last_error?.detail || ''}`) : 'không'}</dd><dt>Nghỉ / chờ</dt><dd>${pause}</dd></dl>
         ${m.note ? `<p class="d-note">${esc(m.note)}</p>` : ''}</section>`;
     }).join('');
