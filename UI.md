@@ -55,7 +55,7 @@ Không còn mục mở từ đợt chuyển.
 
 ## Commit
 
-- Repo Launcher: `Laucher Order <số>: …`, nối tiếp số cũ.
+- Repo Launcher: `Laucher Order <số>: …`, nối tiếp số cũ. Fix lặt vặt sau một Order thì gom vào số đó: `26.1`, `26.2`… (PO 15/10).
 - Repo land: `Order UI <số>: …`, nối tiếp số Order cao nhất của repo đó.
 - Báo commit, phép kiểm, phần chưa kiểm. Không push khi PO chưa bảo.
 
