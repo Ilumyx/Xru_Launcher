@@ -1,6 +1,6 @@
 # UI XRU
 
-Sổ chung của Codex và Claude. Chỉ hai file: `UI.md` (quyết định, việc) và `README.md` (chạy, thư mục, Kit). Cập nhật: 07/10/2026.
+Sổ chung của Codex và Claude. Chỉ hai file: `UI.md` (quyết định, việc) và `README.md` (chạy, thư mục, Kit). Cập nhật: 21/10/2026.
 
 ## Ai làm gì
 
@@ -48,6 +48,18 @@ Crawler (Order 121): Backend `Xru_Crawler/ui_backend_service/` đọc qua `local
 Gate Dash: màn `gate/dash/` trên 5050 đọc `/api/stats` từ Backend ảnh 5059 và video 5058, không gọi CLI. Giữ số và nghĩa cũ; NONE = chưa có kết luận máy, không phải sạch. Lane không trả dữ liệu thì báo đang tắt/chưa có số; lane còn lại vẫn đọc được. Đã đối chiếu số tổng/trạng thái/nguồn với hai API và kiểm tắt từng Backend rồi phục hồi. Đã xoá màn, test và server Dash cũ.
 
 Label video (Claude làm theo yêu cầu PO 07/10): Backend `Xru_Label/label_division_video/backend_service/` gọi use case `label_division_review`; màn `label/video/` trên 5050 cùng khung Gate (hàng chờ kit | sân khấu frame/video + timeline + bảng nhãn | hồ sơ). Lọc Tất cả/Thiếu/Đủ trên toàn hàng chờ (số đếm từ cùng catalog). Lưu một ô chỉ gửi ô đó, ô đang gõ khác giữ nguyên; thêm/xoá nhân vật tại chỗ; trang hàng chờ và mục đang mở giữ trên URL. Đã kiểm chuỗi trên fixture và đọc dữ liệu thật (322 = CLI, phát/tua video); xoá `video_po_review_ui/` và lệnh `start-apps`.
+
+## Ca học: kho lên vạn món là treo (21/10)
+
+Bệnh lặp lại nhiều lần, lần nào test cũng xanh vì fixture chỉ vài món. Ca gần nhất: Crawler `/api/board` treo 10 phút, 5055 kẹt 99% CPU (Crawler Order 131). Kho 4 món, 60 link thì không sao; lên 12,126 món × 27,113 link thì vòng lặp trong vòng lặp dựng lại tập 12k phần tử khoảng 2,35 triệu lần. Sửa xong còn 0,25 giây. Ca kèm theo: Label video chạy `sync_foundry_release` trước mọi request, kể cả từng mẩu video và thumbnail.
+
+Luật cho mọi Backend và màn mới:
+- Đếm, gom, lọc ở `local_registrar` bằng SQL (`COUNT`, `GROUP BY`, `JOIN`). Backend chỉ ghép số và gắn nhãn. Không bê cả kho lên Python để đếm tay.
+- Thứ không đổi thì dựng một lần trước vòng lặp, không dựng lại trong vòng.
+- Request đọc không kèm việc nặng (đồng bộ sổ, quét kho). Việc đó chạy ở CLI hoặc khi sổ đổi.
+- Có test tốc độ trên kho giả lớn (từ 100k món): API màn chính dưới 1 giây. Fixture nhỏ chỉ chứng cơ chế.
+- Màn không vẽ cả vạn dòng một lúc: Backend lọc và phân trang trước. Poll 5 giây chỉ gọi API rẻ; lượt trước chưa xong thì không gọi lượt mới.
+- Soát một màn: đo thời gian API trên kho thật rồi mới báo đạt.
 
 ## Còn mở
 
