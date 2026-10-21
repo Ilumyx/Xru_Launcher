@@ -1,6 +1,6 @@
 # UI XRU
 
-Sổ chung của Codex và Claude. Chỉ hai file: `UI.md` (quyết định, việc) và `README.md` (chạy, thư mục, Kit). Cập nhật: 21/10/2026.
+Sổ chung của Codex và Claude. Ba file: `UI.md` (quyết định, việc), `README.md` (chạy, thư mục, Kit) và `UI_STUDY_CASE.md` (ca hẹo và luật chặn). Cập nhật: 21/10/2026.
 
 ## Ai làm gì
 
@@ -49,17 +49,9 @@ Gate Dash: màn `gate/dash/` trên 5050 đọc `/api/stats` từ Backend ảnh 5
 
 Label video (Claude làm theo yêu cầu PO 07/10): Backend `Xru_Label/label_division_video/backend_service/` gọi use case `label_division_review`; màn `label/video/` trên 5050 cùng khung Gate (hàng chờ kit | sân khấu frame/video + timeline + bảng nhãn | hồ sơ). Lọc Tất cả/Thiếu/Đủ trên toàn hàng chờ (số đếm từ cùng catalog). Lưu một ô chỉ gửi ô đó, ô đang gõ khác giữ nguyên; thêm/xoá nhân vật tại chỗ; trang hàng chờ và mục đang mở giữ trên URL. Đã kiểm chuỗi trên fixture và đọc dữ liệu thật (322 = CLI, phát/tua video); xoá `video_po_review_ui/` và lệnh `start-apps`.
 
-## Ca học: kho lên vạn món là treo (21/10)
+## Ca học
 
-Bệnh lặp lại nhiều lần, lần nào test cũng xanh vì fixture chỉ vài món. Ca gần nhất: Crawler `/api/board` treo 10 phút, 5055 kẹt 99% CPU (Crawler Order 131). Kho 4 món, 60 link thì không sao; lên 12,126 món × 27,113 link thì vòng lặp trong vòng lặp dựng lại tập 12k phần tử khoảng 2,35 triệu lần. Sửa xong còn 0,25 giây. Ca kèm theo: Label video chạy `sync_foundry_release` trước mọi request, kể cả từng mẩu video và thumbnail.
-
-Luật cho mọi Backend và màn mới:
-- Đếm, gom, lọc ở `local_registrar` bằng SQL (`COUNT`, `GROUP BY`, `JOIN`). Backend chỉ ghép số và gắn nhãn. Không bê cả kho lên Python để đếm tay.
-- Thứ không đổi thì dựng một lần trước vòng lặp, không dựng lại trong vòng.
-- Request đọc không kèm việc nặng (đồng bộ sổ, quét kho). Việc đó chạy ở CLI hoặc khi sổ đổi.
-- Có test tốc độ trên kho giả lớn (từ 100k món): API màn chính dưới 1 giây. Fixture nhỏ chỉ chứng cơ chế.
-- Màn không vẽ cả vạn dòng một lúc: Backend lọc và phân trang trước. Poll 5 giây chỉ gọi API rẻ; lượt trước chưa xong thì không gọi lượt mới.
-- Soát một màn: đo thời gian API trên kho thật rồi mới báo đạt.
+Những lần UI hẹo (kho lớn là treo, cuộn giật, tua khựng), gốc và luật chặn tái phát: xem `UI_STUDY_CASE.md`. Dựng màn hoặc Backend mới thì đọc file đó trước.
 
 ## Còn mở
 
