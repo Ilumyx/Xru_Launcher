@@ -5,20 +5,37 @@ Sổ chung của Codex và Claude. Ba file: `UI.md` (quyết định, việc), `
 ## Ai làm gì
 
 - PO chốt mục tiêu, mặt màn, thứ tự.
-- Codex làm code. Claude soát theo bản vẽ PO, không sửa code song song.
+- Màn UI (5050): Codex hoặc Claude làm, Claude soát theo bản vẽ PO.
+- UI Backend: Sector Admin của từng Sector code như thường. Claude thầu audit sau mỗi đợt (xem Audit UI Backend).
 - Trước khi code: nói lại bản vẽ PO, PO gật mới làm. Quyết định mới ghi vào đây, sửa câu cũ, không nối thêm.
 
-## Kiến trúc (bản vẽ PO, 07/10)
+## Kiến trúc (bản vẽ PO, 21/10)
 
 ```
-Lõi land ──► CLI ──► LLM
-   └──────► Backend ──HTTP──► UI (module rời, ngoài mọi land)
+Liên Bang ─► Lục địa ─► Sector ─► Zone (1984)
+
+Sector:  Local Registrar (cầm sổ) ─┬─ CLI/Ops (lõi)
+                                   ├─ DIRC Embassy ─► DIRC
+                                   └─ UI Backend ──HTTP──► UI (5050, ngoài mọi Sector)
 ```
 
+- UI Backend và UI thò ra ngoài lõi, sinh ra để bị rút bỏ. Rút `ui_backend_service/` thì CLI và lõi vẫn chạy 100%. UI sập kéo cả dây chuyền là tội của Sector đó.
 - UI chỉ gọi Backend. Không import lõi, không đọc sổ, không gọi CLI.
-- Backend thuộc land, đọc/ghi qua clerk. Trả JSON; ảnh/video trả file, video tua được.
-- Gỡ UI thì lõi, CLI, Backend vẫn chạy. Tắt một Backend thì màn đó báo đang tắt.
+- UI Backend chỉ đi qua Local Registrar / DIRC Embassy. Không mở SQL, không import ops/station/source. Trả JSON; ảnh/video trả file, video tua được.
+- Tắt một Backend thì màn đó báo đang tắt.
 - Số nào chưa có nguồn và nghĩa rõ thì không hiện. Không số tĩnh, không số gõ tay.
+
+## Audit UI Backend (PO 21/10)
+
+UI Backend là DMZ: Sector code, Launcher dùng. Sau mỗi đợt Sector đổi UI Backend, Claude soát:
+
+1. Rút phích: xoá `ui_backend_service/` ở bản sao, test lõi và CLI vẫn chạy.
+2. Đúng cửa: chỉ gọi Local Registrar / DIRC Embassy; không SQL, không ops/CLI.
+3. Không việc nặng mỗi request (luật trong `UI_STUDY_CASE.md`).
+4. Đo trên kho thật: API màn chính dưới 1 giây.
+5. `API.md` khớp dữ liệu trả thật.
+
+Hỏng gọn trong `ui_backend_service/` thì Claude được sửa thẳng, commit `Order UI <số>` ở repo Sector. Hỏng phải đụng lõi, hoặc UI không rút ra được, thì tố giác Sector Admin cho PO kèm bằng chứng để ra Order.
 
 | Cổng | Vai trò |
 |---|---|
