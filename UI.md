@@ -6,7 +6,7 @@ Sổ chung của Codex và Claude. Ba file: `UI.md` (quyết định, việc), `
 
 - PO chốt mục tiêu, mặt màn, thứ tự.
 - Màn UI (5050): Codex hoặc Claude làm, Claude soát theo bản vẽ PO.
-- UI Backend: Sector Admin của từng Sector code như thường. Claude thầu audit sau mỗi đợt (xem Audit UI Backend).
+- UI Backend (`ui_backend_service/` trong mỗi Sector) là đất UI, Claude sở hữu (bản vẽ PO 21/10). Sector Admin vẫn được code như thường; Claude audit sau mỗi đợt và sửa thẳng (xem Audit UI Backend).
 - Trước khi code: nói lại bản vẽ PO, PO gật mới làm. Quyết định mới ghi vào đây, sửa câu cũ, không nối thêm.
 
 ## Kiến trúc (bản vẽ PO, 21/10)
@@ -77,7 +77,7 @@ Không còn mục mở từ đợt chuyển.
 ## Commit
 
 - Repo Launcher: `Laucher Order <số>: …`, nối tiếp số cũ. Fix lặt vặt sau một Order thì gom vào số đó: `26.1`, `26.2`… (PO 15/10).
-- Repo land: `Order UI <số>: …`, nối tiếp số Order cao nhất của repo đó.
+- Repo Sector: `Order UI <số>: …`, nối tiếp số Order cao nhất của repo đó (Crawler `Order UI 132`, Gate `Order UI 46`), để nhìn là biết commit của đất UI.
 - Báo commit, phép kiểm, phần chưa kiểm. Không push khi PO chưa bảo.
 
 Crawler Order 118: UI và CLI board dùng cùng bảng số từ phòng Lỗi & số liệu của Crawler. Từng ô ảnh/video hiện đã sinh/tổng (nguồn không tự khai: đã thấy+), số chờ/đáy, scout cuối/thêm/độ lệch tổng, run cuối và hôm nay/7 ngày, [E] theo loại, giờ nghỉ/chờ. Sidebar mỗi loại hiện đủ 7 câu cùng thời gian bắt đầu/kết thúc. Tổng/giờ cũ chưa có bằng chứng giữ chưa biết; không lấy giờ nâng cấp làm lịch sử. CLI chỉ còn scout/run/board/orders.
