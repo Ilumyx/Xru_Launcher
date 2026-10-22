@@ -24,7 +24,7 @@ window.XRU_I18N.add({
     // Nguồn: dải tổng, nhóm, trạng thái, bảng
     cr_totals_aria: 'Tổng theo nhóm', cr_g_ok: 'ỔN', cr_g_run: 'ĐANG CÀO', cr_g_new: 'CHƯA CÀO', cr_g_look: 'CẦN NHÌN',
     cr_st_stuck: 'KẸT', cr_st_wait: 'WAITING', cr_st_stale: 'CŨ', cr_st_scout: 'THIẾU SCOUT', cr_st_ok: 'OK',
-    cr_th_cluster: 'CỤM', cr_th_country: 'NƯỚC', cr_th_platform: 'NỀN', cr_th_image: 'ẢNH', cr_th_crawl: 'CÀO', cr_th_status: 'TRẠNG THÁI',
+    cr_th_cluster: 'CỤM', cr_th_country: 'NƯỚC', cr_th_platform: 'NỀN', cr_th_image: 'ẢNH', cr_th_video: 'VIDEO', cr_th_crawl: 'CÀO', cr_th_status: 'TRẠNG THÁI',
     cr_empty: 'Không có nguồn phù hợp.', cr_updated: 'CẬP NHẬT',
     cr_leg_scout: 'scout đỏ = thiếu scout ·', cr_leg_bottom: '= chưa dò tới đáy',
     cr_leg_stale: 'Cũ khi chưa cào quá: A 3n · B 7n · C 14n · D 30n · chưa chấm 7n · F không tính',
@@ -62,7 +62,7 @@ window.XRU_I18N.add({
     cr_by_platform: 'Collected by platform', cr_view_sources: 'View sources ↗', cr_img_vid: 'IMAGES + VIDEO',
     cr_totals_aria: 'Totals by group', cr_g_ok: 'FINE', cr_g_run: 'RUNNING', cr_g_new: 'NOT STARTED', cr_g_look: 'NEEDS A LOOK',
     cr_st_stuck: 'STUCK', cr_st_wait: 'WAITING', cr_st_stale: 'STALE', cr_st_scout: 'NO SCOUT', cr_st_ok: 'OK',
-    cr_th_cluster: 'CLUSTER', cr_th_country: 'CTRY', cr_th_platform: 'PLAT', cr_th_image: 'IMAGES', cr_th_crawl: 'CRAWL', cr_th_status: 'STATUS',
+    cr_th_cluster: 'CLUSTER', cr_th_country: 'CTRY', cr_th_platform: 'PLAT', cr_th_image: 'IMAGES', cr_th_video: 'VIDEOS', cr_th_crawl: 'CRAWL', cr_th_status: 'STATUS',
     cr_empty: 'No matching sources.', cr_updated: 'UPDATED',
     cr_leg_scout: 'red scout = missing scout ·', cr_leg_bottom: '= not scouted to the bottom',
     cr_leg_stale: 'Stale when not crawled for: A 3d · B 7d · C 14d · D 30d · unrated 7d · F never',

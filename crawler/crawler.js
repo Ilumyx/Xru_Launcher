@@ -36,11 +36,7 @@
     name: (a, b) => a.name.localeCompare(b.name),
     pending: (a, b) => b.links_pending - a.links_pending,
     recent: (a, b) => newest(b) - newest(a),
-    recent_asc: (a, b) => (newest(a) || Infinity) - (newest(b) || Infinity),
-    platform: (a, b) => platformName(a.platform).localeCompare(platformName(b.platform)) || a.name.localeCompare(b.name),
-    platform_asc: (a, b) => platformName(b.platform).localeCompare(platformName(a.platform)) || a.name.localeCompare(b.name),
   };
-  // Bấm đầu cột Platform / Ảnh / Video / Ngày: bấm lần nữa để đảo chiều.
   for (const kind of ['image', 'video']) {
     const count = (s) => s[kind === 'image' ? 'images' : 'videos'];
     SORT[kind] = (a, b) => (count(b) ?? -1) - (count(a) ?? -1);

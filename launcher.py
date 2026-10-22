@@ -1,6 +1,8 @@
 """UI XRU: sảnh, Kit, Gate ảnh/video/Dash, Crawler và Label. Mọi màn chỉ gọi Backend qua HTTP.
-python3 launcher.py          # sảnh :5050
+python3 launcher.py          # sảnh :5050 (luôn nghe 127.0.0.1; PC vào qua hầm SSH, xem README)
 python3 launcher.py stop     # tắt UI :5050 (Backend tắt bằng xru stop)
+Ảnh card sector: assets/sectors/<tên>.jpg là bản mặc định theo git; ảnh PO tải lên cất ở
+${XDG_DATA_HOME:-~/.local/share}/xru/launcher/sectors/ và được phục vụ trước, nên đổi ảnh không làm bẩn repo.
 Không import code của land. Chỉ dùng thư viện chuẩn Python.
 """
 
@@ -13,7 +15,7 @@ import sys
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 HERE = Path(__file__).resolve().parent
 PORT = 5050
@@ -42,12 +44,21 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def translate_path(self, path: str) -> str:
+        """Ảnh card có bản PO tải lên thì phục vụ bản đó; không thì rơi về bản mặc định trong repo."""
+        url = urlparse(path).path
+        if url.startswith(SECTOR_URL) and url.endswith(".jpg"):
+            mine = sector_file(unquote(url[len(SECTOR_URL):-4]))
+            if mine is not None and mine.is_file():
+                return str(mine)
+        return super().translate_path(path)
+
     def _sector_image(self, land: str, data: bytes) -> None:
-        """Lưu (hoặc xoá, nếu rỗng) ảnh card sector do trang chủ gửi lên. Chỉ nhận JPEG."""
+        """Lưu (hoặc xoá, nếu rỗng) ảnh card sector do trang chủ gửi lên. Chỉ nhận JPEG. Ghi ngoài repo; xoá thì bản mặc định hiện lại."""
         path = sector_file(land)
         if path is None or (data and not data.startswith(b"\xff\xd8")):
             return self._send(400, "")
-        SECTORS.mkdir(parents=True, exist_ok=True)
+        USER_SECTORS.mkdir(parents=True, exist_ok=True)
         if data:
             path.write_bytes(data)
         else:
@@ -69,13 +80,14 @@ class Handler(SimpleHTTPRequestHandler):
         return self._send(404, "")
 
 
-SECTORS = HERE / "assets" / "sectors"
+SECTOR_URL = "/assets/sectors/"
+USER_SECTORS = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local" / "share") / "xru" / "launcher" / "sectors"
 
 
 def sector_file(land: str) -> Path | None:
-    """Ảnh card sector trên trang chủ: assets/sectors/<tên>.jpg. Tên lạ thì từ chối."""
+    """Ảnh card sector PO tải lên: <thư mục dữ liệu>/xru/launcher/sectors/<tên>.jpg. Tên lạ thì từ chối."""
     name = land.strip().lower()
-    return SECTORS / f"{name}.jpg" if name and all(c.isalnum() or c in "-_ " for c in name) else None
+    return USER_SECTORS / f"{name}.jpg" if name and all(c.isalnum() or c in "-_ " for c in name) else None
 
 
 def stop_ui() -> None:
@@ -102,12 +114,11 @@ def main() -> None:
         LABEL_BACKEND = sys.argv[sys.argv.index('--label-backend')+1].rstrip('/')
     if '--crawler-backend' in sys.argv:
         CRAWLER_BACKEND = sys.argv[sys.argv.index('--crawler-backend')+1].rstrip('/')
-    host = "0.0.0.0" if "--lan" in sys.argv else "127.0.0.1"
     LOGS.mkdir(exist_ok=True)
     if PORT == 5050:
         (LOGS / "launcher.pid").write_text(str(os.getpid()))
     print(f"Xru_Launcher: http://127.0.0.1:{PORT}", flush=True)
-    ThreadingHTTPServer((host, PORT), partial(Handler, directory=str(HERE))).serve_forever()
+    ThreadingHTTPServer(("127.0.0.1", PORT), partial(Handler, directory=str(HERE))).serve_forever()
 
 
 if __name__ == "__main__":

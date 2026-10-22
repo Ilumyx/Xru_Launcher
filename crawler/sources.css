@@ -10,7 +10,7 @@ a.rail-icon-btn { text-decoration: none; }
 .src .side-head { border-bottom-color: var(--c2); }
 .src .side-search, .src .side-field select { background: var(--c1); border-color: var(--c2); }
 .src .side-search { margin-bottom: 12px; }
-.src-scroll { scrollbar-color: var(--c3) transparent; }
+.src-scroll { scrollbar-color: var(--c3) transparent; container-type: inline-size; } /* bề ngang cột giữa quyết định bảng gọn hay đủ, xem hai khối @container ở ô media */
 .src-main { max-width: 1320px; margin: 0 auto; padding: 28px 32px; min-width: 0; }
 .src .page-head { border-bottom-color: var(--c2); }
 .src-stamp { font: 11px var(--font-mono); letter-spacing: .06em; color: var(--c5); }
@@ -35,12 +35,11 @@ a.rail-icon-btn { text-decoration: none; }
 .src-totals b { display: block; margin-top: 6px; font: 500 28px/1 var(--font-mono); color: var(--c8); }
 .src-totals b.red { color: var(--red); } .src-totals b.green { color: var(--green); } .src-totals b.dim { color: var(--c5); }
 
-/* Bảng: một nguồn một dòng, cao 36px. */
+/* Bảng: một nguồn một dòng, cao 36px. Bề ngang cột đặt ở đây (không viết cứng trong HTML) để @container đổi được. */
+.src-table col.c-arm { width: 30px; } .src-table col.c-country { width: 48px; } .src-table col.c-plat { width: 68px; }
+.src-table col.c-media { width: 236px; } .src-table col.c-age { width: 56px; } .src-table col.c-status { width: 128px; }
 .src-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid var(--c2); }
 .src-table th { height: 34px; padding: 0 8px; text-align: left; font: 11px var(--font-mono); font-weight: 400; letter-spacing: .08em; color: var(--c5); border-bottom: 1px solid var(--c3); white-space: nowrap; }
-.src-table th[data-sort] { cursor: pointer; user-select: none; }
-.src-table th[data-sort]:hover, .src-table th.on { color: var(--c8); }
-.src-table th.on::after { content: ' ' attr(data-arrow); }
 .src-table td { height: 36px; padding: 0 8px; border-bottom: 1px solid var(--c1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--c7); }
 .src-table .split { border-left: 1px solid var(--c2); }
 .src-table tr[data-id] { cursor: pointer; }
@@ -70,6 +69,19 @@ a.rail-icon-btn { text-decoration: none; }
 .mc .dim { color: var(--c4); }
 .mc .red { color: var(--red); }
 .mc.off { opacity: .35; }
+@container (max-width: 959px) { /* cột giữa hẹp (laptop mở chi tiết): ô media chỉ còn [hạng] download, plan/scout xem ở tooltip và chi tiết */
+  .src-table col.c-media { width: clamp(88px, 12cqw, 120px); }
+  .mc { grid-template-columns: 20px minmax(0, 1fr); }
+  .mc .plan, .mc .scout { display: none; }
+  .mc .down { margin-left: 4px; border-left: 0; }
+}
+@container (max-width: 719px) { /* rất hẹp: bỏ cột phụ (icon, nước, nền, ngày cào; chi tiết vẫn ghi đủ), lề gọn */
+  .src-main { padding-inline: 16px; }
+  .src .page-head { flex-wrap: wrap; gap: 8px 24px; } /* dòng "cập nhật" xuống dưới tiêu đề thay vì đè lên */
+  .src-table col:is(.c-arm, .c-country, .c-plat, .c-age) { width: 0; } /* cột 0px, không display:none: dòng nhóm colspan=8 cần đủ 8 cột */
+  .src-table tr:not(.grp) > :is(:nth-child(1), :nth-child(3), :nth-child(4), :nth-child(7)) { padding: 0; overflow: hidden; }
+  .src-table col.c-status { width: 112px; }
+}
 .tier { display: grid; place-items: center; width: 20px; height: 18px; border: 1px solid var(--c4); font: 600 11px var(--font-mono); color: var(--c8); }
 .tier.none { border-style: dashed; border-color: var(--c3); }
 .tier.t-A { color: var(--c8); border-color: var(--c7); }

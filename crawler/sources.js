@@ -57,9 +57,7 @@
   const SORT = {
     tier: (a, b) => bestTier(a) - bestTier(b) || a.name.localeCompare(b.name),
     name: (a, b) => a.name.localeCompare(b.name),
-    name_asc: (a, b) => b.name.localeCompare(a.name),
     platform: (a, b) => platName(a.platform).localeCompare(platName(b.platform)) || a.name.localeCompare(b.name),
-    platform_asc: (a, b) => platName(b.platform).localeCompare(platName(a.platform)) || a.name.localeCompare(b.name),
     recent: (a, b) => newest(b) - newest(a),
     recent_asc: (a, b) => (newest(a) || Infinity) - (newest(b) || Infinity),
     pending: (a, b) => (b.links_pending || 0) - (a.links_pending || 0),
@@ -85,10 +83,10 @@
     const o = s.operations?.[k] || {}, m = (s.media || {})[k] || {};
     const on = onKinds(s).includes(k), never = s.st[0] === 'new';
     const tier = m.tier ? `<b class="tier t-${esc(m.tier)}" title="${esc(m.note || t('cr_tier', { tier: m.tier }))}">${esc(m.tier)}</b>` : `<b class="tier none" title="${t('cr_unrated')}"></b>`;
-    if (o.supported === false) return `<div class="mc off">${tier}<span class="dim">—</span><span class="dim">—</span><span class="dim">—</span></div>`;
+    if (o.supported === false) return `<div class="mc off">${tier}<span class="plan dim">—</span><span class="scout dim">—</span><span class="down dim">—</span></div>`;
     const plan = o.supports_count && o.total != null ? n(o.total) : '—';
     const scout = never ? '—' : scoutText(o), down = never ? '—' : n(s[k === 'image' ? 'images' : 'videos']);
-    return `<div class="mc${on ? '' : ' off'}">${tier}<span class="plan${plan === '—' ? ' dim' : ''}">${plan}</span><span class="scout${noScout(s, k) && s.st[0] === 'scout' ? ' red' : ''}${never ? ' dim' : ''}">${scout}</span><span class="down${never ? ' dim' : ''}">${down}</span></div>`;
+    return `<div class="mc${on ? '' : ' off'}" title="${plan} │ ${scout} │ ${down}">${tier}<span class="plan${plan === '—' ? ' dim' : ''}">${plan}</span><span class="scout${noScout(s, k) && s.st[0] === 'scout' ? ' red' : ''}${never ? ' dim' : ''}">${scout}</span><span class="down${never ? ' dim' : ''}">${down}</span></div>`;
   }
 
   function row(s) {
@@ -128,11 +126,6 @@
     }
     $('src-rows').innerHTML = html;
     $('src-empty').hidden = shown.length !== 0 || !board.complete;
-    document.querySelectorAll('[data-sort]').forEach((th) => {
-      const k = th.dataset.sort, on = f.sort === k || f.sort === k + '_asc';
-      th.classList.toggle('on', on);
-      th.dataset.arrow = on ? (f.sort.endsWith('_asc') ? '↑' : '↓') : '';
-    });
     if (picked) showDetail(sources.find((s) => `${s.platform}|${s.cluster_key}` === picked) || null);
   }
 
@@ -191,11 +184,10 @@
   // Sự kiện.
   const flip = (set, v) => (set.has(v) ? set.delete(v) : set.add(v));
   document.addEventListener('click', (e) => {
-    const el = e.target.closest('[data-plat],[data-quick],[data-sort],[data-group],#src-rows tr[data-id],[data-shot]');
+    const el = e.target.closest('[data-plat],[data-quick],[data-group],#src-rows tr[data-id],[data-shot]');
     if (!el) return;
     if (el.dataset.plat) flip(f.plat, el.dataset.plat);
     else if (el.dataset.quick) f.quick = f.quick === el.dataset.quick ? '' : el.dataset.quick;
-    else if (el.dataset.sort) { const k = el.dataset.sort; f.sort = f.sort === k ? k + '_asc' : k; $('src-sort').value = SORT[f.sort] && $('src-sort').querySelector(`[value="${f.sort}"]`) ? f.sort : $('src-sort').value; }
     else if (el.dataset.group) { if (f.q || f.plat.size || f.quick) return; open[el.dataset.group] = !open[el.dataset.group]; }
     else if (el.hasAttribute('data-shot')) { $('shot-view-img').src = el.querySelector('img').src; return $('shot-view').showModal(); }
     else { const s = sources.find((x) => `${x.platform}|${x.cluster_key}` === el.dataset.id); return showDetail(picked === el.dataset.id ? null : s); }

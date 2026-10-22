@@ -521,6 +521,8 @@
     return loadQueue();
   }).catch((err) => {
     down = true;
+    // Chưa vẽ được hàng chờ thì danh sách trái báo tắt/lỗi, không kẹt "Đang đọc" mãi (hàng chờ đã có thì giữ, banner lo).
+    if (!page) $('queue-list').innerHTML = `<div class="side-empty" data-i18n="lb_off">${esc(t('lb_off'))}</div>`;
     $('empty').textContent = t('lb_down') + ' ' + err.message;
     say(t('lb_down'), 'error', true);
   });

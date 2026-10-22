@@ -8,14 +8,14 @@ Module UI rời của XRU: sảnh, Kit, các màn. Quyết định và việc: [
 xru start                       # bật UI :5050 + 4 Backend (ảnh :5059, video :5058, Crawler :5055, Label :5057)
 xru stop                        # tắt hết
 xru backend image status        # READY khi API trả được dữ liệu; dùng cho máy, từng lane
-python3 launcher.py --lan       # chỉ UI, mở cho mạng LAN
+python3 launcher.py             # chỉ UI :5050
 ```
 
 `xru start` / `xru stop` bật/tắt UI :5050 cùng bốn Backend. Gate ảnh mở tại `/gate/image/`, video tại `/gate/video/?view=grid` hoặc `view=watch`, Gate Dash tại `/gate/dash/`, Crawler tại `/crawler/dash.html` và `/crawler/sources.html`, Label tại `/label/video/`; Backend chạy riêng: `python -m ui_backend_service.image_api` hoặc `python -m ui_backend_service.video_api` trong Xru_Gate, `python -m ui_backend_service.source_api` trong Xru_Crawler, `python -m label_division_video.backend_service.label_api` trong Xru_Label. Hợp đồng ở `Xru_Gate/ui_backend_service/API.md` (ảnh + video), `Xru_Crawler/ui_backend_service/API.md` và `Xru_Label/label_division_video/backend_service/API.md`. Bật/tắt/status từng Backend qua `xru backend image|video|crawler|label start|stop|status`.
 
 Dùng UI trên PC (chung mạng nhà): laptop đào hầm ngược `ssh -N -R 5050:127.0.0.1:5050 -R 5055:127.0.0.1:5055 -R 5057:127.0.0.1:5057 -R 5058:127.0.0.1:5058 -R 5059:127.0.0.1:5059 pc`, rồi PC mở `http://127.0.0.1:5050`. `ssh pc` gọi PC bằng tên `o.local` (mDNS), PC gọi laptop bằng `XruProryv.local`. Hầm đứt khi laptop ngủ hoặc mất mạng.
 
-Mặc định chạy localhost. `--lan` mở server UI cho LAN; để dùng Backend từ máy khác phải cấu hình host và `--ui-origin` của Backend tương ứng. UI có `--port`, `--image-backend`, `--video-backend`, `--crawler-backend`, `--label-backend` để thử với dữ liệu riêng.
+UI luôn nghe 127.0.0.1, máy khác vào qua hầm SSH ở trên (Backend chỉ nhận Origin `http://127.0.0.1:5050`). UI có `--port`, `--image-backend`, `--video-backend`, `--crawler-backend`, `--label-backend` để thử với dữ liệu riêng.
 
 ## Thư mục
 
@@ -25,7 +25,7 @@ Mặc định chạy localhost. `--lan` mở server UI cho LAN; để dùng Back
 | `kit/` | Thư viện gốc, xem tại `/kit/` |
 | `home/` | Quả cầu, menu trang chủ |
 | `gate/image/`, `gate/video/`, `gate/dash/`, `crawler/`, `label/video/` | Các màn chỉ gọi Backend qua HTTP |
-| `assets/` | `gu/` ảnh gu PO, `sectors/` ảnh ô sector |
+| `assets/` | `gu/` ảnh gu PO, `sectors/` ảnh mặc định của ô sector (ảnh PO tải lên ở trang chủ cất ngoài repo tại `${XDG_DATA_HOME:-~/.local/share}/xru/launcher/sectors/`, Launcher phục vụ bản đó trước; xoá thì hiện lại ảnh mặc định) |
 | `array/` | Màn Array (tra cứu, đọc bản chụp `data/array_snapshot.js`) |
 | `data/`, `tools/` | Số chụp Array (tĩnh, có ngày chụp) |
 

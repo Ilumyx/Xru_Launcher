@@ -80,7 +80,7 @@ window.LauncherGlobe = (() => {
       <div class="lands-panel-head">${continentId.toUpperCase()}</div>
       <div class="lands-list">
         ${lands.map(land => {
-          // Ảnh card = file trên đĩa (assets/sectors/<tên>.jpg, do Launcher lưu). Chưa có file thì ô xám.
+          // Ảnh card = assets/sectors/<tên>.jpg qua Launcher: bản PO tải lên (thư mục dữ liệu người dùng) trước, bản mặc định theo git sau. Không có cả hai thì ô xám.
           const imgSrc = land.image || sectorImg(land.name);
           // Link chính của card = module đầu tiên có URL thật ('#' = chưa có trang)
           const main = (land.mods || []).find(m => m.url && m.url !== '#');
@@ -107,8 +107,8 @@ window.LauncherGlobe = (() => {
   }
 
   // ---------------- SỬA ẢNH CARD: upload + kéo + zoom ----------------
-  // Khung cắt cùng tỉ lệ card (16:7). Lưu ra JPEG đã cắt sẵn (~100KB) thành file
-  // Xru_Launcher/assets/sectors/<tên>.jpg qua Launcher (POST /sector-image), mở ở máy/trình duyệt nào cũng thấy.
+  // Khung cắt cùng tỉ lệ card (16:7). Lưu ra JPEG đã cắt sẵn (~100KB) qua Launcher (POST /sector-image):
+  // Launcher cất vào ~/.local/share/xru/launcher/sectors/<tên>.jpg (ngoài repo), mở ở trình duyệt nào cũng thấy; xoá thì hiện lại ảnh mặc định.
   const IMG_KEY = name => 'xru-land-img-' + name; // bản cũ lưu trong trình duyệt: tự chuyển thành file khi gặp
   const FRAME_RATIO = 16 / 7;
   const OUT_W = 1200;
