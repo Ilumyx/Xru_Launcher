@@ -159,34 +159,6 @@
   $('cr-q').addEventListener('input', () => { f.q = $('cr-q').value.trim().toLocaleLowerCase('vi'); render(); });
   $('cr-sort').value = f.sort;
   $('cr-sort').addEventListener('change', () => { f.sort = $('cr-sort').value; render(); });
-  // Kéo mép để giãn sidebar trái; bấm đúp về mặc định. Nhớ theo trình duyệt.
-  function grip(side) {
-    const ws = document.querySelector('.cr-ws');
-    if (!ws) return;
-    const KEY = 'xru-crawler-' + side + '-w', VAR = '--cr-side', MIN = 200, MAX = 480;
-    const set = (w) => { if (w == null) ws.style.removeProperty(VAR); else ws.style.setProperty(VAR, Math.round(Math.max(MIN, Math.min(MAX, w))) + 'px'); };
-    try { const saved = +localStorage.getItem(KEY); if (saved) set(saved); } catch { /* không nhớ được thì dùng mặc định */ }
-    const el = document.createElement('div');
-    el.className = 'cr-grip ' + side;
-    el.title = 'Kéo để giãn · bấm đúp để về mặc định';
-    ws.appendChild(el);
-    el.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      document.body.classList.add('is-gripping');
-      const move = (ev) => {
-        const r = ws.getBoundingClientRect(), scale = r.width / ws.offsetWidth;
-        set(side === 'left' ? (ev.clientX - r.left) / scale : (r.right - ev.clientX) / scale);
-      };
-      const up = () => {
-        document.body.classList.remove('is-gripping');
-        window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up);
-        try { localStorage.setItem(KEY, parseInt(ws.style.getPropertyValue(VAR)) || ''); } catch { /* bỏ qua */ }
-      };
-      window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
-    });
-    el.addEventListener('dblclick', () => { set(null); try { localStorage.removeItem(KEY); } catch { /* bỏ qua */ } });
-  }
-  grip('left');
 
   for (const button of document.querySelectorAll('[data-chart-series]')) {
     button.addEventListener('click', () => {

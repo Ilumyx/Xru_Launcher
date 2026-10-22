@@ -19,7 +19,7 @@
 
   // Bề rộng 1 cột ảnh khi đang ở 5 cột (tính bằng phép cộng trừ, không phụ thuộc animation)
   function colWidth() {
-    const listW = document.documentElement.classList.contains('sidebar-hidden') ? 0 : LIST_W;
+    const listW = document.documentElement.classList.contains('sidebar-hidden') ? 0 : (document.querySelector('.side')?.offsetWidth || LIST_W);
     const extra = main.clientWidth - gallery.clientWidth;              // padding cột giữa
     const free = ws.offsetWidth - listW - BASE_W - extra - (BASE_COLS - 1) * GAP;
     return free / BASE_COLS;

@@ -1,17 +1,6 @@
 /* Crawler Dash. Màn Nguồn có CSS riêng ở sources.css. */
 a.rail-icon-btn { text-decoration: none; }
-.cr-ws { --cr-side-now: var(--cr-side, var(--side-w)); position: relative; display: grid; grid-template-columns: var(--cr-side-now) minmax(0, 1fr); height: calc(100vh / var(--ui-zoom)); min-width: 0; transition: grid-template-columns .2s ease; }
-/* Bề ngang đã kéo nằm ở --cr-side (inline); ẩn sidebar thì cột về 0 mà vẫn nhớ bề ngang cũ. */
-html.sidebar-hidden .cr-ws { --cr-side-now: 0px; }
-body.is-gripping { cursor: col-resize; user-select: none; }
-body.is-gripping .cr-ws { transition: none; }
-/* Mép kéo giãn của sidebar trái. */
-.cr-grip { position: absolute; top: 0; bottom: 0; width: 10px; z-index: 5; cursor: col-resize; }
-.cr-grip.left { left: calc(var(--cr-side-now) - 5px); }
-html.sidebar-hidden .cr-grip.left { display: none; }
-.cr-grip::before { content: ''; position: absolute; left: 4px; top: 0; bottom: 0; width: 2px; background: transparent; transition: background .12s; }
-.cr-grip:hover::before, body.is-gripping .cr-grip::before { background: var(--accent); }
-/* Sidebar phải: chi tiết nguồn. */
+.cr-ws { position: relative; display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); height: calc(100vh / var(--ui-zoom)); min-width: 0; transition: grid-template-columns .2s ease; }
 .cr-scroll { min-width: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--m-6) transparent; }
 .side .side-items { padding-bottom: 20px; }
 .side-head .side-search { margin-bottom: 12px; }
