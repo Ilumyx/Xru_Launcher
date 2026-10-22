@@ -57,10 +57,4 @@
 
   renderRail();
   window.addEventListener('xru-lang-applied', renderRail);
-  window.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape' || event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
-    if (event.target.closest('input, textarea, select, dialog') || document.querySelector('dialog[open], [role="dialog"][aria-modal="true"]')) return;
-    const home = (window.XRU_RAILS || {})[nav.dataset.rail]?.home;
-    if (home) { event.preventDefault(); location.href = home; }
-  });
 })();

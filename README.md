@@ -42,6 +42,7 @@ Kit không biết land nào có màn gì. Một món vào Kit khi đã có ở �
 | Rail | `kit/rail/` | Chỉ vẽ; menu từ `window.XRU_RAILS`, mỗi land một file (`gate/rail_menu.js`, `crawler/rail_menu.js`). Không iframe. |
 | Bộ xương | `kit/frame/` | `.ws` > `.side` + `.ws-main` + `.ws-insp` (tuỳ có, `[hidden]` khi chưa chọn gì). Hai cột bên kéo giãn ở mép trong (trái 200–480, phải 280–720), bấm đúp về mặc định (260 / 360), một bề ngang chung mọi màn, nhớ bằng cookie. Cột trái đóng/mở ở rail (`data-panel`), cột phải gập ở nút góc trên phải. Màn chỉ lo nội dung trong cột, không tự dựng khung hay tay kéo. |
 | Cột lọc | `kit/sidebar/` | Nội dung cột trái: số đếm, tìm, lọc, sắp xếp, danh sách, phân trang. |
+| Tường | `kit/wall/` | Lưới ô nhỏ chung (Gate ảnh, Gate video): `XRU_WALL({grid, pager, next, size, thumb, media?, end?, onSelect, onPage})`. Màn tự đọc Backend; tường vẽ một trang, ảnh nhỏ tải lười, lật trang, rê chuột 300ms mới phát video. Màn không tự viết lưới. |
 | Cài đặt | `kit/account/` | Ngôn ngữ, profile, sáng/tối, font, màu nhấn, cỡ. `--ui-zoom` = cỡ PO chọn × (rộng màn / 1920), từ 1 đến 2: màn 2K/4K giữ bố cục như laptop. Chiều cao viết `calc(100vh / var(--ui-zoom))`. |
 | Hai thứ tiếng | `kit/i18n/i18n.js` | `data-i18n`, đủ `vi` + `en`, English mặc định. Chữ riêng của màn nạp bằng `XRU_I18N.add`. |
 

@@ -203,12 +203,6 @@
   $('src-q').addEventListener('input', () => { f.q = $('src-q').value.trim().toLocaleLowerCase('vi'); render(); });
   $('src-sort').value = $('src-sort').querySelector(`[value="${f.sort}"]`) ? f.sort : 'tier';
   $('src-sort').addEventListener('change', () => { f.sort = $('src-sort').value; render(); });
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !$('src-detail').hidden && !$('shot-view').open) { e.stopPropagation(); e.preventDefault(); showDetail(null); return; }
-    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName) || document.querySelector('dialog[open]')) return;
-    if (e.key === '1') location.href = '/crawler/dash' + (f.plat.size ? `?plat=${encodeURIComponent([...f.plat].join(','))}` : '');
-    if (e.key === '2') location.href = '/crawler/sources' + keepFilters();
-  }, true);
 
   function error(message) { $('src-error').textContent = message; $('src-error').hidden = !message; }
   async function readBoard() {

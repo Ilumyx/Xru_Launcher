@@ -78,43 +78,13 @@
 
 /* Khung 3 cột, kéo giãn, gập cột phải: kit/frame. */
 
-/* --- Cột giữa: header + gallery --- */
+/* --- Cột giữa: header + tường --- */
 .ws-main { padding: 28px 32px; }
 /* Đầu trang chung ở kit/page/page.css; Gate chỉ thêm khoảng dưới và hàng tab bên phải */
 .ws-head { margin-bottom: 22px; }
 .ws-head .gate-tabs { flex-wrap: wrap; justify-content: flex-end; }
 
-/* Tường ảnh (PO 22/10, theo lưới Facebook): ô vuông cắt đầy, khe 4px, không chữ trên ô (chữ ở cột phải).
-   Lướt để bắt pattern; xem trọn ảnh ở cột phải hoặc Enter. Số cột tự theo bề ngang. */
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 4px;
-}
-#tiles-end { min-height: 1px; padding: 18px 0 6px; text-align: center; font: 11px var(--font-mono); color: var(--fg-dim); }
-#tiles-end:empty { padding: 0; }
-.g-tile { cursor: pointer; min-width: 0; }
-.g-thumb {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  background: var(--m-2);
-  overflow: hidden;
-}
-/* Ô vuông cắt đầy: mép ảnh rộng bị cắt trên lưới, ảnh trọn nằm ở cột phải. */
-.g-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .2s ease; }
-.g-tile:hover .g-thumb img { transform: scale(1.03); }
-.g-tile.is-active .g-thumb { outline: 2px solid var(--accent); outline-offset: -2px; }
-.g-num {
-  position: absolute;
-  z-index: 1;
-  top: 6px;
-  left: 6px;
-  padding: 1px 5px;
-  background: rgba(0, 0, 0, 0.72);
-  border-radius: 2px;
-  font: 10px var(--font-mono);
-  color: var(--fg);
-}
+/* Tường ảnh: kit/wall (ô vuông 120px, trang 250). */
 
 
 /* --- Cột phải: xem chi tiết --- */
@@ -189,7 +159,7 @@
 .ws-head .gate-tabs { gap: 4px; }
 
 
-a.side-item, a.g-tile, a.gate-tab-btn { text-decoration: none; color: inherit; }
+a.side-item, a.gate-tab-btn { text-decoration: none; color: inherit; }
 .side-item > div { min-width: 0; }
 .gate-tab-btn:disabled { cursor: default; }
 .card-act-btn:disabled { opacity: .4; cursor: default; }
@@ -197,8 +167,6 @@ a.side-item, a.g-tile, a.gate-tab-btn { text-decoration: none; color: inherit; }
 .insp-cap { white-space: pre-wrap; overflow-wrap: anywhere; }
 .insp-meta dd { min-width: 0; }
 .ig-flash { padding: 10px; margin-bottom: 12px; border: 1px solid var(--warn); color: var(--warn); }
-.gr-tile.is-done { opacity: .4; }
-.gr-tile.is-busy { opacity: .65; pointer-events: none; }
 .gr-peek { display: none; position: fixed; inset: 0; z-index: 20; background: #000e; padding: 32px; }
 .gr-peek.is-open { display: flex; }
 .gr-peek img { width: 100%; height: 100%; object-fit: contain; }
@@ -208,12 +176,8 @@ a.side-item, a.g-tile, a.gate-tab-btn { text-decoration: none; color: inherit; }
 /* Real captions can be long: scroll the caption, retain the mockup action position. */
 .insp-caption { min-height: 0; overflow-y: auto; scrollbar-width: thin; }
 .insp-bottom, .insp-meta, .insp-title, .insp-top { flex-shrink: 0; }
-.side-pager a { color: inherit; text-decoration: none; }
-.side-pager a:hover { color: var(--fg-strong); }
 .side-field > span { font-size: 11px; color: var(--fg-dim); }
 /* UI state: unavailable/empty selection cannot submit a decision. */
-.side-pager button {background:none; border:0; color:var(--fg-dim); cursor:pointer; font:11px var(--font-mono);}
-.side-pager button:disabled {opacity:.35; cursor:default;}
 .card-act-btn:disabled {opacity:.35; cursor:default;}
 .insp-acts button[hidden] {display:none;}
 .gr-peek:not(.is-open) {display:none;}

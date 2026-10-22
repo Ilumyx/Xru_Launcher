@@ -60,6 +60,13 @@
     document.head.appendChild(l);
   }
 
+  // Cỡ giao diện = cỡ PO chọn × độ rộng màn so với màn chuẩn 1920px (laptop). Màn 2K/4K tự phóng theo tỉ lệ
+  // để bố cục giữ đúng như trên laptop; màn nhỏ hơn không thu lại dưới cỡ PO chọn.
+  function zoom(s) {
+    const fit = Math.min(2, Math.max(1, window.innerWidth / 1920));
+    document.documentElement.style.setProperty('--ui-zoom', String(Math.round(parseFloat(s.zoom) * fit * 1000) / 1000));
+  }
+
   function apply(s) {
     document.documentElement.dataset.uiMode = s.mode === 'system' ? (systemMode.matches ? 'dark' : 'light') : s.mode;
     document.documentElement.lang = s.lang;
@@ -69,10 +76,7 @@
     document.documentElement.dataset.profile = PROFILES.some(([k]) => k === s.profile) ? s.profile : DEFAULTS.profile;
     if (s.accent) r.setProperty('--accent-rgb', [1, 3, 5].map(i => parseInt(s.accent.slice(i, i + 2), 16)).join(', '));
     else r.removeProperty('--accent-rgb');
-    // Cỡ giao diện = cỡ PO chọn × độ rộng màn so với màn chuẩn 1920px (laptop). Màn 2K/4K tự phóng theo tỉ lệ
-    // để bố cục giữ đúng như trên laptop; màn nhỏ hơn không thu lại dưới cỡ PO chọn.
-    const fit = Math.min(2, Math.max(1, window.innerWidth / 1920));
-    r.setProperty('--ui-zoom', String(Math.round(parseFloat(s.zoom) * fit * 1000) / 1000));
+    zoom(s);
     ensureFont(s.font);
     if (window.XRU_I18N && typeof window.XRU_I18N.apply === 'function') {
       window.XRU_I18N.apply(s.lang);
@@ -83,7 +87,7 @@
   apply(settings);
   systemMode.addEventListener('change', () => { if (settings.mode === 'system') apply(settings); });
   let resizing = 0;
-  window.addEventListener('resize', () => { cancelAnimationFrame(resizing); resizing = requestAnimationFrame(() => apply(settings)); });
+  window.addEventListener('resize', () => { cancelAnimationFrame(resizing); resizing = requestAnimationFrame(() => zoom(settings)); }); // đổi cỡ cửa sổ chỉ đổi zoom, không dịch lại cả trang
 
   function update(patch) {
     settings = { ...settings, ...patch };

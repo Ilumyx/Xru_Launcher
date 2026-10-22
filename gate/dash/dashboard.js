@@ -203,11 +203,7 @@
   $('gd-sort').addEventListener('change', (e) => { state.sort = e.target.value; render(); });
   $('gd-q').addEventListener('input', (e) => { state.q = e.target.value.trim(); if (lane()) tree(); });
   $('gd-q').addEventListener('keydown', (e) => e.stopPropagation());
-  window.addEventListener('keydown', (e) => {
-    if (e.key.toLowerCase() !== 'v' || ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
-    Object.assign(state, { kind: state.kind === 'video' ? 'image' : 'video', scope: null, platform: 'all' });
-    render();
-  });
+
   window.addEventListener('xru-lang-applied', render);
   render();
 
@@ -244,10 +240,3 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
   document.querySelectorAll('select').forEach(select => select.addEventListener('blur', render));
 })();
-
-// Phím số sang màn Gate khác.
-window.addEventListener('keydown', (event) => {
-  if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey || event.target.closest('input,textarea,select')) return;
-  const links = {'1': '/gate/image/', '2': '/gate/video/?view=grid', '3': '/gate/dash/'};
-  if (links[event.key]) location.href = links[event.key];
-});

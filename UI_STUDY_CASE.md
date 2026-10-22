@@ -64,8 +64,8 @@ Gốc của cả họ: **làm việc nặng cho từng món, ở chỗ chỉ c�
 2. Liệt kê chỉ đọc sổ nhẹ. Kiểm nặng (SHA, mở file, soi frame) chỉ khi mở một món.
 3. Thứ không đổi thì dựng một lần trước vòng lặp.
 4. Request đọc không kèm việc nặng (đồng bộ sổ, quét kho). Việc đó chạy ở CLI hoặc khi sổ đổi.
-5. Danh sách luôn chia trang, lọc và sort ở Backend trước khi chia. Lưới dùng ảnh nhỏ (chụp một lần rồi cất, `loading=lazy`), không ảnh gốc, không thẻ `<video>` dựng sẵn.
-6. Thao tác tại chỗ, không tải lại cả trang. Poll 5 giây chỉ gọi API rẻ; lượt trước chưa xong thì không gọi lượt mới.
+5. Danh sách luôn chia trang, lọc và sort ở Backend trước khi chia. Lưới ô nhỏ dùng Kit `wall` (ảnh nhỏ đúng cỡ ô, chụp một lần rồi cất, tải lười, có trần mỗi trang); không ảnh gốc, không thẻ `<video>` dựng sẵn, không tự viết lưới riêng.
+6. Thao tác tại chỗ, không tải lại cả trang. Không đọc lại khi cửa sổ được bấm vào (chỉ khi Backend từng mất). Poll 5 giây chỉ gọi API rẻ; lượt trước chưa xong thì không gọi lượt mới.
 7. Không vá chậm bằng cache hay tải sau ở UI. Gốc ở lõi thì nói ngay "cần Order", chịu chậm thật còn hơn nhanh giả.
 8. Có test tốc độ trên kho giả lớn (từ 100k món): API màn chính dưới 1 giây.
 9. Soát một màn: đo thời gian API trên kho thật rồi mới báo đạt.

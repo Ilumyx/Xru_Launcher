@@ -168,12 +168,7 @@
       if (button.dataset.chartSeries === 'stock') render(); // trục co lại theo đường mỗi ngày khi tắt Kho
     });
   }
-  window.addEventListener('keydown', (event) => {
-    if (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(document.activeElement.tagName) || document.querySelector('dialog[open]')) return;
-    const q = keepFilters();
-    if (event.key === '1') location.href = '/crawler/dash' + q;
-    if (event.key === '2') location.href = '/crawler/sources' + q;
-  });
+
 
   function error(message) { $('cr-error').textContent=message;$('cr-error').hidden=!message;$('cr-foot').textContent=message||'CHỈ ĐỌC · ẢNH + VIDEO'; }
   async function readBoard() {

@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/kit/tokens.css">
   <link rel="stylesheet" href="/kit/rail/rail.css">
   <link rel="stylesheet" href="/kit/page/page.css">
-  <link rel="stylesheet" href="/kit/sidebar/sidebar.css"><link rel="stylesheet" href="/kit/frame/frame.css">
+  <link rel="stylesheet" href="/kit/sidebar/sidebar.css"><link rel="stylesheet" href="/kit/frame/frame.css"><link rel="stylesheet" href="/kit/wall/wall.css">
   <link rel="stylesheet" href="/kit/account/account.css">
   <script src="/kit/i18n/i18n.js"></script>
   <script src="/kit/account/account.js"></script>
@@ -45,7 +45,7 @@
 
         <div class="empty-placeholder">Đang đọc Gate video…</div>
       </div></div>
-      <div class="side-pager"><button type="button" data-page="-1" data-i18n="pager_prev">← Trước</button><b id="page-range"></b><button type="button" data-page="1" data-i18n="pager_next">Sau →</button></div>
+      <div class="side-pager wall-pager" id="page-range"></div>
     </aside>
 
 
@@ -76,11 +76,10 @@
 
   </nav>
 </header>
-    <div id="watch-area" hidden></div><div class="gallery is-video" id="video-gallery"></div>
+    <div id="watch-area" hidden></div><div class="wall" id="video-gallery" style="--wall-min:160px; --wall-ratio:4 / 3"></div><div class="wall-next" id="video-next"></div>
     <footer class="page-foot">
   <div class="key-hints">
   <span><span class="key">1</span> Noise</span><span><span class="key">2</span> Watermark</span><span><span class="key">3</span> EVENT</span><span><span class="key">4</span> CAUTION</span>
-    <span><span class="key">ESC</span> <span data-i18n="esc_launcher">Về Launcher</span></span>
   </div><div>XRU GATE // 2026</div>
 </footer>
   </main>
@@ -109,5 +108,5 @@
 
 
 
-<div class="flash-banner flash-error" id="api-error" role="status" hidden></div><script src="/gate/video/video.js"></script></body>
+<div class="flash-banner flash-error" id="api-error" role="status" hidden></div><script src="/kit/wall/wall.js"></script><script src="/gate/video/video.js"></script></body>
 </html>

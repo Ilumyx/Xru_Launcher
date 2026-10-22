@@ -309,11 +309,6 @@ function renderStage() {
   const footerHtml = `
     <footer class="page-foot">
       <div class="key-hints">
-        <span><span class="key">1</span> Euramerika</span>
-        <span><span class="key">2</span> Eurasia</span>
-        <span><span class="key">3</span> Euruska</span>
-        <span><span class="key">4</span> Europa</span>
-        <span><span class="key">/</span> Array</span>
       </div>
       <div>XRU FEDERAL SYSTEM // 2026</div>
     </footer>
@@ -335,17 +330,6 @@ function renderStage() {
   const initialTarget = (currentContinent && currentContinent !== 'xru') ? currentContinent : 'eurasia';
   LauncherGlobe.setActive(initialTarget);
 }
-
-// Bắt phím tắt
-window.addEventListener('keydown', (e) => {
-  const isInputActive = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
-  if (isInputActive) return;
-
-  if (e.key === '1') switchContinent('euramerika');
-  if (e.key === '2') switchContinent('eurasia');
-  if (e.key === '3') switchContinent('euruska');
-  if (e.key === '4') switchContinent('europa');
-});
 
 // Khởi chạy mặc định lúc nạp trang
 document.addEventListener('DOMContentLoaded', () => {

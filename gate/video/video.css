@@ -85,39 +85,13 @@
    ========================================================================== */
 /* Khung 3 cột, kéo giãn, gập cột phải: kit/frame. */
 
-/* --- Cột giữa: header + gallery --- */
+/* --- Cột giữa: header + tường --- */
 .ws-main { padding: 28px 32px; }
 /* Đầu trang chung ở kit/page/page.css; Gate chỉ thêm khoảng dưới và hàng tab bên phải */
 .ws-head { margin-bottom: 22px; }
 .ws-head .gate-tabs { flex-wrap: wrap; justify-content: flex-end; }
 
-/* Tường video (PO 22/10): ô 4:3 cắt đầy, khe 4px, chỉ số thứ tự + thời lượng; chữ ở cột phải. */
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 4px;
-}
-.g-tile { cursor: pointer; min-width: 0; }
-.g-thumb {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  background: var(--m-2);
-  overflow: hidden;
-}
-.g-thumb img, .g-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
-.g-thumb video { position: absolute; inset: 0; }
-.g-tile.is-active .g-thumb { outline: 2px solid var(--accent); outline-offset: -2px; }
-.g-num {
-  position: absolute;
-  z-index: 1;
-  top: 6px;
-  left: 6px;
-  padding: 1px 5px;
-  background: rgba(0, 0, 0, 0.72);
-  border-radius: 2px;
-  font: 10px var(--font-mono);
-  color: var(--fg);
-}
+/* Tường video: kit/wall (ô 4:3 từ 160px, trang 100). */
 
 
 /* --- Cột phải: xem chi tiết --- */
@@ -171,7 +145,7 @@
 /* ==========================================================================
    GATE VIDEO — dùng chung khung 3 cột với Image, chỉ thêm vài chi tiết video
    ========================================================================== */
-/* Ô clip trong gallery */
+/* Nút phát trên khung xem */
 .g-play {
   position: absolute; left: 50%; top: 50%;
   width: 30px; height: 30px; margin: -15px 0 0 -15px;
@@ -181,10 +155,6 @@
   display: grid; place-items: center;
 }
 .g-play::before { content: ''; margin-left: 3px; border-left: 9px solid rgba(255, 255, 255, 0.85); border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
-.g-dur { position: absolute; z-index: 1; right: 6px; bottom: 6px; padding: 1px 5px; background: rgba(0, 0, 0, 0.75); border-radius: 2px; font: 10px var(--font-mono); color: var(--fg); }
-/* Chip cụm nằm trên khung (góc dưới trái), không đẩy chữ bên dưới lệch hàng */
-.g-cluster { position: absolute; left: 6px; bottom: 6px; padding: 1px 5px; border: 1px solid var(--accent-line); background: rgba(0, 0, 0, 0.75); border-radius: 2px; font: 9px var(--font-mono); color: var(--accent); }
-.gallery.is-video .ph::after { display: none; }
 
 /* Khung xem video giả ở cột phải */
 .insp-img.is-video { aspect-ratio: 16 / 9; position: relative; }
@@ -208,7 +178,6 @@
 .ws-head { flex-wrap: wrap; row-gap: 14px; }
 .ws-head .gate-tabs { flex-wrap: nowrap; gap: 6px; }
 .ws-head .gate-tab-btn { padding: 5px 10px; font-size: 11px; white-space: nowrap; }
-/* Tên nguồn dưới ô gallery: 1 dòng, dài thì "..." */
 
 /* ==========================================================================
    GATE VIDEO — XEM TO (gate_video_watch.html, bản thử nghiệm)
@@ -309,8 +278,6 @@ body[data-mode="watch"] .page-foot { margin-top: 16px; }
 .side-item.active { background: var(--m-3); }
 .side-item.active::before { content: ''; position: absolute; left: 6px; top: 15px; width: 4px; height: 4px; border-radius: 50%; background: var(--warn); }
 .side-item.active .n { color: var(--fg); }
-.side-pager button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
-.side-pager button:disabled { cursor: default; opacity: .4; }
 .video-container { width: 100%; height: 100%; }
 .watch-stage .video-container { display: grid; place-items: center; }
 #review-video-player { display: block; width: 100%; height: 100%; object-fit: contain; }
@@ -348,7 +315,6 @@ body[data-mode="watch"] .page-foot { margin-top: 16px; }
 .flash-error { color: var(--warn); }
 [hidden] { display: none !important; }
 
-a.g-tile { color: inherit; text-decoration: none; }
 
 [hidden] { display: none !important; }
 .btn:disabled { opacity: .35; cursor: default; }
