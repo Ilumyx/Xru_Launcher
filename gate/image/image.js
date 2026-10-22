@@ -202,7 +202,7 @@
     if (key==='a' || key==='d') {event.preventDefault(); act(key==='a'?'ACCEPT':'DETAIN'); return;}
     if (key==='enter') {event.preventDefault(); openPeek(); return;}
     if (key==='1') document.querySelector('.rail a[aria-current="page"]')?.click();
-    if (key==='2') location.href='/gate/video/';
+    if (key==='2') location.href='/gate/video/?view=grid';
     if (key==='3') location.href='/gate/dash/';
     if (!selected || reading || writing || !page) return;
     const columns=view.grid ? (document.querySelectorAll('.g-tile').length ? [...document.querySelectorAll('.g-tile')].filter(tile=>tile.offsetTop===document.querySelector('.g-tile').offsetTop).length : 1) : 1;
