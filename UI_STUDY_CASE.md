@@ -1,6 +1,6 @@
 # UI Study Case
 
-Những lần UI XRU hẹo, vì sao, sửa ra sao. Ai dựng màn mới hoặc Backend mới thì đọc file này trước khi viết dòng đầu. Cập nhật: 21/10/2026.
+Những lần UI XRU hẹo, vì sao, sửa ra sao. Ai dựng màn mới hoặc Backend mới thì đọc file này trước khi viết dòng đầu. Cập nhật: 22/10/2026.
 
 ## Bệnh chung
 
@@ -32,7 +32,13 @@ Gốc của cả họ: **làm việc nặng cho từng món, ở chỗ chỉ c�
 - Triệu chứng: màn Crawler trắng số, 5055 kẹt 99% CPU suốt 10 phút.
 - Gốc: `local_registrar/board_view.py` dựng lại tập `born | rejected` (12.126 món) bên trong vòng lặp 43 cụm × 2 loại × 27.113 link, khoảng 2,35 triệu lần. Kho 4 món, 60 link thì không ai thấy.
 - Sửa: Crawler Order 131, dựng tập và gom số một lần trước vòng lặp. Còn 0,25 giây (đọc sổ 0,17 + dựng bảng 0,08).
-- Còn nợ: mỗi lần UI hỏi, Backend vẫn bê cả 12k món lên Python để đếm tay. Lên 100k món sẽ ì lại. Gốc là để SQL đếm.
+- Audit 21/10 và trả nợ (Crawler Order 133, 22/10): bỏ import Tổng đài khỏi `local_registrar`, đọc gọn cột DIRC, gom `link_pages` bằng SQL, đóng kết nối, test lõi hết dính UI. Còn 0,1 giây. Vẫn bê 27k link + 12k món lên Python (cần đối chiếu hai sổ) nên còn tăng tuyến tính: ước khoảng 1 giây ở 120k món, chưa đo.
+
+## Ca 4 — Gate: mọi request bê cả lane (audit 21/10)
+
+- Gốc: mọi GET, kể cả `/api/health`, từng mẩu `/media` và từng `/thumb`, dựng snapshot cả lane (`SELECT *` mọi bảng rồi lọc Python). Đo kho giả: 10k món 0,25 giây, 100k món 2,6 giây mỗi request. Chi tiết clip trùng tính bậc hai. Thumbnail chạy ffmpeg mỗi lần, cấm trình duyệt nhớ, lỗi thì gửi nguyên video.
+- Sửa: UI Backend (Order UI 46) health rẻ, thumbnail được nhớ, không gửi video thay ảnh nhỏ. Lõi (Order 47) phân trang và GROUP BY bằng SQL, tra một id cho `/media`, `/thumb`, `/api/assets`, giới hạn related 100.
+- Đo lại 22/10 trên kho giả: 100k món còn health 1ms, chi tiết 1ms, hàng chờ 34ms, thống kê 72ms.
 
 ## Ca kèm — Label video: việc nặng trước mọi request (19/10)
 
