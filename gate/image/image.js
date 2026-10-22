@@ -8,7 +8,8 @@
     source: params.get('source') || '', sort: params.get('sort') === 'newest' ? 'newest' : 'oldest',
     query: params.get('q') || '', grid: params.get('view') === 'grid', selected: params.get('selected'),
   };
-  const CHUNK = 100;
+  // Tường giữ tối đa 500 ô (PO 22/10): đủ để lướt bắt pattern, RAM đứng yên. Xem nhóm khác thì lọc nguồn/sort.
+  const CHUNK = 100, WALL = 500;
   let backend, page, selected, pending = false, reading = false, writing = false, readId = 0, detailId = 0;
   const drafts = new Map();
   const search = document.querySelector('.side-search input');
@@ -106,7 +107,11 @@
     tile.append(thumb); $('tiles').append(tile);
     for (const node of [row,tile]) node.addEventListener('click',event => {event.preventDefault(); select(index); if (event.detail === 2) openPeek();});
   }
-  function countLabel() { $('page-count').textContent = page.total ? `${format(page.items.length)} / ${format(page.total)}` : '0'; }
+  function countLabel() {
+    $('page-count').textContent = page.total ? `${format(page.items.length)} / ${format(page.total)}` : '0';
+    const capped = page.items.length >= WALL && page.total > WALL;
+    $('tiles-end').textContent = capped ? `Đã hiện ${format(WALL)} / ${format(page.total)} ảnh · lọc nguồn hoặc đổi sắp xếp để xem nhóm khác` : '';
+  }
   function paintPage() {
     rows.replaceChildren(); $('tiles').replaceChildren();
     page.items.forEach(paintItem);
@@ -123,7 +128,7 @@
   const query = (offset) => '/api/queue?' + new URLSearchParams({state:view.state, sort:view.sort, source:view.source, q:view.query, limit:CHUNK, offset});
   // Cuộn gần đáy thì hỏi thêm một lượt; lõi trả tối đa 100 món mỗi lượt.
   async function more() {
-    if (!page || reading || writing || pending || page.items.length >= page.total) return;
+    if (!page || reading || writing || pending || page.items.length >= Math.min(page.total, WALL)) return;
     pending = true; const id = readId;
     try {
       const result = await json(query(page.items.length));
@@ -148,7 +153,7 @@
     if (!backend) return;
     try {
       const result = await json(query(0));
-      while (id === readId && result.items.length < Math.min(keep, result.total)) {
+      while (id === readId && result.items.length < Math.min(keep, result.total, WALL)) {
         const next = await json(query(result.items.length));
         if (!next.items.length) break;
         result.items.push(...next.items); result.total = next.total; result.counts = next.counts;

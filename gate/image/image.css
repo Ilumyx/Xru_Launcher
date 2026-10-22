@@ -97,7 +97,8 @@
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 4px;
 }
-#tiles-end { height: 1px; }
+#tiles-end { min-height: 1px; padding: 18px 0 6px; text-align: center; font: 11px var(--font-mono); color: var(--fg-dim); }
+#tiles-end:empty { padding: 0; }
 .g-tile { cursor: pointer; min-width: 0; }
 .g-thumb {
   position: relative;
