@@ -1,6 +1,6 @@
 // ==========================================================================
 // XRU ACCOUNT — Menu tài khoản (bấm avatar IL) + Cài đặt giao diện
-// Đổi: ngôn ngữ, profile màu, chế độ sáng/tối, font chữ, màu nhấn, cỡ giao diện. Lưu vào trình duyệt, mọi trang dùng chung.
+// Đổi: ngôn ngữ, profile màu, chế độ sáng/tối, font chữ, màu nhấn, cỡ giao diện (tự nhân theo độ rộng màn). Lưu vào trình duyệt, mọi trang dùng chung.
 // Màu của từng profile nằm ở profiles/<tên>.css. Thêm profile: tạo file đó, thêm 1 dòng @import
 // trong kit/tokens.css và 1 dòng vào PROFILES dưới đây.
 // Chữ của menu và bảng cài đặt lấy từ kit/i18n/i18n.js (không viết cứng hai thứ tiếng ở đây).
@@ -69,7 +69,10 @@
     document.documentElement.dataset.profile = PROFILES.some(([k]) => k === s.profile) ? s.profile : DEFAULTS.profile;
     if (s.accent) r.setProperty('--accent-rgb', [1, 3, 5].map(i => parseInt(s.accent.slice(i, i + 2), 16)).join(', '));
     else r.removeProperty('--accent-rgb');
-    r.setProperty('--ui-zoom', s.zoom);
+    // Cỡ giao diện = cỡ PO chọn × độ rộng màn so với màn chuẩn 1920px (laptop). Màn 2K/4K tự phóng theo tỉ lệ
+    // để bố cục giữ đúng như trên laptop; màn nhỏ hơn không thu lại dưới cỡ PO chọn.
+    const fit = Math.min(2, Math.max(1, window.innerWidth / 1920));
+    r.setProperty('--ui-zoom', String(Math.round(parseFloat(s.zoom) * fit * 1000) / 1000));
     ensureFont(s.font);
     if (window.XRU_I18N && typeof window.XRU_I18N.apply === 'function') {
       window.XRU_I18N.apply(s.lang);
@@ -79,6 +82,8 @@
   let settings = load();
   apply(settings);
   systemMode.addEventListener('change', () => { if (settings.mode === 'system') apply(settings); });
+  let resizing = 0;
+  window.addEventListener('resize', () => { cancelAnimationFrame(resizing); resizing = requestAnimationFrame(() => apply(settings)); });
 
   function update(patch) {
     settings = { ...settings, ...patch };

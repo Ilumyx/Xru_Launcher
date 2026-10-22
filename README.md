@@ -39,7 +39,7 @@ Kit không biết land nào có màn gì. Một món vào Kit khi đã có ở �
 | Rail | `kit/rail/` | Chỉ vẽ; menu từ `window.XRU_RAILS`. Không iframe. |
 | Đầu/chân trang | `kit/page/page.css` | `.page-head`, `.page-foot`. |
 | Cột lọc | `kit/sidebar/` | Rộng `--side-w`; rail có `data-panel` thì có nút đóng/mở. |
-| Cài đặt | `kit/account/` | Ngôn ngữ, profile, sáng/tối, font, màu nhấn, cỡ. |
+| Cài đặt | `kit/account/` | Ngôn ngữ, profile, sáng/tối, font, màu nhấn, cỡ. `--ui-zoom` = cỡ PO chọn × (rộng màn / 1920), từ 1 đến 2: màn 2K/4K giữ bố cục như laptop. Chiều cao viết `calc(100vh / var(--ui-zoom))`. |
 | Hai thứ tiếng | `kit/i18n/i18n.js` | `data-i18n`, đủ `vi` + `en`, English mặc định. Chữ riêng của màn nạp bằng `XRU_I18N.add`. |
 
 Thêm profile: chép `graphite.css`, đổi tên và `data-profile`; thêm `@import` trong `tokens.css`; thêm vào `PROFILES` trong `account/account.js`.
