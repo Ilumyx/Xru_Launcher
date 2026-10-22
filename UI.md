@@ -1,6 +1,6 @@
 # UI XRU
 
-Sổ chung của Codex và Claude. Ba file: `UI.md` (quyết định, việc), `README.md` (chạy, thư mục, Kit) và `UI_STUDY_CASE.md` (ca hẹo và luật chặn). Cập nhật: 21/10/2026.
+Sổ chung của Codex và Claude. Ba file: `UI.md` (quyết định, việc), `README.md` (chạy, thư mục, Kit) và `UI_STUDY_CASE.md` (ca hẹo và luật chặn), kèm bản đồ `XRU_MAP.webp`. Cập nhật: 21/10/2026.
 
 ## Ai làm gì
 
@@ -19,6 +19,7 @@ Sector:  Local Registrar (cầm sổ) ─┬─ CLI/Ops (lõi)
                                    └─ UI Backend ──HTTP──► UI (5050, ngoài mọi Sector)
 ```
 
+- Bản đồ toàn cảnh (Liên Bang, Eurasia/DIRC, mặt cắt Gate, vùng DMZ): `XRU_MAP.webp`. Đọc trước khi sửa UI Backend của một Sector.
 - UI Backend và UI thò ra ngoài lõi, sinh ra để bị rút bỏ. Rút `ui_backend_service/` thì CLI và lõi vẫn chạy 100%. UI sập kéo cả dây chuyền là tội của Sector đó.
 - UI chỉ gọi Backend. Không import lõi, không đọc sổ, không gọi CLI.
 - UI Backend chỉ đi qua Local Registrar / DIRC Embassy. Không mở SQL, không import ops/station/source. Trả JSON; ảnh/video trả file, video tua được.
@@ -77,7 +78,7 @@ Không còn mục mở từ đợt chuyển.
 ## Commit
 
 - Repo Launcher: `Laucher Order <số>: …`, nối tiếp số cũ. Fix lặt vặt sau một Order thì gom vào số đó: `26.1`, `26.2`… (PO 15/10).
-- Repo Sector: `Order UI <số>: …`, nối tiếp số Order cao nhất của repo đó (Crawler `Order UI 132`, Gate `Order UI 46`), để nhìn là biết commit của đất UI.
+- Repo Sector: `Order UI <số>: …` khi commit chỉ đụng vùng DMZ (`ui_backend_service/`), dù Launcher hay Sector sửa; nối tiếp số Order cao nhất của repo đó (Crawler `Order UI 132`, Gate `Order UI 46`). Commit đụng ngoài DMZ thì tách riêng.
 - Báo commit, phép kiểm, phần chưa kiểm. Không push khi PO chưa bảo.
 
 Crawler Order 118: UI và CLI board dùng cùng bảng số từ phòng Lỗi & số liệu của Crawler. Từng ô ảnh/video hiện đã sinh/tổng (nguồn không tự khai: đã thấy+), số chờ/đáy, scout cuối/thêm/độ lệch tổng, run cuối và hôm nay/7 ngày, [E] theo loại, giờ nghỉ/chờ. Sidebar mỗi loại hiện đủ 7 câu cùng thời gian bắt đầu/kết thúc. Tổng/giờ cũ chưa có bằng chứng giữ chưa biết; không lấy giờ nâng cấp làm lịch sử. CLI chỉ còn scout/run/board/orders.
