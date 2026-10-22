@@ -1,6 +1,6 @@
 # UI Study Case
 
-Những lần UI XRU hẹo, vì sao, sửa ra sao. Ai dựng màn mới hoặc Backend mới thì đọc file này trước khi viết dòng đầu. Cập nhật: 22/10/2026.
+Những lần UI XRU hẹo, vì sao, sửa ra sao. Ai dựng màn mới hoặc Backend mới thì đọc file này trước khi viết dòng đầu. Cập nhật: 22/10/2026 (tối).
 
 ## Bệnh chung
 
@@ -40,6 +40,14 @@ Gốc của cả họ: **làm việc nặng cho từng món, ở chỗ chỉ c�
 - Sửa: UI Backend (Order UI 46) health rẻ, thumbnail được nhớ, không gửi video thay ảnh nhỏ. Lõi (Order 47) phân trang và GROUP BY bằng SQL, tra một id cho `/media`, `/thumb`, `/api/assets`, giới hạn related 100.
 - Đo lại 22/10 trên kho giả: 100k món còn health 1ms, chi tiết 1ms, hàng chờ 34ms, thống kê 72ms.
 
+## Ca 5 — Gate video: tường mở chậm, đổi tab khựng (22/10)
+
+- Triệu chứng: mở tường video hay đổi lane thấy ì, laptop gồng. Kho mới 316 video.
+- Gốc: mỗi ô là một `<video poster>`, trình duyệt xin cả 100 ảnh bìa cùng lúc (poster không biết tải lười). Mỗi ảnh bìa Backend chạy ffprobe + ffmpeg lại từ đầu, không cất; 66 lượt ffmpeg chạy song song nên ảnh cuối tới sau 4,3 giây. Máy khác (PC qua hầm) hay lane mới là chạy lại hết.
+- Sửa: Order UI 52 Gate cất ảnh nhỏ xuống đĩa (`~/.cache`, khoá cỡ + giờ sửa), tối đa 3 ffmpeg cùng lúc. Laucher Order 35.1: ô video là `<img loading=lazy>`, rê chuột mới dựng video, rời chuột thì gỡ.
+- Đo lại: 100 ảnh bìa lần đầu 11 giây (chỉ một lần mỗi clip), từ lần sau 0,3 giây; tường hiện đủ ô đang nhìn sau 0,32 giây; đổi lane dưới 0,13 giây.
+- Bài học: ảnh nhỏ dựng một lần, cất lại; lưới chỉ tải ô đang nhìn thấy; phần tử nặng (video) chỉ dựng khi người dùng chạm tới.
+
 ## Ca kèm — Label video: việc nặng trước mọi request (19/10)
 
 - Backend Label gọi `sync_foundry_release` trước mọi request, kể cả từng mẩu video và từng thumbnail. Video phát là hàng chục request mẩu, mỗi mẩu đều kéo theo đồng bộ sổ.
@@ -56,7 +64,7 @@ Gốc của cả họ: **làm việc nặng cho từng món, ở chỗ chỉ c�
 2. Liệt kê chỉ đọc sổ nhẹ. Kiểm nặng (SHA, mở file, soi frame) chỉ khi mở một món.
 3. Thứ không đổi thì dựng một lần trước vòng lặp.
 4. Request đọc không kèm việc nặng (đồng bộ sổ, quét kho). Việc đó chạy ở CLI hoặc khi sổ đổi.
-5. Danh sách luôn chia trang, lọc và sort ở Backend trước khi chia. Lưới dùng ảnh nhỏ, không ảnh gốc.
+5. Danh sách luôn chia trang, lọc và sort ở Backend trước khi chia. Lưới dùng ảnh nhỏ (chụp một lần rồi cất, `loading=lazy`), không ảnh gốc, không thẻ `<video>` dựng sẵn.
 6. Thao tác tại chỗ, không tải lại cả trang. Poll 5 giây chỉ gọi API rẻ; lượt trước chưa xong thì không gọi lượt mới.
 7. Không vá chậm bằng cache hay tải sau ở UI. Gốc ở lõi thì nói ngay "cần Order", chịu chậm thật còn hơn nhanh giả.
 8. Có test tốc độ trên kho giả lớn (từ 100k món): API màn chính dưới 1 giây.

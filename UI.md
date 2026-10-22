@@ -74,7 +74,7 @@ Những lần UI hẹo (kho lớn là treo, cuộn giật, tua khựng), gốc v
 ## Còn mở
 
 - Ô sắp xếp (22/10): Gate theo i18n ("Sort"), Crawler viết cứng tiếng Việt, Crawler Nguồn còn bấm đầu cột. Đề xuất một chuẩn Kit: sidebar, cùng nhãn i18n, mỗi màn khai lựa chọn riêng, bỏ bấm đầu cột. Chờ PO chốt.
-- Tường video (22/10): còn chia trang 100 clip; chưa cuộn vô tận và trần 500 như tường ảnh. Thumbnail Gate chỉ nhớ ở trình duyệt; chưa cất đĩa (mỗi máy/mỗi ngày chạy lại ffmpeg).
+- Tường video (22/10): còn chia trang 100 clip; chưa cuộn vô tận và trần 500 như tường ảnh. Ảnh bìa đã cất đĩa (Order UI 52), clip mới vào kho thì lần xem đầu chậm một nhịp.
 - Cờ `--lan` của `launcher.py` (22/10): chỉ mở trang, Backend vẫn nghe 127.0.0.1 và chặn Origin nên trang trống số. Đề xuất xoá vì đã có hầm SSH; chờ PO gật.
 - Label video: Backend trả 400 mọi request vì `sync_foundry_release` mở đường DB Foundry cũ. Không vá; chờ Foundry/Label xây lại theo 3 tầng.
 - Bản đồ UI (22/10): PO muốn UI có bản đồ như kiến trúc. Gom câu PO đã nói thành `UI_MAP.md` (mỗi màn một dòng mục đích, ngân sách thông tin ô/cột phải, hình mẫu, luật cứng) khi PO có hứng.
