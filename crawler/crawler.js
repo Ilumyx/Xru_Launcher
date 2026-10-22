@@ -116,12 +116,16 @@
     if(days.length) {
     const perDay = (kind) => days.map((_, i) => rows.reduce((a, r) => a + r.by_day[kind][i], 0));
     const img = perDay('image'), vid = perDay('video'), tot = img.map((v, i) => v + vid[i]);
-    const step = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000].find((v) => v * 3 >= Math.max(...tot, 1)) || 10000;
+    // Kho: tổng đã thu tính tới cuối mỗi ngày = tổng hiện có trừ phần sinh sau ngày đó (PO 22/10: nhìn kho lớn dần).
+    const now = total('image') + total('video'), stock = tot.map((_, i) => now - tot.slice(i + 1).reduce((a, v) => a + v, 0));
+    const top = Math.max(...tot, ...(hiddenSeries('stock') ? [] : stock), 1);
+    const step = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000].find((v) => v * 3 >= top) || 100000;
     const max = step * 3, X = (i) => 48 + i * (630 / Math.max(days.length - 1, 1)), Y = (v) => 330 - (v / max) * 298;
     const pts = (a) => a.map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
     const k = (v) => (v >= 1000 ? `${v / 1000}k` : v);
     const end = (a) => `<circle cx="${X(a.length - 1)}" cy="${Y(a.at(-1)).toFixed(1)}" r="3"/><text class="cr-chart-value" x="${X(a.length - 1) - 12}" y="${(Y(a.at(-1)) - 12).toFixed(1)}" text-anchor="end">${n(a.at(-1))}</text>`;
     let svg = [3, 2, 1, 0].map((g) => `<path class="grid" d="M48 ${Y(g * step).toFixed(1)}H678"/><text x="8" y="${(Y(g * step) + 4).toFixed(1)}">${k(g * step)}</text>`).join('');
+    svg += `<g id="cr-series-stock" class="cr-series stock"${hiddenSeries('stock')}><polyline class="line" points="${pts(stock)}"/>${end(stock)}</g>`;
     svg += `<g id="cr-series-total" class="cr-series total"${hiddenSeries('total')}><polygon class="area" points="48,330 ${pts(tot)} 678,330"/><polyline class="line" points="${pts(tot)}"/>${end(tot)}</g>`;
     svg += `<g id="cr-series-video" class="cr-series video"${hiddenSeries('video')}><polyline class="line" points="${pts(vid)}"/>${end(vid)}</g>`;
     svg += `<g id="cr-series-image" class="cr-series image"${hiddenSeries('image')}><polyline class="line" points="${pts(img)}"/>${end(img)}</g>`;
@@ -189,6 +193,7 @@
       const visible = button.getAttribute('aria-pressed') !== 'true';
       button.setAttribute('aria-pressed', String(visible));
       $(button.getAttribute('aria-controls'))?.toggleAttribute('hidden', !visible);
+      if (button.dataset.chartSeries === 'stock') render(); // trục co lại theo đường mỗi ngày khi tắt Kho
     });
   }
   window.addEventListener('keydown', (event) => {

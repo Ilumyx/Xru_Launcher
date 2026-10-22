@@ -45,7 +45,8 @@
     ['ok', 'OK', 'ok', () => true],
   ];
   const stateOf = (s) => STATES.find(([, , , test]) => test(s));
-  const GROUPS = [['look', 'CẦN NHÌN'], ['run', 'ĐANG CÀO'], ['ok', 'ỔN'], ['new', 'CHƯA CÀO']];
+  // PO 22/10: Ổn trên cùng, Cần nhìn dưới cùng.
+  const GROUPS = [['ok', 'ỔN'], ['run', 'ĐANG CÀO'], ['new', 'CHƯA CÀO'], ['look', 'CẦN NHÌN']];
   const QUICK = { look: ['Cần nhìn', (s) => s.st[2] === 'look'], stuck: ['Kẹt', (s) => s.st[0] === 'stuck'], stale: ['Cũ', (s) => s.st[0] === 'stale'], scout: ['Thiếu scout', (s) => s.st[0] === 'scout'], wait: ['Waiting', (s) => s.st[0] === 'wait'] };
   if (!(f.quick in QUICK)) f.quick = '';
 
@@ -233,5 +234,27 @@
     catch { disconnected = true; error('BACKEND CRAWLER ĐANG TẮT — số đang hiện chưa được cập nhật.'); }
     finally { polling = false; }
   }, 5000);
+  // Kéo mép phải sidebar để giãn; bấm đúp về mặc định. Chung bề ngang và chỗ nhớ với Dashboard.
+  (() => {
+    const ws = document.querySelector('.src-ws'), KEY = 'xru-crawler-left-w', VAR = '--cr-side', MIN = 200, MAX = 480;
+    const set = (w) => { if (w == null) ws.style.removeProperty(VAR); else ws.style.setProperty(VAR, Math.round(Math.max(MIN, Math.min(MAX, w))) + 'px'); };
+    try { const saved = +localStorage.getItem(KEY); if (saved) set(saved); } catch { /* không nhớ được thì dùng mặc định */ }
+    const el = document.createElement('div');
+    el.className = 'src-grip';
+    el.title = 'Kéo để giãn · bấm đúp để về mặc định';
+    ws.appendChild(el);
+    el.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      document.body.classList.add('is-gripping');
+      const move = (ev) => { const r = ws.getBoundingClientRect(); set((ev.clientX - r.left) / (r.width / ws.offsetWidth)); };
+      const up = () => {
+        document.body.classList.remove('is-gripping');
+        window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up);
+        try { localStorage.setItem(KEY, parseInt(ws.style.getPropertyValue(VAR)) || ''); } catch { /* bỏ qua */ }
+      };
+      window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
+    });
+    el.addEventListener('dblclick', () => { set(null); try { localStorage.removeItem(KEY); } catch { /* bỏ qua */ } });
+  })();
   fetch('/ui-config', { cache: 'no-store' }).then((r) => r.json()).then((c) => { backend = c.crawler_backend; readBoard(); }).catch(() => error('Không đọc được cấu hình UI.'));
 })();

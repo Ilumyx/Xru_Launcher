@@ -55,6 +55,9 @@ html.sidebar-hidden .cr-grip.left { display: none; }
 .cr-series { color: var(--accent); }
 .cr-series.image { color: var(--m-12); }
 .cr-series.video { color: var(--m-10); }
+.cr-series.stock { color: var(--fg-strong); }
+.cr-chart .cr-series.stock .line { stroke-width: 2.5; }
+.cr-legend i.stock { height: 3px; background: var(--fg-strong); }
 .cr-chart .cr-series .line { stroke: currentColor; }
 .cr-series.video .line { stroke-dasharray: 5 4; }
 .cr-series circle { fill: currentColor; }

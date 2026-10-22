@@ -6,8 +6,15 @@ body.src {
   background: var(--c0); font-family: 'Barlow', var(--font-sans);
 }
 a.rail-icon-btn { text-decoration: none; }
-.src-ws { position: relative; display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); height: calc(100vh / var(--ui-zoom)); min-width: 0; transition: grid-template-columns .2s ease; }
+.src-ws { --src-side-now: var(--cr-side, var(--side-w)); position: relative; display: grid; grid-template-columns: var(--src-side-now) minmax(0, 1fr); height: calc(100vh / var(--ui-zoom)); min-width: 0; transition: grid-template-columns .2s ease; }
 .src .side { background: var(--c0); border-right-color: var(--c2); }
+/* Kéo mép phải sidebar để giãn, như Dashboard; bấm đúp về mặc định. */
+body.is-gripping { cursor: col-resize; user-select: none; }
+body.is-gripping .src-ws { transition: none; }
+.src-grip { position: absolute; top: 0; bottom: 0; left: calc(var(--src-side-now) - 5px); width: 10px; z-index: 5; cursor: col-resize; }
+html.sidebar-hidden .src-grip { display: none; }
+.src-grip::before { content: ''; position: absolute; left: 4px; top: 0; bottom: 0; width: 2px; background: transparent; transition: background .12s; }
+.src-grip:hover::before, body.is-gripping .src-grip::before { background: var(--c6); }
 .src .side-head { border-bottom-color: var(--c2); }
 .src .side-search, .src .side-field select { background: var(--c1); border-color: var(--c2); }
 .src .side-search { margin-bottom: 12px; }
