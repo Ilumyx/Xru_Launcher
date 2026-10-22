@@ -24,7 +24,11 @@
     root.classList.toggle(c.cls, hidden);
     if (c === COLS.side) document.querySelectorAll('[data-sidebar-toggle]').forEach((b) => b.setAttribute('aria-expanded', String(!hidden)));
     const t = document.querySelector('.insp-toggle');
-    if (c === COLS.insp && t) { t.setAttribute('aria-expanded', String(!hidden)); t.title = hidden ? 'Mở cột phải' : 'Gập cột phải'; }
+    if (c === COLS.insp && t) {
+      // Tooltip đổi theo trạng thái; khóa nằm ở data-i18n-attr để kit/i18n dịch lại khi đổi ngôn ngữ.
+      const key = hidden ? 'frame_insp_open' : 'frame_insp_fold';
+      t.setAttribute('aria-expanded', String(!hidden)); t.setAttribute('data-i18n-attr', 'title:' + key); t.title = window.XRU_I18N.t(key);
+    }
   }
   function load() {
     for (const c of Object.values(COLS)) { width(c, +stored(c.width) || null); hide(c, stored(c.hidden) === '1'); }
@@ -35,7 +39,7 @@
   function grip(frame, c, side) {
     const el = document.createElement('div');
     el.className = 'frame-grip is-' + side;
-    el.title = 'Kéo để giãn · bấm đúp để về mặc định';
+    el.setAttribute('data-i18n-attr', 'title:frame_grip_tip'); el.title = window.XRU_I18N.t('frame_grip_tip');
     el.innerHTML = '<span></span>';
     frame.appendChild(el);
     const tip = el.firstChild;

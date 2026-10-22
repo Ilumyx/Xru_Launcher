@@ -7,13 +7,13 @@
   const PLATFORM = { facebook: 'Facebook', dvids: 'DVIDS', waralbum: 'War Album', reddit: 'Reddit', x: 'X', telegram: 'Telegram', youtube: 'YouTube', vk: 'VK', tiktok: 'TikTok', bilibili: 'Bilibili', direct: 'Direct' };
   const SWATCH = ['var(--accent)', 'var(--m-11)', 'var(--m-8)', 'var(--m-6)', 'var(--m-5)'];
   const $ = (id) => document.getElementById(id);
+  const t = (key, fill) => { const text = window.XRU_I18N.t(key); return fill ? text.replace(/\{(\w+)\}/g, (_, name) => fill[name]) : text; };
   const n = (v) => v == null ? '—' : Number(v).toLocaleString('en-US');
   const platformName = (p) => PLATFORM[p] || (p ? p[0].toUpperCase() + p.slice(1) : '—');
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const two = (v) => String(v).padStart(2, '0');
   const dm = (d) => `${two(d.getDate())}/${two(d.getMonth() + 1)}`;
   const day = (iso) => (iso ? `${dm(new Date(iso))}/${new Date(iso).getFullYear()}` : '—');
-  const ago = (iso) => (iso ? `${Math.max(0, Math.floor((Date.now() - new Date(iso)) / 864e5))} ngày` : '—');
   const isToday = (iso) => iso && new Date(iso).toDateString() === new Date().toDateString();
 
   // Một dòng là một cụm; ảnh/video chỉ là số khai sinh theo loại.
@@ -22,7 +22,7 @@
   const FLAG = { US: '🇺🇸', UK: '🇬🇧', Germany: '🇩🇪', France: '🇫🇷', Poland: '🇵🇱', Australia: '🇦🇺', Japan: '🇯🇵', Korea: '🇰🇷', Taiwan: '🇹🇼', Thailand: '🇹🇭', China: '🇨🇳', Russia: '🇷🇺', USSR: '☭', Ukraine: '🇺🇦', Israel: '🇮🇱', NATO: '✪' };
   const flags = (s) => (s.tags || []).filter((t) => FLAG[t]).map((t) => `<i title="${esc(t)}">${FLAG[t]}</i>`).join('');
   const issue = (s) => s.state === 'broken';
-  const QUICK = { issue: ['Có vấn đề', issue], waiting: ['Waiting', (s) => s.waiting] };
+  const QUICK = { issue: ['cr_q_issue', issue], waiting: ['cr_q_waiting', (s) => s.waiting] };
   if (!(f.quick in QUICK)) f.quick = '';
   function match(s, skip) {
     if (f.q && !`${s.name} ${s.platform}`.toLocaleLowerCase('vi').includes(f.q)) return false;
@@ -47,7 +47,7 @@
     SORT[kind + '_asc'] = (a, b) => (count(a) ?? Infinity) - (count(b) ?? Infinity);
   }
 
-  // URL giữ bộ lọc để Dash và Nguồn dùng chung.
+  // URL giữ bộ lọc để Dash và Nguồn dùng chung. Link rail sửa ở menu XRU_RAILS (rail vẽ lại cả khi đổi ngôn ngữ); link trong trang sửa tại chỗ.
   function keepFilters() {
     const url = new URL(location.href), q = new URLSearchParams();
     if (f.plat.size) q.set('plat', [...f.plat].join(','));
@@ -55,7 +55,8 @@
     if (f.sort !== 'issue') q.set('sort', f.sort);
     const qs = q.toString() ? '?' + q : '';
     history.replaceState(null, '', url.pathname + qs);
-    document.querySelectorAll('[data-keep-scope], .rail a.rail-icon-btn').forEach((a) => { a.href = a.getAttribute('href').split('?')[0] + qs; });
+    document.querySelectorAll('[data-keep-scope]').forEach((a) => { a.href = a.getAttribute('href').split('?')[0] + qs; });
+    window.XRU_RAILS.crawler.carry(() => qs);
     return qs;
   }
 
@@ -63,12 +64,12 @@
   function renderFilters() {
     const row = (attr, key, on, label, count, empty) => `<button type="button" class="f-row${on ? ' on' : ''}${empty ? ' empty' : ''}" ${attr}="${esc(key)}"><span>${esc(label)}</span>${count}</button>`;
     const num = (v, warn) => `<b class="${warn ? 'gap' : ''}">${v}</b>`;
-    let html = '<div class="f-head"><span>LỌC NHANH</span></div>';
+    let html = `<div class="f-head"><span>${t('cr_f_quick')}</span></div>`;
     const qpool = sources.filter((s) => match(s, 'quick'));
-    html += Object.entries(QUICK).map(([k, [label, test]]) => { const c = qpool.filter(test).length; return row('data-quick', k, f.quick === k, label, num(c, c > 0), !c); }).join('');
+    html += Object.entries(QUICK).map(([k, [label, test]]) => { const c = qpool.filter(test).length; return row('data-quick', k, f.quick === k, t(label), num(c, c > 0), !c); }).join('');
     const plats = {}; for (const s of sources.filter((s) => match(s, 'plat'))) plats[s.platform] = (plats[s.platform] || 0) + 1;
     const known = [...new Set([...sources.map((s) => s.platform)])].sort((a, b) => (plats[b] || 0) - (plats[a] || 0));
-    html += '<div class="f-head"><span>PLATFORM</span></div>' + known.map((p) => row('data-plat', p, f.plat.has(p), platformName(p), num(plats[p] || 0), !plats[p])).join('');
+    html += `<div class="f-head"><span>${t('cr_f_platform')}</span></div>` + known.map((p) => row('data-plat', p, f.plat.has(p), platformName(p), num(plats[p] || 0), !plats[p])).join('');
     $('cr-filters').innerHTML = html;
     $('cr-count').textContent = n(sources.length);
   }
@@ -79,8 +80,8 @@
     if (SORT[f.sort]) shown = [...shown].sort(SORT[f.sort]);
     renderFilters();
     keepFilters();
-    const chips = [...[...f.plat].map(platformName), ...(f.quick ? [QUICK[f.quick][0]] : [])];
-    $('cr-active').textContent = chips.length ? 'Đang lọc: ' + chips.join(' + ') : '';
+    const chips = [...[...f.plat].map(platformName), ...(f.quick ? [t(QUICK[f.quick][0])] : [])];
+    $('cr-active').textContent = chips.length ? t('cr_filtering') + chips.join(' + ') : '';
     $('cr-clear').hidden = !chips.length;
     if ($('cr-chart')) renderDash(shown);
   }
@@ -96,11 +97,11 @@
     const on = rows.filter((r) => r.enabled).length, all = rows.length;
 
     $('m-today').textContent = n(last('image') + last('video'));
-    $('m-today-split').textContent = `${n(last('image'))} ảnh · ${n(last('video'))} video`;
+    $('m-today-split').textContent = t('cr_split', { img: n(last('image')), vid: n(last('video')) });
     $('m-on').textContent = on; $('m-all').textContent = all;
-    $('m-off').textContent = `${all - on} nguồn đang tắt`;
+    $('m-off').textContent = t('cr_off_n', { n: all - on });
     $('m-total').textContent = n(total('image') + total('video'));
-    $('m-total-split').textContent = `${n(total('image'))} ảnh · ${n(total('video'))} video`;
+    $('m-total-split').textContent = t('cr_split', { img: n(total('image')), vid: n(total('video')) });
     const latest = rows.filter((r) => r.last_born_at).sort((a, b) => new Date(b.last_born_at) - new Date(a.last_born_at))[0];
     $('m-latest').textContent='—';$('m-latest-src').textContent='';
     if (latest) {
@@ -170,25 +171,31 @@
   }
 
 
-  function error(message) { $('cr-error').textContent=message;$('cr-error').hidden=!message;$('cr-foot').textContent=message||'CHỈ ĐỌC · ẢNH + VIDEO'; }
+  // Câu lỗi lưu dạng khóa chữ + phần Backend trả (không dịch) để vẽ lại được khi đổi ngôn ngữ.
+  let fault = null;
+  function paintError() { const message = fault ? t(fault.key) + fault.extra : ''; $('cr-error').textContent = message; $('cr-error').hidden = !message; $('cr-foot').textContent = message || t('cr_foot'); }
+  function error(key, extra = '') { fault = key ? { key, extra } : null; paintError(); }
   async function readBoard() {
     try {
       const r=await fetch(backend+'/api/board',{cache:'no-store',signal:AbortSignal.timeout(20000)}), data=await r.json();
-      if(!Array.isArray(data.rows)) throw Error(data.error||'Backend chưa trả được dữ liệu.');
+      if(!Array.isArray(data.rows)) throw Error(data.error||t('cr_err_nodata'));
       board=data; sources=toSources(data);
       render();
       const failures=Object.values(data.errors);
-      error(failures.length?'THIẾU DỮ LIỆU — '+failures.join(' · '):'');disconnected=!data.complete;
-    } catch(e) { disconnected=true;error('BACKEND CRAWLER ĐANG TẮT HOẶC ĐỌC LỖI — số đang hiện chưa được cập nhật. '+e.message); }
+      failures.length?error('cr_err_missing',failures.join(' · ')):error();disconnected=!data.complete;
+    } catch(e) { disconnected=true;error('cr_err_down_read',e.message); }
   }
   window.addEventListener('focus',()=>{if(backend)readBoard();});
   let polling=false;
   async function health() {
     if(!backend||polling||document.hidden)return;polling=true;
     try { const r=await fetch(backend+'/api/health',{cache:'no-store',signal:AbortSignal.timeout(3000)});if(!r.ok)throw Error('HTTP '+r.status);if(disconnected)await readBoard(); }
-    catch(e) {disconnected=true;error('BACKEND CRAWLER ĐANG TẮT — số đang hiện chưa được cập nhật.');}
+    catch(e) {disconnected=true;error('cr_err_down');}
     finally {polling=false;}
   }
   setInterval(health,5000);
-  fetch('/ui-config',{cache:'no-store'}).then(r=>r.json()).then(config=>{backend=config.crawler_backend;readBoard();}).catch(()=>error('Không đọc được cấu hình UI.'));
+  // Đổi ngôn ngữ: chữ do JS vẽ (lọc, số, câu lỗi) vẽ lại theo; chữ tĩnh trong HTML do kit/i18n lo.
+  window.addEventListener('xru-lang-applied',()=>{paintError();render();});
+  paintError();
+  fetch('/ui-config',{cache:'no-store'}).then(r=>r.json()).then(config=>{backend=config.crawler_backend;readBoard();}).catch(()=>error('cr_err_config'));
 })();

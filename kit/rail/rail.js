@@ -4,6 +4,7 @@
 //             <nav class="rail" data-rail="<khu>" data-active="<key>"></nav><script src=".../kit/rail/rail.js"></script>
 //   label/homeTip/tip: khóa chữ trong kit/i18n (không có khóa thì in nguyên chữ). icon: tên trong kit/icons/icons.svg.
 //   data-panel: thêm nút đóng/mở cột danh sách (trang có sidebar lọc).
+//   Rail vẽ lại khi đổi ngôn ngữ (xru-lang-applied) hoặc khi màn đổi XRU_RAILS rồi phát window 'xru-rail-changed'.
 // ==========================================================================
 (() => {
   const script = document.currentScript;
@@ -57,4 +58,6 @@
 
   renderRail();
   window.addEventListener('xru-lang-applied', renderRail);
+  // Màn đổi href trong XRU_RAILS (mang bộ lọc sang màn kia) thì báo ở đây để rail vẽ lại.
+  window.addEventListener('xru-rail-changed', renderRail);
 })();

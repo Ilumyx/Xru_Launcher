@@ -1,11 +1,12 @@
 // Tường ô nhỏ chung (kit/wall/wall.css). Màn tự đọc Backend; tường chỉ vẽ ô của một trang, đánh dấu ô đang chọn,
 // lật trang, và (tuỳ màn) rê chuột chờ một nhịp mới phát video không tiếng trong ô.
-//   const wall = XRU_WALL({ grid, pager, next, size, thumb(item), media?(item), end?(item), onSelect(index, double), onPage(page) });
+//   const wall = XRU_WALL({ grid, pager, next, size, thumb(item, width), media?(item), end?(item), onSelect(index, double), onPage(page) });
+//   thumb(item, width): địa chỉ ảnh nhỏ rộng 240 hoặc 480; ô xin cả hai (srcset) để màn nét cao vẫn nét.
 //   wall.render(items, offset, total) · wall.active(id) · wall.columns()
 window.XRU_WALL = (o) => {
   const t = (key) => (window.XRU_I18N ? window.XRU_I18N.t(key) : key);
   const n = (v) => Number(v).toLocaleString('en-US');
-  let offset = 0, total = 0, timer = 0;
+  let offset = 0, total = 0, timer = 0, sizes = '120px', drawn = false;
   const preview = document.createElement('video');
   Object.assign(preview, { muted: true, loop: true, playsInline: true });
   preview.setAttribute('aria-hidden', 'true');
@@ -14,7 +15,8 @@ window.XRU_WALL = (o) => {
   function tile(item, index) {
     const a = document.createElement('a');
     a.className = 'wall-tile'; a.href = '#'; a.dataset.id = item.xru_id;
-    const img = new Image(); img.loading = 'lazy'; img.decoding = 'async'; img.alt = ''; img.src = o.thumb(item);
+    const img = new Image(); img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
+    img.sizes = sizes; img.srcset = `${o.thumb(item, 240)} 240w, ${o.thumb(item, 480)} 480w`; img.src = o.thumb(item, 240);
     a.append(img);
     badge(a, 'is-num', String(offset + index + 1).padStart(3, '0'));
     const end = o.end && o.end(item); if (end) badge(a, 'is-end', end);
@@ -36,14 +38,18 @@ window.XRU_WALL = (o) => {
   function paintPager() {
     if (o.pager) {
       const span = document.createElement('span');
-      span.innerHTML = total ? `${t('wall_page')} <b>${page()}/${pages()}</b> · ${n(offset + 1)}–${n(Math.min(total, offset + o.size))} / ${n(total)}` : '0';
+      span.innerHTML = total ? `<b>${page()}/${pages()}</b> · ${n(offset + 1)}–${n(Math.min(total, offset + o.size))} / ${n(total)}` : '0';
       o.pager.replaceChildren(button('‹', t('wall_prev'), page() - 1, page() <= 1), span, button('›', t('wall_next'), page() + 1, page() >= pages()));
     }
     if (o.next) o.next.replaceChildren(...(page() < pages() ? [button(t('wall_next'), '', page() + 1, false)] : []));
   }
+  // Đổi ngôn ngữ thì nhãn nút, tooltip phải đổi theo; chưa vẽ trang nào thì chưa có gì để vẽ lại.
+  window.addEventListener('xru-lang-applied', () => { if (drawn) paintPager(); });
   return {
     render(items, at, count) {
-      const turned = at !== offset; offset = at; total = count;
+      const turned = at !== offset; offset = at; total = count; drawn = true;
+      // Ô rộng gần bằng cỡ tối thiểu màn khai (--wall-min); sizes cho trình duyệt chọn 240 hay 480.
+      sizes = (parseFloat(getComputedStyle(o.grid).getPropertyValue('--wall-min')) || 120) + 'px';
       clearTimeout(timer); stop();
       o.grid.replaceChildren(...items.map(tile));
       paintPager();

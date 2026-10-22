@@ -77,7 +77,6 @@
       sort_longest: 'Dài nhất trước',
       pager_prev: '← Trước',
       pager_next: 'Sau →',
-      wall_page: 'Trang',
       wall_next: 'Trang sau ›',
       wall_prev: 'Trang trước',
       no_match: 'Không có mục khớp.',
@@ -89,8 +88,9 @@
       btn_detain: 'Giữ',
       btn_purge: 'Hủy',
       btn_skip: 'Bỏ qua',
-      grip_tip: 'Kéo để giãn cột phải · bấm đúp để về mặc định',
-      esc_launcher: 'Về Launcher',
+      frame_grip_tip: 'Kéo để giãn · bấm đúp để về mặc định',
+      frame_insp_open: 'Mở cột phải',
+      frame_insp_fold: 'Gập cột phải',
 
       // Gate Dash
       records_lbl: 'HỒ SƠ',
@@ -122,7 +122,7 @@
       // Rail Navigation
       rail_fed_continents: 'Lục địa Liên Bang',
       rail_overview_tip: 'XRU FEDERAL // Bản đồ Toàn Cảnh Liên Bang',
-      rail_esc_launcher: 'Về Launcher',
+      rail_home: 'Về Launcher',
       rail_gate_nav: 'Điều hướng Gate',
       rail_added_sources: 'Nguồn đã thêm',
       rail_video_watch: 'Gate Video — Xem to (thử)',
@@ -163,7 +163,6 @@
       ax_tab_ai: 'Chế độ AI',
       ax_k_type: 'gõ câu',
       ax_k_pick: 'chọn',
-      ax_k_back: 'lùi một màn',
       ax_foot: 'Mockup · chụp thật từ Array · chỉ đọc',
       ax_home_tip: 'Về trang đầu Array',
       ax_clear_tip: 'Xoá câu',
@@ -246,7 +245,6 @@
       sort_longest: 'Longest first',
       pager_prev: '← Prev',
       pager_next: 'Next →',
-      wall_page: 'Page',
       wall_next: 'Next page ›',
       wall_prev: 'Previous page',
       no_match: 'No matching items.',
@@ -258,8 +256,9 @@
       btn_detain: 'Detain',
       btn_purge: 'Purge',
       btn_skip: 'Skip',
-      grip_tip: 'Drag to resize panel · double click to reset',
-      esc_launcher: 'Return to Launcher',
+      frame_grip_tip: 'Drag to resize · double-click to reset',
+      frame_insp_open: 'Open right column',
+      frame_insp_fold: 'Fold right column',
 
       // Gate Dash
       records_lbl: 'RECORDS',
@@ -291,7 +290,7 @@
       // Rail Navigation
       rail_fed_continents: 'Federal Continents',
       rail_overview_tip: 'XRU FEDERAL // Federal Overview Map',
-      rail_esc_launcher: 'Return to Launcher',
+      rail_home: 'Return to Launcher',
       rail_gate_nav: 'Gate Navigation',
       rail_added_sources: 'Added Sources',
       rail_video_watch: 'Gate Video — Expanded (Preview)',
@@ -332,7 +331,6 @@
       ax_tab_ai: 'AI mode',
       ax_k_type: 'type query',
       ax_k_pick: 'pick',
-      ax_k_back: 'go back',
       ax_foot: 'Mockup · real Array snapshot · read-only',
       ax_home_tip: 'Back to Array home',
       ax_clear_tip: 'Clear query',

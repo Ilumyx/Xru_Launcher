@@ -362,11 +362,9 @@ window.addEventListener('keydown', (e) => {
     hlSug(sugHl + (e.key === 'ArrowDown' ? 1 : -1));
     return;
   }
+  // Esc chỉ lo ô tìm (đóng gợi ý, rồi rời ô); không đi đâu cả (PO 22/10: không ESC về sảnh / lùi màn).
   if (e.key === 'Escape') {
-    if (typing) { $('ax-sug').hidden ? input.blur() : closeSug(); return; }
-    // Lùi một màn: kết quả → trang đầu Array → Launcher
-    if (ax.dataset.view === 'results') navigate('');
-    else location.href = '../index.html';
+    if (typing) $('ax-sug').hidden ? input.blur() : closeSug();
     return;
   }
   if (typing || ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;

@@ -238,7 +238,7 @@
     });
   });
 
-  // Khi menu / bảng cài đặt đang mở: ESC chỉ đóng nó, và chặn phím tắt của trang (1/2/3, ESC về Launcher)
+  // Khi menu / bảng cài đặt đang mở: ESC chỉ đóng nó, và chặn phím làm việc của trang (A/D, mũi tên, Space…)
   window.addEventListener('keydown', (e) => {
     if (!isMenuOpen() && !isPanelOpen()) return;
     if (e.key === 'Tab') return;

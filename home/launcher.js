@@ -114,8 +114,8 @@ const CONTINENTAL_DATA = {
         tagline: 'Vòi bạch tuộc thu thập nguyên liệu thô (Video / Image / News)',
         image: '',
         mods: [
-          { label: 'Dashboard', url: '/crawler/dash' },
-          { label: 'Nguồn đã thêm', url: '/crawler/sources' }
+          { label: 'Dashboard', url: '/crawler/dash.html' },
+          { label: 'Nguồn đã thêm', url: '/crawler/sources.html' }
         ],
         ago: '1 ngày trước',
         status: '● HOẠT ĐỘNG',

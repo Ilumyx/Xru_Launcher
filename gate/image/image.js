@@ -61,7 +61,10 @@
     for (const [id, value] of Object.entries({'insp-title':item.title, 'insp-cap':item.description, 'insp-src':sourceName(item), 'insp-res':resolution(item), 'insp-state':item.state, 'insp-lane':item.state, 'insp-note':item.po_note})) $(id).textContent = value || '';
     $('insp-num').textContent = `${String(page.offset + index + 1).padStart(3,'0')} / ${page.total}`;
     $('po_note_input').value = drafts.has(item.xru_id) ? drafts.get(item.xru_id) : item.po_note || '';
-    for (const node of rows.children) node.classList.toggle('is-active', node.dataset.id === item.xru_id);
+    for (const node of rows.children) {
+      const on = node.dataset.id === item.xru_id; node.classList.toggle('is-active', on);
+      if (on) node.scrollIntoView({block:'nearest'});
+    }
     wall.active(item.xru_id);
     controls(); syncUrl();
     if ($('peek').classList.contains('is-open')) openPeek();
@@ -106,9 +109,9 @@
   }
   const wall = window.XRU_WALL({
     grid: $('tiles'), pager: $('page-count'), next: $('tiles-end'), size: SIZE,
-    thumb: item => backend+'/thumb/'+encodeURIComponent(item.xru_id)+'?w=240',
+    thumb: (item, width) => backend+'/thumb/'+encodeURIComponent(item.xru_id)+'?w='+width,
     onSelect: (index, double) => { select(index); if (double) openPeek(); },
-    onPage: n => { view.page = n; view.selected = null; load(); },
+    onPage: n => { if (writing) return; view.page = n; view.selected = null; load(); },
   });
   function paintPage() {
     rows.replaceChildren(); page.items.forEach(paintRow);
@@ -127,7 +130,8 @@
   // Lõi kẹp offset cuối về bội số 100; cắt phần đầu thừa để món bắt đầu đúng chỗ xin.
   async function chunk(at) { const r = await json(query(at)); return {...r, items:r.items.slice(Math.max(0, at - r.offset))}; }
   // Đọc một trang: lượt đầu lấy tổng, hai lượt sau song song. Trang vượt cuối (món vừa rời lane) thì lùi về trang cuối.
-  async function load(preferred = view.selected) {
+  // preferred: id muốn chọn; không còn trên trang thì chọn ô số slot (kẹp ở ô cuối).
+  async function load(preferred = view.selected, slot = 0) {
     if (writing) return;
     saveDraft(); reading=true; pending=true; const id=++readId; ++detailId; controls();
     if (!backend) return;
@@ -142,7 +146,7 @@
       page={...result, offset:base}; reading=false;
       paintPage(); notice('');
       const index = page.items.findIndex(item=>item.xru_id===preferred);
-      if (page.items.length) await select(index>=0 ? index : 0);
+      if (page.items.length) await select(index>=0 ? index : Math.min(slot, page.items.length-1));
       else { clearSelection(); notice('Không có ảnh khớp bộ lọc.'); syncUrl(); }
     } catch (error) {
       if (id !== readId) return;
@@ -154,11 +158,10 @@
     if (!selected || reading || writing) return;
     const button=actions.find(button=>button.dataset.act===action); if (!button || button.disabled) return;
     saveDraft(); const item=selected; const index=page.items.findIndex(row=>row.xru_id===item.xru_id);
-    const next=page.items[index+1]?.xru_id || page.items[index-1]?.xru_id;
     writing=true; controls();
     try {
       await json('/api/assets/'+encodeURIComponent(item.xru_id)+'/decisions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action, expected_state:item.state, po_note:drafts.get(item.xru_id) ?? item.po_note})});
-      drafts.delete(item.xru_id); writing=false; await load(next);
+      drafts.delete(item.xru_id); writing=false; await load(null, index);
     } catch (error) { writing=false; notice('Chưa xác nhận lưu. Ghi chú được giữ. '+error.message); controls(); }
   }
   function closePeek() { $('peek').classList.remove('is-open'); $('peek').removeAttribute('aria-modal'); }
@@ -171,7 +174,7 @@
   $('sort_filter').addEventListener('change',()=>{view.sort=$('sort_filter').value; view.page=1; load();});
   let searchTimer;
   search.value=view.query;
-  search.addEventListener('input',()=>{clearTimeout(searchTimer); view.query=search.value.trim(); view.page=1; searchTimer=setTimeout(()=>load(),250);});
+  search.addEventListener('input',()=>{clearTimeout(searchTimer); view.query=search.value.trim(); view.page=1; ++readId; pending=false; reading=true; controls(); searchTimer=setTimeout(()=>load(),250);});
   search.addEventListener('keydown',event=>event.stopPropagation());
   for (const button of document.querySelectorAll('[data-state]')) button.addEventListener('click',()=>{view.state=button.dataset.state; view.source=''; view.page=1; view.selected=null; load();});
   document.addEventListener('keydown',event=>{

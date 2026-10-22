@@ -23,24 +23,12 @@ CRAWLER_BACKEND = "http://127.0.0.1:5055"
 LABEL_BACKEND = "http://127.0.0.1:5057"
 LOGS = HERE / "logs"
 
-# Giữ link cũ dưới dạng chuyển hướng; không tạo vỏ hay nhúng màn.
-DESTINATIONS = {
-    '/crawler': '/crawler/dash.html',
-    '/crawler/dash': '/crawler/dash.html',
-    '/crawler/sources': '/crawler/sources.html',
-    '/gate': '/gate/image/',
-    '/gate/image': '/gate/image/index.html',
-    '/gate/video': '/gate/video/index.html',
-    '/gate/dash': '/gate/dash/index.html',
-    '/label': '/label/video/index.html',
-    '/label/video': '/label/video/index.html',
-}
-
 class Handler(SimpleHTTPRequestHandler):
-    """File tĩnh của sảnh + chuyển hướng link cũ. Không cache để luôn thấy bản mới."""
+    """File tĩnh của sảnh. no-cache: trình duyệt giữ file nhưng mỗi lần hỏi lại; file không đổi thì stdlib trả 304
+    (Last-Modified / If-Modified-Since) nên đổi màn không tải lại ~18 file, sửa file là thấy bản mới ngay."""
 
     def end_headers(self) -> None:
-        self.send_header("Cache-Control", "no-store, must-revalidate")
+        self.send_header("Cache-Control", "no-store" if urlparse(self.path).path == "/ui-config" else "no-cache")
         super().end_headers()
 
     def log_message(self, *args) -> None:  # yên lặng
@@ -71,13 +59,6 @@ class Handler(SimpleHTTPRequestHandler):
         path = urlparse(self.path).path
         if path == '/ui-config':
             return self._send(200, json.dumps({'image_backend': IMAGE_BACKEND, 'video_backend': VIDEO_BACKEND, 'crawler_backend': CRAWLER_BACKEND, 'label_backend': LABEL_BACKEND}), 'application/json')
-        destination = DESTINATIONS.get(path.rstrip('/'))
-        if destination:
-            self.send_response(302)
-            query = urlparse(self.path).query
-            self.send_header('Location', destination + ('?' + query if query else ''))
-            self.end_headers()
-            return
         return super().do_GET()
 
     def do_POST(self) -> None:
