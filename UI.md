@@ -73,7 +73,7 @@ Những lần UI hẹo (kho lớn là treo, cuộn giật, tua khựng), gốc v
 
 ## Còn mở
 
-Không còn mục mở từ đợt chuyển.
+- Array (Babel, 22/10): `array/` là mockup Blind test đọc bản chụp tĩnh 04/10 (`data/array_snapshot.js`, sinh bằng `tools/array_snapshot.py`). Giữ làm bản vẽ tới khi Babel có `ui_backend_service/`; lúc nối thật thì màn gọi HTTP và xoá bản chụp cùng tool. Atlas chưa có repo trên laptop.
 
 ## Commit
 
