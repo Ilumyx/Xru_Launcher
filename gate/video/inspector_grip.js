@@ -29,10 +29,10 @@
     main = document.querySelector('.ws-main');
     gallery = document.querySelector('.gallery');
     if (!main || !gallery) return;
-    ws.style.setProperty('--insp-w', Math.floor(BASE_W + step * (colWidth() + GAP)) + 'px');
-    gallery.style.setProperty('--g-cols', BASE_COLS - step);
-    const colWord = window.XRU_I18N && window.XRU_I18N.getActiveLang() === 'en' ? 'cols' : 'cột';
-    tip.textContent = `${BASE_COLS - step} ${colWord}`;
+    // Tường video tự xếp số cột theo chỗ trống; khấc chỉ đổi bề rộng cột phải.
+    const width = Math.floor(BASE_W + step * (colWidth() + GAP));
+    ws.style.setProperty('--insp-w', width + 'px');
+    tip.textContent = `${width}px`;
   }
   function setStep(n) {
     n = Math.max(0, Math.min(MAX_STEP, n));

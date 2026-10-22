@@ -101,10 +101,8 @@
     row.append(element('span','n',String(index+1).padStart(2,'0')));
     const labels = element('div',''); labels.append(element('div','t',item.title || ''), element('div','s',`${sourceName(item)}${resolution(item) ? ' · '+resolution(item) : ''}`)); row.append(labels); rows.append(row);
     const tile = element('a','g-tile gr-tile'); tile.href = '#'; tile.dataset.id = item.xru_id;
-    tile.title = [item.title, sourceName(item)].filter(Boolean).join(' · ');
     const thumb = element('div','g-thumb'); thumb.append(element('span','g-num',String(index+1).padStart(3,'0')));
     const image = document.createElement('img'); image.loading='lazy'; image.decoding='async'; image.src=backend+'/thumb/'+encodeURIComponent(item.xru_id); image.alt=''; thumb.append(image);
-    thumb.append(element('div','g-cap',item.title || ''));
     tile.append(thumb); $('tiles').append(tile);
     for (const node of [row,tile]) node.addEventListener('click',event => {event.preventDefault(); select(index); if (event.detail === 2) openPeek();});
   }

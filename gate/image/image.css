@@ -90,7 +90,7 @@
 .ws-head { margin-bottom: 22px; }
 .ws-head .gate-tabs { flex-wrap: wrap; justify-content: flex-end; }
 
-/* Tường ảnh (PO 22/10, theo lưới Facebook): ô vuông cắt đầy, khe 4px, chữ chỉ hiện khi rê chuột.
+/* Tường ảnh (PO 22/10, theo lưới Facebook): ô vuông cắt đầy, khe 4px, không chữ trên ô (chữ ở cột phải).
    Lướt để bắt pattern; xem trọn ảnh ở cột phải hoặc Enter. Số cột tự theo bề ngang. */
 .gallery {
   display: grid;
@@ -120,15 +120,7 @@
   font: 10px var(--font-mono);
   color: var(--fg);
 }
-.g-cap {
-  position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
-  padding: 18px 8px 6px;
-  background: linear-gradient(transparent, rgba(0, 0, 0, .85));
-  font-size: 11px; line-height: 1.35; color: #fff;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  opacity: 0; transition: opacity .12s;
-}
-.g-tile:hover .g-cap { opacity: 1; }
+
 
 /* --- Cột phải: xem chi tiết --- */
 .ws-insp {
