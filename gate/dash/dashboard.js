@@ -244,3 +244,10 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
   document.querySelectorAll('select').forEach(select => select.addEventListener('blur', render));
 })();
+
+// Phím số sang màn Gate khác.
+window.addEventListener('keydown', (event) => {
+  if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey || event.target.closest('input,textarea,select')) return;
+  const links = {'1': '/gate/image/', '2': '/gate/video/?view=grid', '3': '/gate/dash/'};
+  if (links[event.key]) location.href = links[event.key];
+});

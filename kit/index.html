@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="rail/rail.css">
   <link rel="stylesheet" href="page/page.css">
-  <link rel="stylesheet" href="sidebar/sidebar.css">
+  <link rel="stylesheet" href="sidebar/sidebar.css"><link rel="stylesheet" href="frame/frame.css">
   <link rel="stylesheet" href="account/account.css">
   <script src="i18n/i18n.js"></script>
   <script src="account/account.js"></script>
@@ -104,7 +104,7 @@
 
     <section class="kx-sec">
       <header><h2>7. Sidebar lọc</h2><code>kit/sidebar/</code></header>
-      <p class="kx-rule">Cột trái của mọi màn duyệt, rộng <code>--side-w</code> (260). Từ trên xuống: <b>số đếm · tìm nhanh · lọc · sắp xếp · danh sách · phân trang</b>. Mỗi dòng: tiêu đề + "nguồn · một thông tin phụ".</p>
+      <p class="kx-rule">Cột trái của mọi màn duyệt, nằm trong bộ xương <code>kit/frame/</code> (<code>.ws</code> &gt; <code>.side</code> + <code>.ws-main</code> + <code>.ws-insp</code>): hai cột bên kéo giãn ở mép trong, bấm đúp về 260 / 360, cột phải gập ở góc trên phải. Từ trên xuống: <b>số đếm · tìm nhanh · lọc · sắp xếp · danh sách · phân trang</b>. Mỗi dòng: tiêu đề + "nguồn · một thông tin phụ".</p>
       <div class="kx-row">
         <div class="kx-demo">
           <aside class="side">

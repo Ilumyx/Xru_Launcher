@@ -188,13 +188,12 @@
   // Sự kiện.
   const flip = (set, v) => (set.has(v) ? set.delete(v) : set.add(v));
   document.addEventListener('click', (e) => {
-    const el = e.target.closest('[data-plat],[data-quick],[data-sort],[data-group],#src-rows tr[data-id],#d-close,[data-shot]');
+    const el = e.target.closest('[data-plat],[data-quick],[data-sort],[data-group],#src-rows tr[data-id],[data-shot]');
     if (!el) return;
     if (el.dataset.plat) flip(f.plat, el.dataset.plat);
     else if (el.dataset.quick) f.quick = f.quick === el.dataset.quick ? '' : el.dataset.quick;
     else if (el.dataset.sort) { const k = el.dataset.sort; f.sort = f.sort === k ? k + '_asc' : k; $('src-sort').value = SORT[f.sort] && $('src-sort').querySelector(`[value="${f.sort}"]`) ? f.sort : $('src-sort').value; }
     else if (el.dataset.group) { if (f.q || f.plat.size || f.quick) return; open[el.dataset.group] = !open[el.dataset.group]; }
-    else if (el.id === 'd-close') return showDetail(null);
     else if (el.hasAttribute('data-shot')) { $('shot-view-img').src = el.querySelector('img').src; return $('shot-view').showModal(); }
     else { const s = sources.find((x) => `${x.platform}|${x.cluster_key}` === el.dataset.id); return showDetail(picked === el.dataset.id ? null : s); }
     render();

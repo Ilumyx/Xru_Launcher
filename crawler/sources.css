@@ -6,12 +6,11 @@ body.src {
   background: var(--c0); font-family: 'Barlow', var(--font-sans);
 }
 a.rail-icon-btn { text-decoration: none; }
-.src-ws { position: relative; display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); height: calc(100vh / var(--ui-zoom)); min-width: 0; transition: grid-template-columns .2s ease; }
 .src .side { background: var(--c0); border-right-color: var(--c2); }
 .src .side-head { border-bottom-color: var(--c2); }
 .src .side-search, .src .side-field select { background: var(--c1); border-color: var(--c2); }
 .src .side-search { margin-bottom: 12px; }
-.src-scroll { min-width: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--c3) transparent; }
+.src-scroll { scrollbar-color: var(--c3) transparent; }
 .src-main { max-width: 1320px; margin: 0 auto; padding: 28px 32px; min-width: 0; }
 .src .page-head { border-bottom-color: var(--c2); }
 .src-stamp { font: 11px var(--font-mono); letter-spacing: .06em; color: var(--c5); }
@@ -89,13 +88,10 @@ a.rail-icon-btn { text-decoration: none; }
 .red { color: var(--red); }
 .src-empty { padding: 40px; text-align: center; color: var(--c6); }
 
-/* Sidebar phải: chi tiết nguồn, đè lên bảng. */
-.src-detail { position: absolute; top: 0; right: 0; bottom: 0; z-index: 10; display: flex; flex-direction: column; width: min(440px, 92vw); background: var(--c0); border-left: 1px solid var(--c3); }
-.src-detail[hidden] { display: none; }
+/* Cột phải (kit/frame): chi tiết nguồn đang chọn; chưa chọn thì ẩn, bảng ăn hết bề ngang. Đầu đứng yên, thân tự cuộn. */
+.src-detail { display: flex; flex-direction: column; overflow: hidden; background: var(--c0); border-left-color: var(--c3); }
 .src-detail header { display: flex; justify-content: space-between; gap: 12px; padding: 22px 20px 16px; border-bottom: 1px solid var(--c2); }
 .src-detail h2 { font: 500 19px/1.3 'Barlow', var(--font-sans); color: var(--c8); }
-.src-detail header button { border: 0; background: none; color: var(--c6); font-size: 22px; line-height: 1; cursor: pointer; }
-.src-detail header button:hover { color: var(--c8); }
 .d-plat { margin-bottom: 6px; font: 11px var(--font-mono); letter-spacing: .08em; color: var(--c6); }
 .d-sub { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .d-sub .tag { padding: 2px 7px; background: var(--c2); font: 11px var(--font-mono); color: var(--c7); }

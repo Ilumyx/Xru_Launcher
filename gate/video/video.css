@@ -83,16 +83,10 @@
 /* ==========================================================================
    GATE IMAGE — BÀN LÀM VIỆC 3 CỘT: Danh sách | Gallery | Xem chi tiết
    ========================================================================== */
-.ws {
-  display: grid;
-  grid-template-columns: var(--side-w) minmax(0, 1fr) var(--insp-w, 360px);
-  height: calc(100vh / var(--ui-zoom));
-  position: relative;
-  transition: grid-template-columns 0.2s ease;
-}
+/* Khung 3 cột, kéo giãn, gập cột phải: kit/frame. */
 
 /* --- Cột giữa: header + gallery --- */
-.ws-main { min-width: 0; overflow-y: auto; padding: 28px 32px; }
+.ws-main { padding: 28px 32px; }
 /* Đầu trang chung ở kit/page/page.css; Gate chỉ thêm khoảng dưới và hàng tab bên phải */
 .ws-head { margin-bottom: 22px; }
 .ws-head .gate-tabs { flex-wrap: wrap; justify-content: flex-end; }
@@ -130,11 +124,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  min-width: 0;
-  overflow-y: auto;
   padding: 24px 20px;
-  border-left: 1px solid var(--hairline);
-  background: var(--m-1);
 }
 .insp-top { display: flex; justify-content: space-between; align-items: center; }
 .insp-tag {
@@ -176,8 +166,6 @@
 .insp-acts .card-act-btn { padding: 9px 0; font-size: 12px; }
 .insp-acts kbd { margin-left: 6px; padding: 0 4px; background: var(--m-4); border-radius: 2px; font: 10px var(--font-mono); color: var(--fg-dim); }
 
-/* Thanh cuộn tối, mảnh — hợp nền đen */
-.ws-main, .ws-insp { scrollbar-width: thin; scrollbar-color: var(--m-6) transparent; }
 
 /* ==========================================================================
    GATE VIDEO — dùng chung khung 3 cột với Image, chỉ thêm vài chi tiết video
@@ -294,39 +282,9 @@ body[data-mode="watch"] .page-foot { margin-top: 16px; }
 .watch-track span { position: absolute; left: 0; top: 0; bottom: 0; width: 28%; background: var(--accent); border-radius: 2px; }
 .watch-ic { color: var(--fg-dim); font-size: 12px; }
 
-/* ==========================================================================
-   KÉO GIÃN CỘT PHẢI THEO KHẤC — mỗi khấc cột phải ăn đúng 1 cột ảnh,
-   ô ảnh giữ nguyên cỡ (5 → 4 → 3 cột). Bấm đúp vào mép để về mặc định.
-   ========================================================================== */
-.insp-grip {
-  position: absolute; top: 0; bottom: 0;
-  right: calc(var(--insp-w, 360px) - 5px);
-  width: 10px; z-index: 5;
-  cursor: col-resize;
-  transition: right 0.2s ease;
-}
-.insp-grip::before {
-  content: ''; position: absolute; left: 4px; top: 0; bottom: 0; width: 2px;
-  background: transparent; transition: background 0.12s;
-}
-.insp-grip::after {
-  content: ''; position: absolute; left: 2px; top: 50%; width: 6px; height: 36px; margin-top: -18px;
-  border-radius: 3px; background: var(--m-6); opacity: 0; transition: opacity 0.12s;
-}
-.insp-grip:hover::before, body.is-gripping .insp-grip::before { background: var(--accent); }
-.insp-grip:hover::after, body.is-gripping .insp-grip::after { opacity: 1; background: var(--accent); }
-body.is-gripping { cursor: col-resize; user-select: none; }
-.insp-grip-tip {
-  position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
-  padding: 3px 7px; white-space: nowrap;
-  background: var(--m-3); border: 1px solid var(--accent-line); border-radius: 3px;
-  font: 10px var(--font-mono); color: var(--accent);
-  opacity: 0; pointer-events: none; transition: opacity 0.12s;
-}
-body.is-gripping .insp-grip-tip { opacity: 1; }
 /* Cột phải rộng ra thì khung xem không cao quá màn */
 .ws-insp .insp-img { max-height: calc(55vh / var(--ui-zoom)); }
-/* Cột giữa hẹp lại (đã kéo giãn cột phải) → thanh lane thành 5 ô đều, số trên chữ dưới */
+/* Cột giữa hẹp lại (cột bên kéo giãn) → thanh lane thành 5 ô đều, số trên chữ dưới */
 .ws-main { container-type: inline-size; }
 @container (max-width: 640px) {
   .ws-head .page-title { flex-basis: 100%; }
@@ -340,13 +298,8 @@ body.is-gripping .insp-grip-tip { opacity: 1; }
 .ws-head { column-gap: 16px; }
 .ws-head .gate-tabs { gap: 4px; }
 
-/* Đổi khấc: ô ảnh trôi về chỗ mới — nhanh, đầu nhanh cuối êm (gate.js → morph) */
-html.vt-notch::view-transition-group(*) { animation-duration: 180ms; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
-html.vt-notch::view-transition-old(*),
-html.vt-notch::view-transition-new(*) { animation-duration: 180ms; }
 
 /* Place the existing fragment workspace in the mockup grid. */
-.review-workspace { display: contents; }
 .side-field > span { font-size: 11px; color: var(--fg-dim); }
 .side-item, .gate-tab-btn { text-decoration: none; color: inherit; }
 .side-item > div { min-width: 0; }
@@ -401,4 +354,3 @@ a.g-tile { color: inherit; text-decoration: none; }
 [hidden] { display: none !important; }
 .btn:disabled { opacity: .35; cursor: default; }
 
-body[data-mode="watch"] .insp-grip { display:none; }

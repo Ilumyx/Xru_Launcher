@@ -1,0 +1,66 @@
+/* ==========================================================================
+   XRU FRAME — bộ xương chung của mọi màn có sidebar (PO 22/10).
+   <div class="ws">
+     <aside class="side">…</aside>            cột trái: lọc + danh sách (kit/sidebar)
+     <main class="ws-main">…</main>           cột giữa: tự cuộn, nội dung tuỳ màn
+     <aside class="ws-insp">…</aside>         cột phải (tuỳ có): chi tiết món đang chọn; [hidden] khi chưa chọn gì
+   </div>
+   Hai cột bên kéo giãn được (mép trong), bấm đúp về mặc định. Bề ngang chung mọi màn, nhớ giữa các cổng.
+   Cột trái đóng/mở ở rail (data-panel). Cột phải gập/mở bằng nút góc trên phải.
+   Màn chỉ lo nội dung trong từng cột (padding, gap…), không tự dựng khung.
+   ========================================================================== */
+:root {
+  --side-w: var(--side-user, 260px);   /* --side-user, --insp-user: bề ngang PO kéo, frame.js đặt */
+  --insp-w: var(--insp-user, 360px);
+}
+html.sidebar-hidden { --side-w: 0px; }
+html.insp-hidden { --insp-w: 0px; }
+
+.ws {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--side-w) minmax(0, 1fr);
+  height: calc(100vh / var(--ui-zoom));
+  min-width: 0;
+  transition: grid-template-columns .2s ease;
+}
+.ws:has(> .ws-insp:not([hidden])) { grid-template-columns: var(--side-w) minmax(0, 1fr) var(--insp-w); }
+
+.ws-main, .ws-insp { min-width: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--m-6) transparent; }
+.ws-insp { border-left: 1px solid var(--hairline); background: var(--m-1); }
+.ws-insp[hidden] { display: none !important; }
+html.sidebar-hidden .side { visibility: hidden; border-right: 0; }
+html.insp-hidden .ws-insp { visibility: hidden; border-left: 0; }
+
+/* Tay kéo: vạch 2px hiện khi rê chuột; lúc kéo có số px. */
+.frame-grip { position: absolute; top: 0; bottom: 0; width: 10px; z-index: 5; cursor: col-resize; }
+.frame-grip.is-side { left: calc(var(--side-w) - 5px); }
+.frame-grip.is-insp { right: calc(var(--insp-w) - 5px); }
+.frame-grip::before { content: ''; position: absolute; left: 4px; top: 0; bottom: 0; width: 2px; background: transparent; transition: background .12s; }
+.frame-grip:hover::before, .frame-grip.is-dragging::before { background: var(--accent); }
+.frame-grip span {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  padding: 3px 7px; white-space: nowrap;
+  background: var(--m-3); border: 1px solid var(--accent-line); border-radius: 3px;
+  font: 10px var(--font-mono); color: var(--accent);
+  opacity: 0; pointer-events: none; transition: opacity .12s;
+}
+.frame-grip.is-side span { left: 14px; }
+.frame-grip.is-insp span { right: 14px; }
+.frame-grip.is-dragging span { opacity: 1; }
+html.sidebar-hidden .frame-grip.is-side, html.insp-hidden .frame-grip.is-insp,
+.ws:not(:has(> .ws-insp:not([hidden]))) .frame-grip.is-insp { display: none; }
+html.frame-dragging, html.frame-dragging * { cursor: col-resize !important; user-select: none; transition: none !important; }
+
+/* Nút gập cột phải: luôn ở góc trên phải khung, mở hay gập đều cùng chỗ. */
+.insp-toggle {
+  position: absolute; top: 4px; right: 4px; z-index: 6;
+  display: grid; place-items: center; width: 22px; height: 22px; padding: 0;
+  background: transparent; border: 1px solid transparent; border-radius: 3px;
+  color: var(--fg-faint); cursor: pointer;
+}
+.insp-toggle:hover { color: var(--fg-strong); background: var(--m-3); border-color: var(--hairline-hi); }
+.insp-toggle svg { width: 12px; height: 12px; transition: transform .2s ease; }
+html.insp-hidden .insp-toggle { color: var(--fg-dim); border-color: var(--hairline); background: var(--m-2); }
+html.insp-hidden .insp-toggle svg { transform: rotate(180deg); }
+.ws:not(:has(> .ws-insp:not([hidden]))) .insp-toggle { display: none; }

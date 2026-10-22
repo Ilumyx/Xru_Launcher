@@ -2,14 +2,10 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>XRU Gate — Image</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/kit/page/page.css"><link rel="stylesheet" href="/kit/sidebar/sidebar.css"><link rel="stylesheet" href="/kit/account/account.css"><link rel="stylesheet" href="/gate/image/image.css">
-<script src="/kit/i18n/i18n.js"></script><script src="/kit/account/account.js"></script><script src="/kit/sidebar/sidebar.js"></script>
+<link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/kit/page/page.css"><link rel="stylesheet" href="/kit/sidebar/sidebar.css"><link rel="stylesheet" href="/kit/frame/frame.css"><link rel="stylesheet" href="/kit/account/account.css"><link rel="stylesheet" href="/gate/image/image.css">
+<script src="/kit/i18n/i18n.js"></script><script src="/kit/account/account.js"></script><script src="/kit/frame/frame.js"></script>
 </head><body><div class="shell">
-<script>window.XRU_RAILS={gate:{label:'rail_gate_nav',home:'/',homeTip:'rail_esc_launcher',groups:[[
-{key:'image',href:'/gate/image/?view=grid',icon:'image',tip:'Lưới / một ảnh'},
-{key:'video',href:'/gate/video/?view=grid',icon:'video',tip:'gate_vid'},
-{key:'watch',href:'/gate/video/?view=watch',icon:'watch',tip:'rail_video_watch'},
-{key:'dash',href:'/gate/dash/',icon:'stats',tip:'gate_dash'}]]}};</script>
+<script src="/gate/rail_menu.js"></script>
 <nav class="rail" data-rail="gate" data-active="image" data-panel></nav><script src="/kit/rail/rail.js"></script>
 <div class="ws"><aside class="side"><div class="side-head">
 <div class="side-count"><b id="total">—</b><span id="lane-label">WAITING_PO</span></div>
@@ -28,4 +24,4 @@
 <button type="button" class="card-act-btn approve" data-act="ACCEPT" data-key="a" disabled><span data-i18n="btn_approve">Nhận</span><kbd>A</kbd></button><button type="button" class="card-act-btn detain" data-act="DETAIN" data-key="d" disabled><span data-i18n="btn_detain">Giữ</span><kbd>D</kbd></button><button type="button" class="card-act-btn approve" data-act="RESCUE" disabled>Rescue → Waiting</button><button type="button" class="card-act-btn purge" data-act="PURGE" disabled><span data-i18n="btn_purge">Hủy</span></button>
 </div><span id="readonly" hidden>Terminal state · Read-only mode</span></div></aside></div></div>
 <div class="gr-peek" id="peek" role="dialog" aria-label="Xem ảnh lớn"><img id="peek-img" alt=""><button id="peek-close" class="card-act-btn">Đóng · Esc</button></div>
-<script src="/gate/image/image.js"></script><script src="/gate/image/inspector_grip.js"></script></body></html>
+<script src="/gate/image/image.js"></script></body></html>

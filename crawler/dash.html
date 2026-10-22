@@ -6,14 +6,13 @@
   <title>XRU Crawler — 01 · Tổng quan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/kit/page/page.css"><link rel="stylesheet" href="/kit/sidebar/sidebar.css"><link rel="stylesheet" href="crawler.css">
-  <link rel="stylesheet" href="/kit/account/account.css"><script src="/kit/i18n/i18n.js"></script><script src="/kit/account/account.js"></script><script src="/kit/sidebar/sidebar.js"></script>
-  <script>window.XRU_RAILS = { crawler: { label: "Crawler", home: "/?continent=eurasia", homeTip: "Về sảnh (ESC)",
-    groups: [[{ key: "dash", href: "/crawler/dash", icon: "bars", tip: "Dashboard" }, { key: "sources", href: "/crawler/sources", icon: "table", tip: "Nguồn" }]] } };</script>
+  <link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/kit/page/page.css"><link rel="stylesheet" href="/kit/sidebar/sidebar.css"><link rel="stylesheet" href="/kit/frame/frame.css"><link rel="stylesheet" href="crawler.css">
+  <link rel="stylesheet" href="/kit/account/account.css"><script src="/kit/i18n/i18n.js"></script><script src="/kit/account/account.js"></script><script src="/kit/frame/frame.js"></script>
+  <script src="/crawler/rail_menu.js"></script>
 </head>
 <body><div class="shell">
   <nav class="rail" data-rail="crawler" data-panel data-active="dash"></nav><script src="/kit/rail/rail.js"></script>
-<div class="cr-ws">
+<div class="ws">
   <aside class="side">
     <div class="side-head">
       <div class="side-count"><b id="cr-count">—</b><span>NGUỒN</span></div>
@@ -22,7 +21,7 @@
     </div>
     <div class="side-items" id="cr-filters"></div>
   </aside>
-  <div class="cr-scroll">
+  <div class="ws-main">
   <main class="cr-stage">
     <header class="page-head"><div class="page-title"><a href="/?continent=eurasia">EURASIA</a><span>/</span><a href="/crawler/dash" data-keep-scope>CRAWLER</a><span>/</span><h1>DASHBOARD</h1></div><div class="cr-active"><span id="cr-active"></span><button type="button" id="cr-clear" hidden>Bỏ lọc</button></div></header><div id="cr-error" role="alert" hidden></div>
 

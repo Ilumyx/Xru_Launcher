@@ -73,7 +73,6 @@ Những lần UI hẹo (kho lớn là treo, cuộn giật, tua khựng), gốc v
 
 ## Còn mở
 
-- Bộ xương Kit (22/10): khung chia cột đang 5 bản (`.ws` ×3, `.gd-shell`, `.cr-ws`, `.src-ws`), sidebar phải 2 kiểu (cột cố định ở Gate/Label, mở đè ở Crawler Nguồn), tay kéo sidebar phải chép ở Gate ảnh và video, Label không có. Đưa khung + hai sidebar + tay kéo vào Kit, mọi màn dùng lại. Chờ PO chốt sidebar phải cố định hay mở đè. Tay kéo sidebar trái đã vào Kit (Order 34).
 - Ô sắp xếp (22/10): Gate theo i18n ("Sort"), Crawler viết cứng tiếng Việt, Crawler Nguồn còn bấm đầu cột. Đề xuất một chuẩn Kit: sidebar, cùng nhãn i18n, mỗi màn khai lựa chọn riêng, bỏ bấm đầu cột. Chờ PO chốt.
 - Tường video (22/10): còn chia trang 100 clip; chưa cuộn vô tận và trần 500 như tường ảnh. Thumbnail Gate chỉ nhớ ở trình duyệt; chưa cất đĩa (mỗi máy/mỗi ngày chạy lại ffmpeg).
 - Cờ `--lan` của `launcher.py` (22/10): chỉ mở trang, Backend vẫn nghe 127.0.0.1 và chặn Origin nên trang trống số. Đề xuất xoá vì đã có hầm SSH; chờ PO gật.

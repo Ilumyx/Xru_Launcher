@@ -1,7 +1,5 @@
 /* Crawler Dash. Màn Nguồn có CSS riêng ở sources.css. */
 a.rail-icon-btn { text-decoration: none; }
-.cr-ws { position: relative; display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); height: calc(100vh / var(--ui-zoom)); min-width: 0; transition: grid-template-columns .2s ease; }
-.cr-scroll { min-width: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--m-6) transparent; }
 .side .side-items { padding-bottom: 20px; }
 .side-head .side-search { margin-bottom: 12px; }
 .f-head { display: flex; justify-content: space-between; padding: 18px 16px 8px; font: 10px var(--font-mono); letter-spacing: .08em; color: var(--fg-faint); }

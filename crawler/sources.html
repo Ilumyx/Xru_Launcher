@@ -6,14 +6,13 @@
   <title>XRU Crawler — Nguồn</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/kit/page/page.css"><link rel="stylesheet" href="/kit/sidebar/sidebar.css"><link rel="stylesheet" href="sources.css">
-  <link rel="stylesheet" href="/kit/account/account.css"><script src="/kit/i18n/i18n.js"></script><script src="/kit/account/account.js"></script><script src="/kit/sidebar/sidebar.js"></script>
-  <script>window.XRU_RAILS = { crawler: { label: "Crawler", home: "/?continent=eurasia", homeTip: "Về sảnh (ESC)",
-    groups: [[{ key: "dash", href: "/crawler/dash", icon: "bars", tip: "Dashboard" }, { key: "sources", href: "/crawler/sources", icon: "table", tip: "Nguồn" }]] } };</script>
+  <link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/kit/page/page.css"><link rel="stylesheet" href="/kit/sidebar/sidebar.css"><link rel="stylesheet" href="/kit/frame/frame.css"><link rel="stylesheet" href="sources.css">
+  <link rel="stylesheet" href="/kit/account/account.css"><script src="/kit/i18n/i18n.js"></script><script src="/kit/account/account.js"></script><script src="/kit/frame/frame.js"></script>
+  <script src="/crawler/rail_menu.js"></script>
 </head>
 <body class="src"><div class="shell">
   <nav class="rail" data-rail="crawler" data-panel data-active="sources"></nav><script src="/kit/rail/rail.js"></script>
-  <div class="src-ws">
+  <div class="ws">
     <aside class="side">
       <div class="side-head">
         <div class="side-count"><b id="src-count">—</b><span>NGUỒN</span></div>
@@ -30,7 +29,7 @@
         <p>Cũ khi chưa cào quá: A 3n · B 7n · C 14n · D 30n · chưa chấm 7n · F không tính</p>
       </div>
     </aside>
-    <div class="src-scroll">
+    <div class="ws-main src-scroll">
       <main class="src-main">
         <header class="page-head"><div class="page-title"><a href="/?continent=eurasia">EURASIA</a><span>/</span><a href="/crawler/dash" data-keep>CRAWLER</a><span>/</span><h1>NGUỒN</h1></div><span class="src-stamp" id="src-stamp"></span></header>
         <div id="src-error" role="alert" hidden></div>
@@ -49,8 +48,8 @@
         <footer class="page-foot"><div class="key-hints"><span><span class="key">1</span> Dashboard</span><span><span class="key">2</span> Nguồn</span><span><span class="key">ESC</span> Đóng chi tiết / Sảnh</span></div><div>CHỈ ĐỌC · ẢNH + VIDEO</div></footer>
       </main>
     </div>
-    <aside class="src-detail" id="src-detail" hidden aria-labelledby="d-name">
-      <header><div><p class="d-plat" id="d-plat"></p><h2 id="d-name"></h2><p class="d-sub" id="d-sub"></p></div><button type="button" id="d-close" aria-label="Đóng chi tiết">×</button></header>
+    <aside class="ws-insp src-detail" id="src-detail" hidden aria-labelledby="d-name">
+      <header><div><p class="d-plat" id="d-plat"></p><h2 id="d-name"></h2><p class="d-sub" id="d-sub"></p></div></header>
       <div class="d-body" id="d-body"></div>
     </aside>
   </div>
