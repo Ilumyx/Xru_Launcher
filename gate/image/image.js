@@ -78,22 +78,19 @@ async function load(preferred = store.s.selectedId, locate = false) {
     store.set({ reading: true, notice: 'Backend Gate ảnh đang tắt hoặc đọc lỗi. Số đang hiện, nếu có, chưa được cập nhật. ' + e.message });
   } finally { if (pending === id) pending = false; }
 }
-// Tới thẳng một ảnh theo mã gõ vào ô tìm: hỏi lõi ảnh đang ở trạng thái nào, bỏ bộ lọc, mở đúng trang chứa nó.
+// Tìm là một bộ lọc (PO 23/10): gõ đúng mã xru thì lõi trả đúng món đó. Món ở trạng thái khác thì chuyển sang đó (bỏ lọc nguồn),
+// mã của một clip thì mở màn Gate video; không có ở đâu thì lọc như chữ thường (không còn món nào).
 async function jump(id) {
   try {
     const d = await json('/api/assets/' + encodeURIComponent(id));
-    store.set((s) => ({ view: { ...s.view, state: d.item.state, platform: '', source: '', q: '', page: 1 } }));
-    await load(id, true);
-    // Nhảy tới đúng món đang xem thì nhìn như không có gì xảy ra: luôn đưa ô của nó vào giữa tầm nhìn.
-    requestAnimationFrame(() => document.querySelector('#tiles .is-active')?.scrollIntoView({ block: 'center' }));
+    store.set((s) => ({ view: { ...s.view, state: d.item.state, platform: '', source: '', q: id, page: 1 } }));
   } catch {
-    // Mã của một clip thì mở màn Gate video đúng clip đó; không có ở đâu thì trả danh sách về như cũ và báo.
     try {
       const r = await fetch(videoBackend + '/api/assets/' + encodeURIComponent(id), { cache: 'no-store' });
-      if (r.ok) { const d = await r.json(); location.href = '/gate/video/?' + new URLSearchParams({ state: d.item.lane, view: 'grid', selected: id }); return; }
+      if (r.ok) { const d = await r.json(); location.href = '/gate/video/?' + new URLSearchParams({ state: d.item.lane, view: 'grid', q: id, selected: id }); return; }
     } catch { /* Backend video tắt: coi như không thấy */ }
-    store.set((s) => ({ view: { ...s.view, q: '' } })); await load(); store.set({ notice: 'Không tìm thấy món ' + id + ' trong Gate.' });
   }
+  await load(id);
 }
 const isId = (text) => /^xru-[0-9a-f-]{36}$/i.test(text);
 function go(change, preferred = store.s.selectedId) { store.set((s) => ({ view: { ...s.view, ...change } })); load(preferred); }

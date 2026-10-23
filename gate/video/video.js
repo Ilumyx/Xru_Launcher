@@ -121,22 +121,19 @@ async function refresh() {
     if (!keep) readDetail(pick);
   } catch { /* lượt đọc thường sau sẽ báo lỗi */ }
 }
-// Tới thẳng một clip theo mã (gõ mã vào ô tìm, bấm clip liên quan): hỏi lõi clip đang ở lane nào, bỏ bộ lọc, mở đúng trang chứa nó.
+// Tìm là một bộ lọc (PO 23/10): gõ đúng mã xru thì lõi trả đúng món đó. Món ở lane khác thì chuyển sang lane đó (bỏ lọc nguồn/trạm),
+// mã của một ảnh thì mở màn Gate ảnh; không có ở đâu thì lọc như chữ thường (không còn món nào).
 async function jump(id) {
   try {
     const d = await json('/api/assets/' + encodeURIComponent(id));
-    store.set((s) => ({ view: { ...s.view, state: d.item.lane, platform: '', source: '', reason: '', q: '', page: 1 } }));
-    await load(id, { locate: true });
-    // Nhảy tới đúng món đang xem thì nhìn như không có gì xảy ra: luôn đưa ô của nó vào giữa tầm nhìn.
-    requestAnimationFrame(() => document.querySelector('#video-gallery .is-active')?.scrollIntoView({ block: 'center' }));
+    store.set((s) => ({ view: { ...s.view, state: d.item.lane, platform: '', source: '', reason: '', q: id, page: 1 } }));
   } catch {
-    // Mã của một ảnh thì mở màn Gate ảnh đúng ảnh đó; không có ở đâu thì trả danh sách về như cũ và báo.
     try {
       const r = await fetch(imageBackend + '/api/assets/' + encodeURIComponent(id), { cache: 'no-store' });
-      if (r.ok) { const d = await r.json(); location.href = '/gate/image/?' + new URLSearchParams({ state: d.item.state, selected: id }); return; }
+      if (r.ok) { const d = await r.json(); location.href = '/gate/image/?' + new URLSearchParams({ state: d.item.state, q: id, selected: id }); return; }
     } catch { /* Backend ảnh tắt: coi như không thấy */ }
-    store.set((s) => ({ view: { ...s.view, q: '' } })); await load(); store.set({ notice: 'Không tìm thấy món ' + id + ' trong Gate.' });
   }
+  await load(id);
 }
 const isId = (text) => /^xru-[0-9a-f-]{36}$/i.test(text);
 function step(delta, wrap = false) {
