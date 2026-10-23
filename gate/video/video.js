@@ -121,6 +121,15 @@ async function refresh() {
     if (!keep) readDetail(pick);
   } catch { /* lượt đọc thường sau sẽ báo lỗi */ }
 }
+// Tới thẳng một clip theo mã (gõ mã vào ô tìm, bấm clip liên quan): hỏi lõi clip đang ở lane nào, bỏ bộ lọc, mở đúng trang chứa nó.
+async function jump(id) {
+  try {
+    const d = await json('/api/assets/' + encodeURIComponent(id));
+    store.set((s) => ({ view: { ...s.view, state: d.item.lane, platform: '', source: '', reason: '', q: '', page: 1 } }));
+    await load(id, { locate: true });
+  } catch (e) { store.set({ reading: false, notice: 'Không tìm thấy clip ' + id + '. ' + e.message }); }
+}
+const isId = (text) => /^xru-[0-9a-f-]{36}$/i.test(text);
 function step(delta, wrap = false) {
   const s = store.s; if (!s.page || s.reading) return;
   const items = s.page.items, at = items.findIndex((r) => r.xru_id === s.selectedId); if (at < 0) return;
@@ -203,7 +212,7 @@ function Sidebar() {
   }
   const typed = (e) => {
     const q = e.currentTarget.value; clearTimeout(searchTimer); ++readId;
-    store.set((st) => ({ view: { ...st.view, q, page: 1 }, reading: true })); searchTimer = setTimeout(() => load(), 180);
+    store.set((st) => ({ view: { ...st.view, q, page: 1 }, reading: true })); searchTimer = setTimeout(() => (isId(q.trim()) ? jump(q.trim()) : load()), 180);
   };
   const keys = (e) => { e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); e.currentTarget.blur(); go({ q: '', page: 1 }); } };
   return [
@@ -271,7 +280,6 @@ function Inspector() {
   const s = useStore(), item = current(s), page = s.page;
   const index = item && page ? page.items.findIndex((r) => r.xru_id === item.xru_id) : -1;
   const detail = s.detail?.item.xru_id === s.selectedId ? s.detail : null;
-  const jump = (row) => (e) => { e.preventDefault(); store.set((st) => ({ view: { ...st.view, state: row.lane, platform: '', source: '', reason: '', q: '', page: 1 } })); load(row.xru_id, { locate: true }); };
   return [
     h('div', { class: 'insp-top' }, h('span', { class: 'insp-tag', title: item?.gate_flag_reason || '' }, item ? item.lane : ''),
       h('span', { class: 'insp-num', id: 'insp-num' }, index >= 0 ? `${String(page.offset + index + 1).padStart(3, '0')} / ${page.total}` : '')),
@@ -288,7 +296,7 @@ function Inspector() {
           h('dt', { 'aria-label': 'Current Lane' }, 'Lane'), h('dd', { id: 'insp-lane' }, item?.lane || ''))),
       item && item.state !== 'WAITING_PO' ? h('p', { class: 'po-note-display' }, item.po_note || '') : null,
       s.view.state === 'MACHINE_FLAGGED' && detail?.related.length ? h('div', { class: 'related-videos' }, h('div', { class: 'insp-label' }, 'RELATED VIDEOS'),
-        detail.related.map((row) => h('span', { key: row.xru_id }, h('a', { href: '#', class: 'dupe-link', onClick: jump(row) }, row.xru_id), ' ', h('span', { class: 'state-chip' }, row.lane), ' '))) : null),
+        detail.related.map((row) => h('span', { key: row.xru_id }, h('a', { href: '#', class: 'dupe-link', onClick: (e) => { e.preventDefault(); jump(row.xru_id); } }, row.xru_id), ' ', h('span', { class: 'state-chip' }, row.lane), ' '))) : null),
   ];
 }
 

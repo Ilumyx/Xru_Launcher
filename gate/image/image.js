@@ -61,12 +61,13 @@ function choose(id) { if (store.s.reading || id === store.s.selectedId) return; 
 
 // Đọc một trang. Trang vượt cuối (món vừa rời lane) thì lõi trả trang cuối; số trang theo offset lõi trả.
 // preferred: id muốn chọn; không còn trên trang thì chọn ô đầu.
-async function load(preferred = store.s.selectedId) {
+async function load(preferred = store.s.selectedId, locate = false) {
   if (!backend) return; if (flushing) await flushing;
   if (!sorts(store.s.view.state).some(([k]) => k === store.s.view.sort)) store.set((s) => ({ view: { ...s.view, sort: 'oldest' } }));
   const id = ++readId; pending = true; store.set({ reading: true });
   try {
-    const result = await json('/api/queue?' + query(store.s.view)); if (id !== readId) return;
+    const q = query(store.s.view); if (locate && preferred) q.set('selected', preferred);
+    const result = await json('/api/queue?' + q); if (id !== readId) return;
     const items = result.items, at = items.findIndex((r) => r.xru_id === preferred);
     const pick = items.length ? items[Math.max(0, at)].xru_id : null;
     store.set((s) => ({ page: result, view: { ...s.view, page: Math.floor(result.offset / SIZE) + 1 }, reading: false,
@@ -77,6 +78,15 @@ async function load(preferred = store.s.selectedId) {
     store.set({ reading: true, notice: 'Backend Gate ảnh đang tắt hoặc đọc lỗi. Số đang hiện, nếu có, chưa được cập nhật. ' + e.message });
   } finally { if (id === readId) pending = false; }
 }
+// Tới thẳng một ảnh theo mã gõ vào ô tìm: hỏi lõi ảnh đang ở trạng thái nào, bỏ bộ lọc, mở đúng trang chứa nó.
+async function jump(id) {
+  try {
+    const d = await json('/api/assets/' + encodeURIComponent(id));
+    store.set((s) => ({ view: { ...s.view, state: d.item.state, platform: '', source: '', q: '', page: 1 } }));
+    await load(id, true);
+  } catch (e) { store.set({ reading: false, notice: 'Không tìm thấy ảnh ' + id + '. ' + e.message }); }
+}
+const isId = (text) => /^xru-[0-9a-f-]{36}$/i.test(text);
 function go(change, preferred = store.s.selectedId) { store.set((s) => ({ view: { ...s.view, ...change } })); load(preferred); }
 
 // Quyết là đi tiếp ngay: ảnh rời trang tại chỗ, lệnh ghi xếp hàng gửi ngầm từng lệnh một; gửi hết mới đọc lại lõi một lượt
@@ -127,7 +137,7 @@ function Sidebar() {
   ] : [];
   const typed = (e) => {
     const q = e.currentTarget.value; clearTimeout(searchTimer); ++readId;
-    store.set((st) => ({ view: { ...st.view, q, page: 1 }, reading: true })); searchTimer = setTimeout(() => load(), 250);
+    store.set((st) => ({ view: { ...st.view, q, page: 1 }, reading: true })); searchTimer = setTimeout(() => (isId(q.trim()) ? jump(q.trim()) : load()), 250);
   };
   return [
     h('div', { class: 'side-head' },
