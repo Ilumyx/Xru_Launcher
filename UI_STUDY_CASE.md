@@ -46,6 +46,7 @@ Gốc của cả họ: **làm việc nặng cho từng món, ở chỗ chỉ c�
 - Gốc: mỗi ô là một `<video poster>`, trình duyệt xin cả 100 ảnh bìa cùng lúc (poster không biết tải lười). Mỗi ảnh bìa Backend chạy ffprobe + ffmpeg lại từ đầu, không cất; 66 lượt ffmpeg chạy song song nên ảnh cuối tới sau 4,3 giây. Máy khác (PC qua hầm) hay lane mới là chạy lại hết.
 - Sửa: Order UI 52 Gate cất ảnh nhỏ xuống đĩa (`~/.cache`, khoá cỡ + giờ sửa), tối đa 3 ffmpeg cùng lúc. Laucher Order 35.1: ô video là `<img loading=lazy>`, rê chuột mới dựng video, rời chuột thì gỡ.
 - Đo lại: 100 ảnh bìa lần đầu 11 giây (chỉ một lần mỗi clip), từ lần sau 0,3 giây; tường hiện đủ ô đang nhìn sau 0,32 giây; đổi lane dưới 0,13 giây.
+- Sửa tận gốc (Gate Order 57, 23/10): ảnh bìa chụp lúc intake nhận hàng, cất trong kho Gate, có lệnh chụp bù; cửa UI chỉ đọc file (1,5ms), bỏ ffmpeg và cache. Clip mới không còn chậm lần đầu.
 - Bài học: ảnh nhỏ dựng một lần, cất lại; lưới chỉ tải ô đang nhìn thấy; phần tử nặng (video) chỉ dựng khi người dùng chạm tới.
 
 ## Ca 6 — Gate: bấm quyết vẫn khựng, lần thứ ba (23/10)
