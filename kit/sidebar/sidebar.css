@@ -105,7 +105,7 @@
 .side-item.is-child { grid-template-columns: minmax(0, 1fr); }
 .side-item.is-all.is-active::before, .side-item.is-group.is-active::before { top: 15px; }
 
-/* Nhóm lọc bấm thẳng (kit/sidebar/filters.js): cao tối đa nửa cột, danh sách bên dưới chiếm phần còn lại.
+/* Nhóm lọc bấm thẳng (kit/sidebar/Filters.js): cao tối đa nửa cột, danh sách bên dưới chiếm phần còn lại.
    Tiêu đề nhóm bấm để gập; gập rồi vẫn ghi lựa chọn đang bật bên phải. Dòng gọn, số đếm bên phải. */
 .side-filters { flex: none; max-height: 50%; overflow-y: auto; padding-bottom: 8px; border-bottom: 1px solid var(--hairline); scrollbar-width: thin; scrollbar-color: var(--m-6) transparent; }
 .side-sect { display: flex; align-items: baseline; gap: 6px; padding: 14px 16px 6px; font: 500 10px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--fg-faint); cursor: pointer; user-select: none; }
