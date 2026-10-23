@@ -33,7 +33,7 @@
 .f-MACHINE_FLAGGED { background: var(--m-13); }
 .f-DETAINED { background: var(--m-10); }
 .f-ACCEPT_APPROVED { background: var(--m-14); }
-.f-PURGE_APPROVED { background: var(--m-7); }
+.f-ARREST_APPROVED { background: var(--m-7); }
 
 .gd-note { margin-top: 14px; max-width: 900px; font-size: 13px; line-height: 1.6; color: var(--fg-dim); }
 /* Thanh nhỏ dưới dòng nguồn (Gate Dash: độ sạch) */

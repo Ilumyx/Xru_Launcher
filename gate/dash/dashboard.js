@@ -17,7 +17,7 @@ const STATES = [
   ['MACHINE_FLAGGED', 'MACHINE FLAG', 'machine_flag_sub'],
   ['DETAINED', 'DETAIN', 'detained'],
   ['ACCEPT_APPROVED', 'ACCEPT', 'cleared_sub'],
-  ['PURGE_APPROVED', 'PURGE', 'purged_sub'],
+  ['ARREST_APPROVED', 'ARREST', 'arrested_sub'],
 ];
 const FINDINGS = [
   ['finding_music', ['MUSIC']],
@@ -34,10 +34,10 @@ const store = createStore({ live: {}, kind: 'video', scope: null, platform: 'all
 const useStore = () => useSheet(store);
 
 const wait = (s) => (s.by_state.WAITING_PO || 0) + (s.by_state.MACHINE_FLAGGED || 0);
-// Tỷ lệ nhận trong trạng thái nhận/giữ/hủy; không phải tỷ lệ quyết định PO.
+// Tỷ lệ nhận trong trạng thái nhận/giữ/bắt; không phải tỷ lệ quyết định PO.
 function acceptance(s) {
   const b = s.by_state, ok = b.ACCEPT_APPROVED || 0;
-  const closed = ok + (b.DETAINED || 0) + (b.PURGE_APPROVED || 0);
+  const closed = ok + (b.DETAINED || 0) + (b.ARREST_APPROVED || 0);
   return { ok, closed, pct: closed ? Math.round((ok / closed) * 100) : null, solid: closed >= MIN_CLOSED_RECORDS };
 }
 const label = (s) => s.name || s.source_name || PLATFORM[s.source_platform] || s.source_platform;
@@ -143,7 +143,7 @@ function Machine({ lane, s }) {
   return h('section', { class: 'gd-block', id: 'gd-machine' },
     head(h('span', { class: 'gd-label' }, `${t('entire_lane')} ${s.kind === 'video' ? 'VIDEO' : t('kind_image').toUpperCase()}${s.scope ? ` · ${t('unsplit_source')}` : ''}`)),
     h('p', { class: 'gd-machine-line' }, t('gd_recorded'), ' ', h('b', null, n(recorded)), ` / ${n(lane.total)} · ${t('gd_missing')} `, h('b', null, n(o.NONE || 0))),
-    h('p', { class: 'gd-machine-line' }, `${t('detained')}: `, h('b', null, n(o.DETAIN || 0)), ' · FLAG: ', h('b', null, n(o.FLAG || 0)), ' · KEEP: ', h('b', null, n(o.KEEP || 0)), ' · PURGE: ', h('b', null, n(o.PURGE || 0))),
+    h('p', { class: 'gd-machine-line' }, `${t('detained')}: `, h('b', null, n(o.DETAIN || 0)), ' · FLAG: ', h('b', null, n(o.FLAG || 0)), ' · KEEP: ', h('b', null, n(o.KEEP || 0))),
     h('div', { class: 'gd-findings' }, rows.map(([name, v]) => h('div', { key: name }, h('span', null, name), h('i', null, h('s', { style: { width: (v / top) * 100 + '%' } })), h('b', null, n(v))))),
     h('p', { class: 'gd-note' }, t('gd_machine_wait_core')));
 }

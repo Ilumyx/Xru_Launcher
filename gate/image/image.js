@@ -10,12 +10,12 @@ const t = (key) => window.XRU_I18N.t(key);
 const n = (v) => Number(v).toLocaleString('en-US');
 // Trang 250 ảnh (PO 22/10): đủ lướt bắt pattern, máy không gồng; lõi trả tối đa 250 món một lượt (Gate Order 55).
 const SIZE = 250;
-const STATES = ['WAITING_PO', 'DETAINED', 'ACCEPT_APPROVED', 'PURGE_APPROVED'];
-const TABS = [['WAITING_PO', 'WAIT', 'alert'], [null, 'MACHINE FLAG', ''], ['DETAINED', 'DETAIN', 'warn'], ['ACCEPT_APPROVED', 'ACCEPT', 'accept'], ['PURGE_APPROVED', 'PURGE', '']];
+const STATES = ['WAITING_PO', 'DETAINED', 'ACCEPT_APPROVED', 'ARREST_APPROVED'];
+const TABS = [['WAITING_PO', 'WAIT', 'alert'], [null, 'MACHINE FLAG', ''], ['DETAINED', 'DETAIN', 'warn'], ['ACCEPT_APPROVED', 'ACCEPT', 'accept'], ['ARREST_APPROVED', 'ARREST', '']];
 // Nút theo lane: [lệnh, khoá nhãn hoặc nhãn, kiểu nút, phím]
 const ACTIONS = {
   WAITING_PO: [['ACCEPT', 'btn_approve', 'approve', 'a'], ['DETAIN', 'btn_detain', 'detain', 'd']],
-  DETAINED: [['RESCUE', 'Rescue → Waiting', 'approve', ''], ['PURGE', 'btn_purge', 'purge', '']],
+  DETAINED: [['RESCUE', 'Rescue → Waiting', 'approve', ''], ['ARREST', 'btn_arrest', 'arrest', '']],
 };
 // Sort theo lane: hai sort "PO quyết định" chỉ có nghĩa ở lane đã quyết.
 const sorts = (state) => [['oldest', 'sort_oldest'], ['newest', 'sort_newest'], ...(state === 'WAITING_PO' ? [] : [['po_newest', 'sort_po_newest'], ['po_oldest', 'sort_po_oldest']])];

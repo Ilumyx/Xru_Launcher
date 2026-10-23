@@ -78,7 +78,7 @@
 .card-act-btn:hover { background: var(--m-5); color: #fff; }
 .card-act-btn.approve:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 .card-act-btn.detain:hover  { background: rgba(var(--hold-rgb), 0.2); border-color: var(--hold); color: var(--hold); }
-.card-act-btn.purge:hover   { background: rgba(var(--warn-rgb), 0.2);  border-color: var(--warn);      color: var(--warn); }
+.card-act-btn.arrest:hover   { background: rgba(var(--warn-rgb), 0.2);  border-color: var(--warn);      color: var(--warn); }
 
 /* ==========================================================================
    GATE IMAGE — BÀN LÀM VIỆC 3 CỘT: Danh sách | Gallery | Xem chi tiết

@@ -11,20 +11,20 @@ const t = (key) => window.XRU_I18N.t(key);
 const n = (v) => Number(v).toLocaleString('en-US');
 const time = (v) => Number.isFinite(v) ? `${Math.floor(v / 60)}:${String(Math.floor(v % 60)).padStart(2, '0')}` : '';
 const SIZE = 100;
-const LANES = ['WAITING_PO', 'MACHINE_FLAGGED', 'DETAINED', 'ACCEPT_APPROVED', 'PURGE_APPROVED'];
-const TABS = [['WAITING_PO', 'WAIT', 'alert'], ['MACHINE_FLAGGED', 'MACHINE FLAG', 'alert'], ['DETAINED', 'DETAIN', 'warn'], ['ACCEPT_APPROVED', 'ACCEPT', 'accept'], ['PURGE_APPROVED', 'PURGE', '']];
+const LANES = ['WAITING_PO', 'MACHINE_FLAGGED', 'DETAINED', 'ACCEPT_APPROVED', 'ARREST_APPROVED'];
+const TABS = [['WAITING_PO', 'WAIT', 'alert'], ['MACHINE_FLAGGED', 'MACHINE FLAG', 'alert'], ['DETAINED', 'DETAIN', 'warn'], ['ACCEPT_APPROVED', 'ACCEPT', 'accept'], ['ARREST_APPROVED', 'ARREST', '']];
 // [lệnh, nhãn, phím]
 const ACTIONS = {
   WAITING_PO: [['ACCEPT', 'Accept', 'a'], ['DETAIN', 'Detain', 'd']],
   MACHINE_FLAGGED: [['KEEP', 'YES · KEEP', 'a'], ['DETAIN', 'NO · DETAIN', 'd']],
-  DETAINED: [['RESCUE', 'RESCUE TO WAIT', 'r'], ['PURGE', 'PURGE', 'p']],
-  PURGE_APPROVED: [['RESTORE_PURGE', 'RESTORE TO DETAIN', 'r']],
+  DETAINED: [['RESCUE', 'RESCUE TO WAIT', 'r'], ['ARREST', 'ARREST', 'p']],
+  ARREST_APPROVED: [['RESTORE_ARREST', 'RESTORE TO DETAIN', 'r']],
   ACCEPT_APPROVED: [['RESCUE_ACCEPT', 'RESCUE TO WAIT', 'r'], ['DETAIN_ACCEPT', 'DETAIN', 'd']],
 };
-const BTN = { a: 'accept', d: 'detain', p: 'purge', r: 'rescue' };
+const BTN = { a: 'accept', d: 'detain', p: 'arrest', r: 'rescue' };
 // Sort theo lane: hai sort "PO quyết định" chỉ có nghĩa ở lane đã quyết.
 const sorts = (state) => [['oldest', 'sort_oldest'], ['newest', 'sort_newest'], ['duration_longest', 'sort_longest'], ['duration_shortest', 'sort_shortest'],
-  ...(['DETAINED', 'ACCEPT_APPROVED', 'PURGE_APPROVED'].includes(state) ? [['po_newest', 'sort_po_newest'], ['po_oldest', 'sort_po_oldest']] : [])];
+  ...(['DETAINED', 'ACCEPT_APPROVED', 'ARREST_APPROVED'].includes(state) ? [['po_newest', 'sort_po_newest'], ['po_oldest', 'sort_po_oldest']] : [])];
 
 // ---------- Sổ tay của màn ----------
 const p = new URLSearchParams(location.search);
