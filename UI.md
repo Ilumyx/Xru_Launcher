@@ -28,7 +28,7 @@ Sector:  Local Registrar (cầm sổ) ─┬─ CLI/Ops (lõi)
 
 ## Audit UI Backend (PO 21/10)
 
-UI Backend là DMZ: Sector code, Launcher dùng. Sau mỗi đợt Sector đổi UI Backend, Claude soát:
+UI Backend là DMZ: Sector code, Launcher dùng. Đầu mỗi lượt audit, Claude chạy `git log -- ui_backend_service/` ở từng repo Sector để thấy mọi commit đụng DMZ từ lần soát trước (tên commit không quan trọng), rồi soát:
 
 1. Rút phích: xoá `ui_backend_service/` ở bản sao, test lõi và CLI vẫn chạy.
 2. Đúng cửa: chỉ gọi Local Registrar / DIRC Embassy; không SQL, không ops/CLI.
@@ -36,7 +36,7 @@ UI Backend là DMZ: Sector code, Launcher dùng. Sau mỗi đợt Sector đổi 
 4. Đo trên kho thật: API màn chính dưới 1 giây.
 5. `API.md` khớp dữ liệu trả thật.
 
-Hỏng gọn trong `ui_backend_service/` thì Claude được sửa thẳng, commit `Order UI <số>` ở repo Sector. Hỏng phải đụng lõi, hoặc UI không rút ra được, thì tố giác Sector Admin cho PO kèm bằng chứng để ra Order.
+Hỏng gọn trong `ui_backend_service/` thì Claude được sửa thẳng, commit `Order UI <số>` ở repo Sector. Hỏng phải đụng lõi, hoặc UI không rút ra được, thì ghi vào [TO_GIAC.md](TO_GIAC.md) kèm bằng chứng. File này là hộp thư hai chiều (PO 23/10): Sector Admin làm xong ghi ngay dưới mục ("xong, Order N, dùng hàm X") hoặc xoá mục; đầu mỗi phiên Claude tự đọc file và kiểm hàng, PO không phải chép tin qua lại.
 
 | Cổng | Vai trò |
 |---|---|
@@ -86,7 +86,7 @@ PO 22/10: không phím chuyển màn, không ESC về sảnh (bấm rail là xon
 ## Commit
 
 - Repo Launcher: `Laucher Order <số>: …`, nối tiếp số cũ. Fix lặt vặt sau một Order thì gom vào số đó: `26.1`, `26.2`… (PO 15/10).
-- Repo Sector: `Order UI <số>: …` khi commit chỉ đụng vùng DMZ (`ui_backend_service/`), dù Launcher hay Sector sửa; nối tiếp số Order cao nhất của repo đó (Crawler `Order UI 132`, Gate `Order UI 46`). Commit đụng ngoài DMZ thì tách riêng.
+- Repo Sector: commit của Claude trong DMZ (`ui_backend_service/`) đặt tên `Order UI <số>: …`, nối tiếp số Order cao nhất của repo đó, để nhìn log biết đất UI. Sector Admin sửa lõi mà phải sửa kèm DMZ (cho test xanh) thì cứ để chung trong Order của họ, không cần tách hay đặt tên riêng (PO 23/10); Claude thấy qua `git log -- ui_backend_service/` và soát ở lượt audit sau.
 - Báo commit, phép kiểm, phần chưa kiểm. Không push khi PO chưa bảo.
 
 Crawler Order 118: UI và CLI board dùng cùng bảng số từ phòng Lỗi & số liệu của Crawler. Từng ô ảnh/video hiện đã sinh/tổng (nguồn không tự khai: đã thấy+), số chờ/đáy, scout cuối/thêm/độ lệch tổng, run cuối và hôm nay/7 ngày, [E] theo loại, giờ nghỉ/chờ. Sidebar mỗi loại hiện đủ 7 câu cùng thời gian bắt đầu/kết thúc. Tổng/giờ cũ chưa có bằng chứng giữ chưa biết; không lấy giờ nâng cấp làm lịch sử. CLI chỉ còn scout/run/board/orders.

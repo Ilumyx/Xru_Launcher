@@ -1,6 +1,8 @@
 # Tố giác
 
-Lỗi lõi mà UI thấy khi audit nhưng không được sửa (ngoài DMZ `ui_backend_service/`). PO ném từng mục cho Sector Admin của nhà đó; làm xong thì Sector Admin xoá mục khỏi file này. Cập nhật 23/10/2026. Đã xong: Gate Order 55 (tìm bằng SQL, xoá đường chụp cả lane, trần 250), Crawler Order 134 (tem sổ).
+Hộp thư hai chiều giữa UI (Claude) và Sector Admin. UI ghi lỗi lõi thấy khi audit nhưng không được sửa (ngoài DMZ `ui_backend_service/`). Sector Admin làm xong thì ghi ngay dưới mục ("xong, Order N, dùng hàm X") hoặc xoá mục; Claude đọc file đầu mỗi phiên và kiểm hàng. PO chỉ cần báo "có hàng".
+
+Luật DMZ: Sector Admin sửa lõi mà phải sửa kèm `ui_backend_service/` cho test xanh thì cứ sửa, để chung trong Order của mình; Claude soát lại qua `git log -- ui_backend_service/`. Cập nhật 23/10/2026. Đã xong: Gate Order 55 (tìm bằng SQL, xoá đường chụp cả lane, trần 250), Crawler Order 134 (tem sổ).
 
 ## Crawler
 
