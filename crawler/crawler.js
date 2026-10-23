@@ -181,17 +181,18 @@
       failures.length?error('cr_err_missing',failures.join(' · ')):error();disconnected=!data.complete;
     } catch(e) { disconnected=true;error('cr_err_down_read',e.message); }
   }
-  window.addEventListener('focus',()=>{if(backend)readBoard();});
-  let polling=false;
+  // Hỏi tem sổ (~1ms) 5 giây một lần và khi quay lại cửa sổ; tem đổi (hoặc vừa mất kết nối) mới đọc lại cả bảng.
+  let polling=false, seen=null;
   async function health() {
     if(!backend||polling||document.hidden)return;polling=true;
-    try { const r=await fetch(backend+'/api/health',{cache:'no-store',signal:AbortSignal.timeout(3000)});if(!r.ok)throw Error('HTTP '+r.status);if(disconnected)await readBoard(); }
+    try { const r=await fetch(backend+'/api/stamp',{cache:'no-store',signal:AbortSignal.timeout(3000)}),tem=await r.json();if(!r.ok&&!tem.errors)throw Error('HTTP '+r.status);if(disconnected||!tem.stamp||tem.stamp!==seen){seen=tem.stamp;await readBoard();} }
     catch(e) {disconnected=true;error('cr_err_down');}
     finally {polling=false;}
   }
+  window.addEventListener('focus',health);
   setInterval(health,5000);
   // Đổi ngôn ngữ: chữ do JS vẽ (lọc, số, câu lỗi) vẽ lại theo; chữ tĩnh trong HTML do kit/i18n lo.
   window.addEventListener('xru-lang-applied',()=>{paintError();render();});
   paintError();
-  fetch('/ui-config',{cache:'no-store'}).then(r=>r.json()).then(config=>{backend=config.crawler_backend;readBoard();}).catch(()=>error('cr_err_config'));
+  fetch('/ui-config',{cache:'no-store'}).then(r=>r.json()).then(config=>{backend=config.crawler_backend;health();}).catch(()=>error('cr_err_config'));
 })();

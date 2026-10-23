@@ -32,7 +32,7 @@ Gốc của cả họ: **làm việc nặng cho từng món, ở chỗ chỉ c�
 - Triệu chứng: màn Crawler trắng số, 5055 kẹt 99% CPU suốt 10 phút.
 - Gốc: `local_registrar/board_view.py` dựng lại tập `born | rejected` (12.126 món) bên trong vòng lặp 43 cụm × 2 loại × 27.113 link, khoảng 2,35 triệu lần. Kho 4 món, 60 link thì không ai thấy.
 - Sửa: Crawler Order 131, dựng tập và gom số một lần trước vòng lặp. Còn 0,25 giây (đọc sổ 0,17 + dựng bảng 0,08).
-- Audit 21/10 và trả nợ (Crawler Order 133, 22/10): bỏ import Tổng đài khỏi `local_registrar`, đọc gọn cột DIRC, gom `link_pages` bằng SQL, đóng kết nối, test lõi hết dính UI. Còn 0,1 giây. Vẫn bê 27k link + 12k món lên Python (cần đối chiếu hai sổ) nên còn tăng tuyến tính: ước khoảng 1 giây ở 120k món, chưa đo.
+- Audit 21/10 và trả nợ (Crawler Order 133, 22/10): bỏ import Tổng đài khỏi `local_registrar`, đọc gọn cột DIRC, gom `link_pages` bằng SQL, đóng kết nối, test lõi hết dính UI. Còn 0,1 giây. Vẫn bê 27k link + 12k món lên Python (cần đối chiếu hai sổ) nên còn tăng tuyến tính: ước khoảng 1 giây ở 120k món, chưa đo. Màn không còn đọc lại bảng mỗi lần quay lại cửa sổ: hỏi tem sổ (Crawler Order 134, khoảng 1ms) 5 giây một lần, tem đổi mới đọc bảng (Order UI 135, 23/10).
 
 ## Ca 4 — Gate: mọi request bê cả lane (audit 21/10)
 

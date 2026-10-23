@@ -78,7 +78,7 @@ PO 22/10: không phím chuyển màn, không ESC về sảnh (bấm rail là xon
 
 ## Còn mở
 
-- Audit đầu trắng 22/10: ba vòng xong (Laucher Order 36–38). Việc lõi UI thấy mà không được sửa nằm ở [TO_GIAC.md](TO_GIAC.md) (Gate: tìm quét cả DIRC, đường chụp cả lane, trần `limit` 100; Crawler: tem sổ để màn tự cập nhật số). Lõi Crawler có tem thì UI mở `GET /api/stamp` và cho màn hỏi tem 5 giây một lần.
+- Audit đầu trắng 22/10: ba vòng xong (Laucher Order 36–38). Sector Admin đã trả phần lõi 23/10: Gate Order 55 (tìm bằng SQL, xoá đường chụp cả lane, trần `limit` 250 → tường ảnh đọc một lượt), Crawler Order 134 (tem sổ → `GET /api/stamp`, màn Crawler hỏi tem 5 giây một lần, tem đổi mới đọc lại bảng). Còn lại ở [TO_GIAC.md](TO_GIAC.md).
 - Label video: Backend trả 400 mọi request vì `sync_foundry_release` mở đường DB Foundry cũ. Không vá; chờ Foundry/Label xây lại theo 3 tầng.
 - Bản đồ UI (22/10): PO muốn UI có bản đồ như kiến trúc. Gom câu PO đã nói thành `UI_MAP.md` (mỗi màn một dòng mục đích, ngân sách thông tin ô/cột phải, hình mẫu, luật cứng) khi PO có hứng.
 - Array (Babel, 22/10): `array/` là mockup Blind test đọc bản chụp tĩnh 04/10 (`data/array_snapshot.js`, sinh bằng `tools/array_snapshot.py`). Giữ làm bản vẽ tới khi Babel có `ui_backend_service/`; lúc nối thật thì màn gọi HTTP và xoá bản chụp cùng tool. Atlas chưa có repo trên laptop.

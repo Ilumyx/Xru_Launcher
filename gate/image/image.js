@@ -8,8 +8,8 @@
     source: params.get('source') || '', sort: params.get('sort') === 'newest' ? 'newest' : 'oldest',
     query: params.get('q') || '', page: Math.max(1, +params.get('page') || 1), selected: params.get('selected'),
   };
-  // Trang 250 ảnh (PO 22/10): đủ lướt bắt pattern, máy không gồng. Lõi trả tối đa 100 món mỗi lượt nên một trang đọc 3 lượt song song.
-  const SIZE = 250, CHUNK = 100;
+  // Trang 250 ảnh (PO 22/10): đủ lướt bắt pattern, máy không gồng. Lõi trả tối đa 250 món một lượt (Gate Order 55): một trang một lượt.
+  const SIZE = 250;
   let backend, page, selected, pending = false, reading = false, writing = false, readId = 0, detailId = 0;
   const drafts = new Map();
   const search = document.querySelector('.side-search input');
@@ -126,24 +126,17 @@
     $('sort_filter').value = view.sort;
     controls();
   }
-  const query = (offset) => '/api/queue?' + new URLSearchParams({state:view.state, sort:view.sort, source:view.source, q:view.query, limit:CHUNK, offset});
-  // Lõi kẹp offset cuối về bội số 100; cắt phần đầu thừa để món bắt đầu đúng chỗ xin.
-  async function chunk(at) { const r = await json(query(at)); return {...r, items:r.items.slice(Math.max(0, at - r.offset))}; }
-  // Đọc một trang: lượt đầu lấy tổng, hai lượt sau song song. Trang vượt cuối (món vừa rời lane) thì lùi về trang cuối.
+  const query = (offset) => '/api/queue?' + new URLSearchParams({state:view.state, sort:view.sort, source:view.source, q:view.query, limit:SIZE, offset});
+  // Đọc một trang. Trang vượt cuối (món vừa rời lane) thì lõi trả trang cuối; số trang theo offset lõi trả.
   // preferred: id muốn chọn; không còn trên trang thì chọn ô số slot (kẹp ở ô cuối).
   async function load(preferred = view.selected, slot = 0) {
     if (writing) return;
     saveDraft(); reading=true; pending=true; const id=++readId; ++detailId; controls();
     if (!backend) return;
     try {
-      let base = (view.page - 1) * SIZE, result = await chunk(base);
-      if (result.total && base >= result.total) { view.page = Math.ceil(result.total / SIZE); base = (view.page - 1) * SIZE; result = await chunk(base); }
-      const rest = [];
-      for (let at = base + CHUNK; at < Math.min(result.total, base + SIZE); at += CHUNK) rest.push(chunk(at));
-      for (const next of await Promise.all(rest)) result.items.push(...next.items);
-      result.items = result.items.slice(0, SIZE);
+      const result = await json(query((view.page - 1) * SIZE));
       if (id !== readId) return;
-      page={...result, offset:base}; reading=false;
+      view.page = Math.floor(result.offset / SIZE) + 1; page = result; reading=false;
       paintPage(); notice('');
       const index = page.items.findIndex(item=>item.xru_id===preferred);
       if (page.items.length) await select(index>=0 ? index : Math.min(slot, page.items.length-1));
