@@ -1,7 +1,8 @@
 // Tường ô nhỏ chung (kit/wall/wall.css). Màn tự đọc Backend; tường chỉ vẽ ô của một trang, đánh dấu ô đang chọn,
 // lật trang, và (tuỳ màn) rê chuột chờ một nhịp mới phát video không tiếng trong ô.
-//   const wall = XRU_WALL({ grid, pager, next, size, thumb(item, width), media?(item), end?(item), onSelect(index, double), onPage(page) });
+//   const wall = XRU_WALL({ grid, pager, next, size, thumb(item, width), media?(item), end?(item), tags?(item), onSelect(index, double), onPage(page) });
 //   thumb(item, width): địa chỉ ảnh nhỏ rộng 240 hoặc 480; ô xin cả hai (srcset) để màn nét cao vẫn nét.
+//   tags(item): nhãn ngắn xếp dưới số thứ tự (Gate video: trạm đã flag clip).
 //   wall.render(items, offset, total) · wall.active(id) · wall.columns()
 window.XRU_WALL = (o) => {
   const t = (key) => (window.XRU_I18N ? window.XRU_I18N.t(key) : key);
@@ -20,6 +21,8 @@ window.XRU_WALL = (o) => {
     a.append(img);
     badge(a, 'is-num', String(offset + index + 1).padStart(3, '0'));
     const end = o.end && o.end(item); if (end) badge(a, 'is-end', end);
+    const tags = o.tags ? o.tags(item) : [];
+    if (tags.length) { const box = document.createElement('span'); box.className = 'wall-tags'; tags.forEach((text) => badge(box, 'is-tag', text)); a.append(box); }
     a.addEventListener('click', (e) => { if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return; e.preventDefault(); o.onSelect(index, e.detail === 2); });
     if (o.media) {
       // Một video xem trước cho cả tường: rê chuột ở yên 300ms mới tải, rời chuột thì trả bộ giải mã.

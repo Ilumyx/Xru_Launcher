@@ -31,20 +31,8 @@
       <div class="side-head">
         <div class="side-count"><b class="queue-count">—</b><span>WAITING_PO</span></div>
         <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" placeholder="Tìm tiêu đề, nguồn…" aria-label="Tìm trong danh sách" data-i18n-attr="placeholder:search_title_src,aria-label:search_in_list"></label>
-        <div class="queue-controls">
-          <label class="side-field"><span data-i18n="source_lbl">Nguồn</span><select name="source" aria-label="Filter by source">
-            <option value="" data-total="—">All sources (—)</option>
-
-          </select></label>
-          <label class="side-field"><span data-i18n="sort_lbl">Sắp xếp</span><select name="sort" aria-label="Sort review queue">
-            <option value="oldest" selected data-i18n="sort_oldest">Cũ nhất trước</option><option value="newest"  data-i18n="sort_newest">Mới nhất trước</option><option value="duration_longest"  data-i18n="sort_longest">Dài nhất trước</option><option value="duration_shortest" data-i18n="sort_shortest">Ngắn nhất trước</option><option value="source" data-i18n="sort_source">Nguồn / kênh</option><option value="po_newest" data-i18n="sort_po_newest">PO quyết định: mới nhất</option><option value="po_oldest" data-i18n="sort_po_oldest">PO quyết định: cũ nhất</option>
-          </select></label>
-        </div>
       </div>
-      <div class="side-items"><div class="queue-list">
-
-        <div class="empty-placeholder">Đang đọc Gate video…</div>
-      </div></div>
+      <div class="side-items" id="filters"></div>
       <div class="side-pager wall-pager" id="page-range"></div>
     </aside>
 

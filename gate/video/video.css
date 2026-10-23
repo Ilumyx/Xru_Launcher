@@ -270,14 +270,7 @@ body[data-mode="watch"] .page-foot { margin-top: 16px; }
 
 
 /* Place the existing fragment workspace in the mockup grid. */
-.side-field > span { font-size: 11px; color: var(--fg-dim); }
-.side-item, .gate-tab-btn { text-decoration: none; color: inherit; }
-.side-item > div { min-width: 0; }
-.queue-list { height: 100%; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--m-6) transparent; }
-.side-items { overflow: hidden; }
-.side-item.active { background: var(--m-3); }
-.side-item.active::before { content: ''; position: absolute; left: 6px; top: 15px; width: 4px; height: 4px; border-radius: 50%; background: var(--warn); }
-.side-item.active .n { color: var(--fg); }
+.gate-tab-btn { text-decoration: none; color: inherit; }
 .video-container { width: 100%; height: 100%; }
 .watch-stage .video-container { display: grid; place-items: center; }
 #review-video-player { display: block; width: 100%; height: 100%; object-fit: contain; }

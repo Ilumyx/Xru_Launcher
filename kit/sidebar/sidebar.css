@@ -1,6 +1,7 @@
 /* ==========================================================================
    XRU SIDEBAR LỌC — cột trái của mọi màn duyệt (Gate ảnh, Gate video, sau này Label…)
    Từ trên xuống: số đếm · tìm nhanh · lọc nguồn · sắp xếp · danh sách · phân trang.
+   Màn có tường (Gate video) bỏ danh sách: cột trái chỉ còn các nhóm lọc bấm thẳng (.side-sect + .side-item.is-filter).
    Mỗi dòng danh sách: số thứ tự · tiêu đề · "nguồn · một thông tin phụ".
    Khung, bề ngang, tay kéo, đóng/mở: kit/frame.
    ========================================================================== */
@@ -103,3 +104,13 @@
 .side-item.is-child .n { display: none; }
 .side-item.is-child { grid-template-columns: minmax(0, 1fr); }
 .side-item.is-all.is-active::before, .side-item.is-group.is-active::before { top: 15px; }
+
+/* Nhóm lọc bấm thẳng (Gate video): tiêu đề nhóm, dòng gọn, số đếm bên phải */
+.side-sect { padding: 16px 16px 6px; font: 500 10px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--fg-faint); }
+.side-item.is-filter { grid-template-columns: 26px minmax(0, 1fr) auto; align-items: baseline; padding: 6px 16px; border-bottom: 0; }
+.side-item.is-filter.is-child { grid-template-columns: 26px minmax(0, 1fr) auto; padding-left: 30px; }
+.side-item.is-filter.is-child .n { display: block; }
+.side-item.is-filter.is-active::before { top: 13px; }
+.side-item.is-filter .t { min-width: 0; }
+.side-item.is-filter .c { font: 11px var(--font-mono); color: var(--fg-dim); }
+.side-item.is-filter.is-active .t { color: var(--fg-strong); }
