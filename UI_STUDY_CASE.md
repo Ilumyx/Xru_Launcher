@@ -1,6 +1,6 @@
 # UI Study Case
 
-Những lần UI XRU hẹo, vì sao, sửa ra sao. Ai dựng màn mới hoặc Backend mới thì đọc file này trước khi viết dòng đầu. Cập nhật: 22/10/2026 (tối).
+Những lần UI XRU hẹo, vì sao, sửa ra sao. Ai dựng màn mới hoặc Backend mới thì đọc file này trước khi viết dòng đầu. Cập nhật: 23/10/2026.
 
 ## Bệnh chung
 
@@ -48,6 +48,14 @@ Gốc của cả họ: **làm việc nặng cho từng món, ở chỗ chỉ c�
 - Đo lại: 100 ảnh bìa lần đầu 11 giây (chỉ một lần mỗi clip), từ lần sau 0,3 giây; tường hiện đủ ô đang nhìn sau 0,32 giây; đổi lane dưới 0,13 giây.
 - Bài học: ảnh nhỏ dựng một lần, cất lại; lưới chỉ tải ô đang nhìn thấy; phần tử nặng (video) chỉ dựng khi người dùng chạm tới.
 
+## Ca 6 — Gate: bấm quyết vẫn khựng, lần thứ ba (23/10)
+
+- Triệu chứng: bấm Accept liên tục thấy delay. Đo: ghi 18ms, đọc lại 6ms, lõi không chậm.
+- Gốc (luật 3 lần: 22/10 quay lại cửa sổ vẽ lại cả màn, 23/10 tường dựng lại 100 ảnh, 23/10 quyết xong chờ lõi rồi đọc lại cả trang): màn coi mỗi thay đổi là "đọc lại cả trang, vẽ lại cả trang", và khoá nút chờ lõi trả lời. Vá từng chỗ thì chỗ khác vẫn vẽ lại.
+- Sửa (Laucher Order 39.3–39.4): tường giữ ô theo id, chỉ dời chỗ. Quyết là đi tiếp ngay: món rời trang tại chỗ, lệnh ghi xếp hàng gửi ngầm từng lệnh một, gửi hết mới đọc lại lặng lẽ (không khoá nút, không chọn lại món đang xem). Ghi lỗi thì đọc lại về đúng món đó, nháp giữ, báo lỗi.
+- Đo lại: ba lần bấm A cách nhau 40ms, mỗi lần màn đi tiếp trong 18–31ms; lõi khớp số (76 → 73).
+- Bài học: màn giữ trang trong tay và sửa tại chỗ; phần lặp vẽ theo id; đọc lại lõi để đối số chứ không để chờ.
+
 ## Ca kèm — Label video: việc nặng trước mọi request (19/10)
 
 - Backend Label gọi `sync_foundry_release` trước mọi request, kể cả từng mẩu video và từng thumbnail. Video phát là hàng chục request mẩu, mỗi mẩu đều kéo theo đồng bộ sổ.
@@ -69,3 +77,4 @@ Gốc của cả họ: **làm việc nặng cho từng món, ở chỗ chỉ c�
 7. Không vá chậm bằng cache hay tải sau ở UI. Gốc ở lõi thì nói ngay "cần Order", chịu chậm thật còn hơn nhanh giả.
 8. Có test tốc độ trên kho giả lớn (từ 100k món): API màn chính dưới 1 giây.
 9. Soát một màn: đo thời gian API trên kho thật rồi mới báo đạt.
+10. Thao tác của người duyệt không chờ lõi: màn đổi tại chỗ ngay, lệnh ghi gửi ngầm theo hàng, lỗi thì quay lại và báo. Phần lặp (ô, dòng) vẽ theo id; đọc lại lõi chỉ để đối số, không xoá dựng lại.

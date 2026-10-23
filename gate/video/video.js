@@ -3,7 +3,7 @@
   const $ = id => document.getElementById(id), p = new URLSearchParams(location.search);
   const lanes = ['WAITING_PO','MACHINE_FLAGGED','DETAINED','ACCEPT_APPROVED','PURGE_APPROVED'];
   const view = {state:lanes.includes(p.get('state'))?p.get('state'):'WAITING_PO',source:p.get('source')||'',platform:p.get('platform')||'',reason:p.get('reason')||'',sort:p.get('sort')||'oldest',q:p.get('q')||'',page:Math.max(1,+p.get('page')||1),mode:p.get('view')==='grid'?'grid':'watch',selected:p.get('selected')};
-  let backend, page, selected, reading=true, writing=false, pending=false, readId=0, detailId=0;
+  let backend, page, selected, reading=true, pending=false, flushing=null, readId=0, detailId=0;
   const drafts=new Map(), list=$('queue-list'), search=document.querySelector('.side-search input');
   // Sort theo lane: hai sort "PO quyết định" chỉ có nghĩa ở lane đã quyết.
   const sorts=()=>[['oldest','sort_oldest'],['newest','sort_newest'],['duration_longest','sort_longest'],['duration_shortest','sort_shortest'],...(['DETAINED','ACCEPT_APPROVED','PURGE_APPROVED'].includes(view.state)?[['po_newest','sort_po_newest'],['po_oldest','sort_po_oldest']]:[])];
@@ -17,9 +17,8 @@
     // Hai nút rail video mang theo bộ lọc hiện tại; chữa ở menu XRU_RAILS rồi báo rail vẽ lại (rail tự vẽ lại cả khi đổi ngôn ngữ).
     let changed=false;for(const entry of window.XRU_RAILS.gate.groups[0])if(['video','watch'].includes(entry.key)){const target=new URLSearchParams(q);target.set('view',entry.key==='video'?'grid':'watch');const href='/gate/video/?'+target;if(entry.href!==href){entry.href=href;changed=true;}}
     if(changed)window.dispatchEvent(new Event('xru-rail-changed'));}
-  function controls(){const valid=selected&&!reading&&!writing&&selected.lane===view.state;
+  function controls(){const valid=selected&&!reading&&selected.lane===view.state;
     document.querySelectorAll('#decision-controls button,#decision-controls input,#decision-controls textarea').forEach(e=>e.disabled=!valid);
-    document.querySelectorAll('[data-state],.side-search input').forEach(e=>e.disabled=writing);
     const skip=$('skip-review-item');if(skip)skip.disabled=!valid||page.total<2;
     document.querySelectorAll('[data-step]').forEach(e=>e.disabled=!valid);
   }
@@ -66,7 +65,7 @@
     renderPlayer(item);paintHints();controls();sync();
   }
   function clear(){selected=null;++detailId;stopPlayer();paintHints();$('decision-controls').replaceChildren();document.querySelectorAll('.related-videos,.po-note-display').forEach(e=>e.remove());document.querySelector('.insp-tag').textContent='';['insp-title','insp-cap','insp-xid','insp-src','insp-res','insp-lane','insp-num'].forEach(id=>$(id).textContent='');controls();}
-  async function select(index){if(reading||writing||!page?.items[index])return;const id=++detailId;const item=page.items[index];paintDetail({...item,lane:view.state},index);
+  async function select(index){if(reading||!page?.items[index])return;const id=++detailId;const item=page.items[index];paintDetail({...item,lane:view.state},index);
     try{const detail=await json('/api/assets/'+encodeURIComponent(item.xru_id));if(id!==detailId)return;if(detail.item.lane!==view.state){notice('Clip đã chuyển lane. Đang đọc lại…');await load();return;}paintDetail(detail.item,index);
       if(view.state==='MACHINE_FLAGGED'&&detail.related.length){const related=document.createElement('div');related.className='related-videos';related.innerHTML='<div class="insp-label">RELATED VIDEOS</div>'+detail.related.map(row=>`<a href="#" class="dupe-link" data-related="${esc(row.xru_id)}" data-lane="${row.lane}">${esc(row.xru_id)}</a> <span class="state-chip">${row.lane}</span>`).join('');document.querySelector('.evidence-grid').append(related);}
     }catch(e){if(id!==detailId)return;reading=true;notice('Backend Gate video đang tắt hoặc đọc lỗi. '+e.message);controls();}
@@ -74,9 +73,9 @@
   // Tường 100 clip một trang (kit/wall): ô là ảnh nhỏ 240px, rê chuột chờ một nhịp mới phát không tiếng.
   const wall=window.XRU_WALL({grid:$('video-gallery'),pager:$('page-range'),next:$('video-next'),size:100,
     thumb:(item,width)=>backend+'/thumb/'+encodeURIComponent(item.xru_id)+'?w='+width,media:item=>media(item.xru_id),end:item=>time(item.duration_seconds),tags:item=>(item.gate_flag_reason||'').split(' + ').filter(Boolean),
-    onSelect:index=>select(index),onPage:to=>{if(writing)return;view.page=to;load(null);}});
+    onSelect:index=>select(index),onPage:to=>{view.page=to;load(null);}});
   // Sidebar: nhóm lọc bấm thẳng (kit/sidebar/filters.js) ở trên, danh sách clip của trang ở dưới. Số đếm do lõi trả.
-  const filters=window.XRU_FILTERS($('filters'),change=>{if(writing)return;Object.assign(view,change);view.page=1;load();});
+  const filters=window.XRU_FILTERS($('filters'),change=>{Object.assign(view,change);view.page=1;load();});
   function paintFilters(){if(!page)return;const t=window.XRU_I18N.t,sections=[];
     if(view.state==='MACHINE_FLAGGED'&&page.reasons?.length)sections.push({key:'flag',title:t('flag_lbl'),rows:[{pick:{reason:''},name:t('all_flags'),total:page.counts[view.state],on:!view.reason,all:true},...page.reasons.map(r=>({pick:{reason:r.reason},name:r.reason,total:r.total,on:view.reason===r.reason}))]});
     sections.push({key:'source',title:t('source_lbl'),tree:{all:t('all_sources'),total:page.counts[view.state],sources:page.sources,platform:view.platform,source:view.source}});
@@ -89,28 +88,47 @@
     document.querySelectorAll('[data-state]').forEach(b=>{b.classList.toggle('is-active',b.dataset.state===view.state);b.querySelector('.count').textContent=n(page.counts[b.dataset.state]);});
     paintFilters();controls();
   }
-  async function load(preferred=view.selected,locate=false,slot=0){if(writing||!backend)return;reading=true;pending=true;const id=++readId;++detailId;controls();if(!sorts().some(([key])=>key===view.sort))view.sort='oldest';const q=new URLSearchParams({state:view.state,platform:view.platform,source:view.source,reason:view.reason,q:view.q,sort:view.sort,limit:100,offset:(view.page-1)*100});if(locate&&preferred)q.set('selected',preferred);
+  async function load(preferred=view.selected,locate=false,slot=0){if(!backend)return;if(flushing)await flushing;reading=true;pending=true;const id=++readId;++detailId;controls();if(!sorts().some(([key])=>key===view.sort))view.sort='oldest';const q=new URLSearchParams({state:view.state,platform:view.platform,source:view.source,reason:view.reason,q:view.q,sort:view.sort,limit:100,offset:(view.page-1)*100});if(locate&&preferred)q.set('selected',preferred);
     try{const result=await json('/api/queue?'+q);if(id!==readId)return;page=result;view.page=Math.floor(result.offset/result.limit)+1;reading=false;paintPage();notice('');if(page.items.length){const at=page.items.findIndex(row=>row.xru_id===preferred);await select(at>=0?at:Math.min(slot,page.items.length-1));}else{clear();notice('Không có clip khớp bộ lọc.');sync();}}
     catch(e){if(id!==readId)return;reading=true;notice('Backend Gate video đang tắt hoặc đọc lỗi. Số đang hiện chưa được cập nhật. '+e.message);controls();}finally{if(id===readId)pending=false;}
   }
-  async function act(action){if(!selected||reading||writing)return;const item=selected,at=page.items.findIndex(x=>x.xru_id===item.xru_id);writing=true;controls();
-    try{const d=drafts.get(item.xru_id)||item;await json('/api/assets/'+encodeURIComponent(item.xru_id)+'/decisions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,expected_lane:item.lane,po_note:d.po_note||null,noise_present:!!d.noise_present,watermark_present:!!d.watermark_present})});drafts.delete(item.xru_id);writing=false;await load(null,false,at);}
-    catch(e){writing=false;notice('Chưa xác nhận lưu. Ghi chú và dấu chọn được giữ. '+e.message);controls();}
+  // Quyết là đi tiếp ngay (PO 23/10): clip rời trang tại chỗ, lệnh ghi xếp hàng gửi ngầm từng lệnh một; gửi hết mới đọc lại lõi một lượt
+  // cho khớp số và lấp chỗ trống cuối trang. Ghi lỗi thì bỏ các lệnh sau, đọc lại về đúng clip đó, nháp vẫn giữ.
+  const outbox=[];
+  function act(action){if(!selected||reading)return;const item=selected,at=page.items.findIndex(x=>x.xru_id===item.xru_id);if(at<0)return;
+    const d=drafts.get(item.xru_id)||item;outbox.push({item,body:{action,expected_lane:item.lane,po_note:d.po_note||null,noise_present:!!d.noise_present,watermark_present:!!d.watermark_present}});
+    ++readId;page.items.splice(at,1);page.total--;page.counts[view.state]--;paintPage();
+    if(page.items.length)select(Math.min(at,page.items.length-1));else clear();
+    if(!flushing)flushing=flush();
   }
-  function step(delta,wrap=false){if(!selected||reading||writing)return;const at=page.items.findIndex(row=>row.xru_id===selected.xru_id);if(wrap&&delta>0&&page.offset+at===page.total-1){view.page=1;load(null);return;}if(delta>0&&at===page.items.length-1&&page.offset+page.items.length<page.total){view.page++;load(null);return;}if(delta<0&&at===0&&page.offset){view.page--;load(null,false,Infinity);return;}select(Math.max(0,Math.min(page.items.length-1,at+delta)));}
+  async function flush(){
+    while(outbox.length){const job=outbox[0];
+      try{await json('/api/assets/'+encodeURIComponent(job.item.xru_id)+'/decisions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(job.body)});drafts.delete(job.item.xru_id);outbox.shift();}
+      catch(e){outbox.length=0;flushing=null;await load(job.item.xru_id,true);notice('Chưa xác nhận lưu. Ghi chú và dấu chọn được giữ. '+e.message);return;}}
+    flushing=null;await refresh();
+  }
+  // Đọc lại lặng lẽ: không khoá nút, không chọn lại nếu clip đang xem còn trên trang; bấm quyết trong lúc đọc thì bỏ kết quả này.
+  async function refresh(){const id=++readId;const q=new URLSearchParams({state:view.state,platform:view.platform,source:view.source,reason:view.reason,q:view.q,sort:view.sort,limit:100,offset:(view.page-1)*100});
+    try{const result=await json('/api/queue?'+q);if(id!==readId||outbox.length)return;page=result;view.page=Math.floor(result.offset/result.limit)+1;paintPage();
+      const at=selected?page.items.findIndex(row=>row.xru_id===selected.xru_id):-1;
+      if(at>=0){wall.active(selected.xru_id);list.querySelectorAll('[data-id]').forEach(e=>e.classList.toggle('is-active',e.dataset.id===selected.xru_id));$('insp-num').textContent=`${String(page.offset+at+1).padStart(3,'0')} / ${page.total}`;}
+      else if(page.items.length)await select(0);else{clear();notice('Không có clip khớp bộ lọc.');}}
+    catch{/* lượt đọc thường sau sẽ báo lỗi */}
+  }
+  function step(delta,wrap=false){if(!selected||reading)return;const at=page.items.findIndex(row=>row.xru_id===selected.xru_id);if(wrap&&delta>0&&page.offset+at===page.total-1){view.page=1;load(null);return;}if(delta>0&&at===page.items.length-1&&page.offset+page.items.length<page.total){view.page++;load(null);return;}if(delta<0&&at===0&&page.offset){view.page--;load(null,false,Infinity);return;}select(Math.max(0,Math.min(page.items.length-1,at+delta)));}
   document.addEventListener('input',e=>{if(e.target.closest('#decision-controls'))remember();});
   document.addEventListener('change',e=>{if(e.target.closest('#decision-controls'))remember();});
   window.addEventListener('xru-lang-applied',paintFilters);
   let timer;search.value=view.q;search.addEventListener('input',()=>{clearTimeout(timer);view.q=search.value.trim();view.page=1;++readId;reading=true;pending=false;controls();timer=setTimeout(()=>load(),180);});
   search.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();search.value='';view.q='';view.page=1;load();search.blur();}e.stopPropagation();});
   document.addEventListener('click',e=>{const t=e.target.closest('[data-state],[data-action],[data-step],[data-player],[data-related],[data-note-token],#skip-review-item,.rail a');if(!t)return;
-    if(t.matches('.rail a')&&new URL(t.href).pathname==='/gate/video/'){if(e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;e.preventDefault();if(writing)return;view.mode=new URL(t.href).searchParams.get('view')==='grid'?'grid':'watch';mode();return;}
+    if(t.matches('.rail a')&&new URL(t.href).pathname==='/gate/video/'){if(e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;e.preventDefault();view.mode=new URL(t.href).searchParams.get('view')==='grid'?'grid':'watch';mode();return;}
     if(t.dataset.state){view.state=t.dataset.state;view.source=view.platform=view.reason='';view.page=1;view.selected=null;load();}
     if(t.dataset.action)act(t.dataset.action);
     if(t.dataset.step)step(+t.dataset.step);
     if(t.id==='skip-review-item')step(1,true);
     if(t.dataset.noteToken)token(t.dataset.noteToken);
-    if(t.dataset.related){e.preventDefault();if(writing)return;view.state=t.dataset.lane;view.source=view.platform=view.reason='';view.q='';search.value='';view.page=1;load(t.dataset.related,true);}
+    if(t.dataset.related){e.preventDefault();view.state=t.dataset.lane;view.source=view.platform=view.reason='';view.q='';search.value='';view.page=1;load(t.dataset.related,true);}
     const v=$('review-video-player');if(!v)return;
     if(t.dataset.player==='play')play();if(t.dataset.player==='mute'){v.muted=!v.muted;t.textContent=v.muted?'🔇':'🔊';}if(t.dataset.player==='rate'){v.playbackRate=v.playbackRate>=2?.5:v.playbackRate+.5;t.textContent=v.playbackRate+'×';}if(t.dataset.player==='fullscreen')v.requestFullscreen().catch(()=>{});
     if(t.dataset.player==='seek'&&Number.isFinite(v.duration)){const r=t.getBoundingClientRect();v.currentTime=Math.max(0,Math.min(v.duration,v.duration*(e.clientX-r.left)/r.width));}
@@ -120,8 +138,8 @@
     if(['1','2'].includes(key)){const cb=$(key==='1'?'noise-present':'watermark-present');if(cb){e.preventDefault();cb.click();}return;}if(['3','4'].includes(key)){e.preventDefault();token(key==='3'?'EVENT':'CAUTION');return;}if(key==='e'&&$('po-note')){e.preventDefault();$('po-note').focus();return;}
     const button=key==='s'?$('skip-review-item'):document.querySelector('.btn-'+({a:'accept',d:'detain',p:'purge',r:'rescue'}[key]||'missing'));if(button){e.preventDefault();button.click();}
   });
-  window.addEventListener('focus',()=>{if(reading&&backend&&!writing&&!pending)load();});
-  setInterval(()=>{if(reading&&!pending&&!writing&&!document.hidden&&backend)load();},5000);
-  setInterval(async()=>{if(!backend||pending||writing||document.hidden)return;try{await json('/api/health');}catch(e){reading=true;controls();notice('Backend Gate video đang tắt. Số đang hiện chưa được cập nhật.');}},5000);
+  window.addEventListener('focus',()=>{if(reading&&backend&&!pending)load();});
+  setInterval(()=>{if(reading&&!pending&&!document.hidden&&backend)load();},5000);
+  setInterval(async()=>{if(!backend||pending||document.hidden)return;try{await json('/api/health');}catch(e){reading=true;controls();notice('Backend Gate video đang tắt. Số đang hiện chưa được cập nhật.');}},5000);
   mode();controls();fetch('/ui-config',{cache:'no-store'}).then(r=>r.json()).then(c=>{backend=c.video_backend;load(view.selected,!!view.selected&&!p.has('page'));}).catch(()=>notice('Không đọc được cấu hình UI.'));
 })();

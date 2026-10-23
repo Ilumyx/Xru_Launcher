@@ -10,7 +10,7 @@
   };
   // Trang 250 ảnh (PO 22/10): đủ lướt bắt pattern, máy không gồng. Lõi trả tối đa 250 món một lượt (Gate Order 55): một trang một lượt.
   const SIZE = 250;
-  let backend, page, selected, pending = false, reading = false, writing = false, readId = 0, detailId = 0;
+  let backend, page, selected, pending = false, reading = false, flushing = null, readId = 0, detailId = 0;
   const drafts = new Map();
   // Sort theo lane: hai sort "PO quyết định" chỉ có nghĩa ở lane đã quyết.
   const sorts = () => [['oldest','sort_oldest'],['newest','sort_newest'],...(view.state === 'WAITING_PO' ? [] : [['po_newest','sort_po_newest'],['po_oldest','sort_po_oldest']])];
@@ -29,7 +29,7 @@
     history.replaceState(null, '', `/gate/image/?${p}`);
   }
   function controls() {
-    const valid = selected && !reading && !writing && selected.state === view.state;
+    const valid = selected && !reading && selected.state === view.state;
     for (const button of actions) {
       const enabledIn = ['ACCEPT', 'DETAIN'].includes(button.dataset.act) ? 'WAITING_PO' : 'DETAINED';
       button.hidden = enabledIn !== view.state && button.dataset.act !== 'PURGE';
@@ -39,7 +39,6 @@
     $('po_note_input').hidden = view.state !== 'WAITING_PO';
     $('insp-note').hidden = view.state === 'WAITING_PO';
     $('readonly').hidden = !selected || ['WAITING_PO','DETAINED'].includes(view.state);
-    for (const control of document.querySelectorAll('[data-state], .side-search input')) control.disabled = writing;
   }
   function clearSelection() {
     saveDraft(); selected = null; ++detailId;
@@ -72,7 +71,7 @@
     if ($('peek').classList.contains('is-open')) openPeek();
   }
   async function select(index) {
-    if (!page || reading || writing || !page.items[index]) return;
+    if (!page || reading || !page.items[index]) return;
     saveDraft(); const id = ++detailId;
     paintSelection(page.items[index], index);
     // Queue already contains light detail; confirm current persisted state separately.
@@ -113,7 +112,7 @@
     grid: $('tiles'), pager: $('page-count'), next: $('tiles-end'), size: SIZE,
     thumb: (item, width) => backend+'/thumb/'+encodeURIComponent(item.xru_id)+'?w='+width,
     onSelect: (index, double) => { select(index); if (double) openPeek(); },
-    onPage: n => { if (writing) return; view.page = n; view.selected = null; load(); },
+    onPage: n => { view.page = n; view.selected = null; load(); },
   });
   function paintPage() {
     rows.replaceChildren(); page.items.forEach(paintRow);
@@ -123,7 +122,7 @@
     paintFilters(); controls();
   }
   // Nhóm lọc bấm thẳng (kit/sidebar/filters.js) nằm trên danh sách: nguồn dạng cây nền tảng → kênh, sắp xếp theo lane.
-  const filters = window.XRU_FILTERS($('filters'), change => { if (writing) return; Object.assign(view, change); view.page = 1; load(); });
+  const filters = window.XRU_FILTERS($('filters'), change => { Object.assign(view, change); view.page = 1; load(); });
   function paintFilters() {
     if (!page) return; const t = window.XRU_I18N.t;
     filters.render([
@@ -136,7 +135,7 @@
   // Đọc một trang. Trang vượt cuối (món vừa rời lane) thì lõi trả trang cuối; số trang theo offset lõi trả.
   // preferred: id muốn chọn; không còn trên trang thì chọn ô số slot (kẹp ở ô cuối).
   async function load(preferred = view.selected, slot = 0) {
-    if (writing) return;
+    if (flushing) await flushing;
     if (!sorts().some(([key]) => key === view.sort)) view.sort = 'oldest';
     saveDraft(); reading=true; pending=true; const id=++readId; ++detailId; controls();
     if (!backend) return;
@@ -154,15 +153,37 @@
       notice('Backend Gate ảnh đang tắt hoặc đọc lỗi. Số đang hiện, nếu có, chưa được cập nhật. '+error.message);
     } finally { if (id === readId) pending=false; }
   }
-  async function act(action) {
-    if (!selected || reading || writing) return;
+  // Quyết là đi tiếp ngay (PO 23/10): ảnh rời trang tại chỗ, lệnh ghi xếp hàng gửi ngầm từng lệnh một; gửi hết mới đọc lại lõi một lượt
+  // cho khớp số và lấp chỗ trống cuối trang. Ghi lỗi thì bỏ các lệnh sau, đọc lại về đúng ảnh đó, ghi chú vẫn giữ.
+  const outbox = [];
+  function act(action) {
+    if (!selected || reading) return;
     const button=actions.find(button=>button.dataset.act===action); if (!button || button.disabled) return;
-    saveDraft(); const item=selected; const index=page.items.findIndex(row=>row.xru_id===item.xru_id);
-    writing=true; controls();
+    saveDraft(); const item=selected; const index=page.items.findIndex(row=>row.xru_id===item.xru_id); if (index < 0) return;
+    outbox.push({item, body:{action, expected_state:item.state, po_note:drafts.get(item.xru_id) ?? item.po_note}});
+    ++readId; page.items.splice(index, 1); page.total--; page.counts[view.state]--; paintPage();
+    if (page.items.length) select(Math.min(index, page.items.length-1)); else clearSelection();
+    if (!flushing) flushing = flush();
+  }
+  async function flush() {
+    while (outbox.length) {
+      const job = outbox[0];
+      try { await json('/api/assets/'+encodeURIComponent(job.item.xru_id)+'/decisions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(job.body)}); drafts.delete(job.item.xru_id); outbox.shift(); }
+      catch (error) { outbox.length = 0; flushing = null; view.selected = job.item.xru_id; await load(job.item.xru_id); notice('Chưa xác nhận lưu. Ghi chú được giữ. '+error.message); return; }
+    }
+    flushing = null; await refresh();
+  }
+  // Đọc lại lặng lẽ: không khoá nút, không chọn lại nếu ảnh đang xem còn trên trang; bấm quyết trong lúc đọc thì bỏ kết quả này.
+  async function refresh() {
+    const id = ++readId;
     try {
-      await json('/api/assets/'+encodeURIComponent(item.xru_id)+'/decisions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action, expected_state:item.state, po_note:drafts.get(item.xru_id) ?? item.po_note})});
-      drafts.delete(item.xru_id); writing=false; await load(null, index);
-    } catch (error) { writing=false; notice('Chưa xác nhận lưu. Ghi chú được giữ. '+error.message); controls(); }
+      const result = await json(query((view.page - 1) * SIZE));
+      if (id !== readId || outbox.length) return;
+      view.page = Math.floor(result.offset / SIZE) + 1; page = result; paintPage();
+      const index = selected ? page.items.findIndex(item=>item.xru_id===selected.xru_id) : -1;
+      if (index >= 0) { for (const node of rows.children) node.classList.toggle('is-active', node.dataset.id === selected.xru_id); wall.active(selected.xru_id); $('insp-num').textContent = `${String(page.offset + index + 1).padStart(3,'0')} / ${page.total}`; }
+      else if (page.items.length) await select(0); else { clearSelection(); notice('Không có ảnh khớp bộ lọc.'); }
+    } catch { /* lượt đọc thường sau sẽ báo lỗi */ }
   }
   function closePeek() { $('peek').classList.remove('is-open'); $('peek').removeAttribute('aria-modal'); }
   function openPeek() { if (!selected || reading) return; $('peek-img').src=backend+'/media/'+encodeURIComponent(selected.xru_id); $('peek-img').alt=selected.title || ''; $('peek').classList.add('is-open'); $('peek').setAttribute('aria-modal','true'); }
@@ -181,7 +202,7 @@
     if (key==='escape' && $('peek').classList.contains('is-open')) {event.preventDefault(); closePeek(); return;}
     if (key==='a' || key==='d') {event.preventDefault(); act(key==='a'?'ACCEPT':'DETAIN'); return;}
     if (key==='enter') {event.preventDefault(); openPeek(); return;}
-    if (!selected || reading || writing || !page) return;
+    if (!selected || reading || !page) return;
     const columns=wall.columns(), moves={arrowright:1,arrowleft:-1,arrowdown:columns,arrowup:-columns};
     if (!(key in moves)) return;
     event.preventDefault(); const index=page.items.findIndex(item=>item.xru_id===selected.xru_id);
@@ -189,8 +210,8 @@
     select(target);
   });
   // Không vẽ lại tường khi cửa sổ được bấm vào; chỉ đọc lại khi Backend từng mất kết nối.
-  window.addEventListener('focus',()=>{if(reading&&backend&&!writing&&!pending)load();});
-  setInterval(()=>{if(reading&&!pending&&!writing&&!document.hidden&&backend)load();},5000);
+  window.addEventListener('focus',()=>{if(reading&&backend&&!pending)load();});
+  setInterval(()=>{if(reading&&!pending&&!document.hidden&&backend)load();},5000);
   controls();
   fetch('/ui-config',{cache:'no-store'}).then(response=>response.json()).then(config=>{backend=config.image_backend; load();}).catch(()=>notice('Không đọc được cấu hình UI. Hãy tải lại trang.'));
 })();
