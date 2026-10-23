@@ -8,50 +8,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/kit/page/page.css"><link rel="stylesheet" href="/kit/sidebar/sidebar.css"><link rel="stylesheet" href="/kit/frame/frame.css"><link rel="stylesheet" href="sources.css">
   <link rel="stylesheet" href="/kit/account/account.css"><script src="/kit/i18n/i18n.js"></script><script src="/kit/account/account.js"></script><script src="/kit/frame/frame.js"></script>
+  <script type="importmap">{"imports":{"preact":"/kit/vendor/preact/preact.module.js","preact/hooks":"/kit/vendor/preact/hooks.module.js"}}</script>
   <script src="/crawler/crawler_text.js"></script><script src="/crawler/rail_menu.js"></script>
 </head>
 <body class="src"><div class="shell">
   <nav class="rail" data-rail="crawler" data-panel data-active="sources"></nav><script src="/kit/rail/rail.js"></script>
   <div class="ws">
-    <aside class="side">
-      <div class="side-head">
-        <div class="side-count"><b id="src-count">—</b><span data-i18n="cr_sources">NGUỒN</span></div>
-        <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" id="src-q" placeholder="Tìm cụm…" aria-label="Tìm cụm" data-i18n-attr="placeholder:cr_find_ph,aria-label:cr_find_aria"></label>
-        <div class="side-field"><label for="src-sort" data-i18n="cr_sort_group">Sắp xếp trong nhóm</label><select id="src-sort">
-          <option value="tier" data-i18n="cr_sort_tier">Hạng cao trước</option><option value="name" data-i18n="sort_alpha">Tên A → Z</option><option value="platform" data-i18n="cr_sort_platform">Nền A → Z</option>
-          <option value="recent" data-i18n="cr_sort_scraped">Cào mới nhất</option><option value="recent_asc" data-i18n="cr_sort_scraped_asc">Cào lâu nhất</option><option value="pending" data-i18n="cr_sort_pending">Chờ tải nhiều nhất</option>
-          <option value="image" data-i18n="cr_sort_image">Nhiều ảnh nhất</option><option value="image_asc" data-i18n="cr_sort_image_asc">Ít ảnh nhất</option><option value="video" data-i18n="cr_sort_video">Nhiều video nhất</option><option value="video_asc" data-i18n="cr_sort_video_asc">Ít video nhất</option>
-        </select></div>
-      </div>
-      <div class="side-items" id="src-filters"></div>
-      <div class="src-legend">
-        <p><i class="dot"></i><span data-i18n="cr_leg_scout">scout đỏ = thiếu scout ·</span> <b>+</b> <span data-i18n="cr_leg_bottom">= chưa dò tới đáy</span></p>
-        <p data-i18n="cr_leg_stale">Cũ khi chưa cào quá: A 3n · B 7n · C 14n · D 30n · chưa chấm 7n · F không tính</p>
-      </div>
-    </aside>
-    <div class="ws-main src-scroll">
-      <main class="src-main">
-        <header class="page-head"><div class="page-title"><a href="/?continent=eurasia">EURASIA</a><span>/</span><a href="/crawler/dash.html" data-keep>CRAWLER</a><span>/</span><h1 data-i18n="cr_sources">NGUỒN</h1></div><span class="src-stamp" id="src-stamp"></span></header>
-        <div id="src-error" role="alert" hidden></div>
-        <section class="src-totals" aria-label="Tổng theo nhóm" data-i18n-attr="aria-label:cr_totals_aria">
-          <div><span data-i18n="cr_g_ok">ỔN</span><b id="t-ok">—</b></div>
-          <div><span data-i18n="cr_g_run">ĐANG CÀO</span><b class="green" id="t-run">—</b></div>
-          <div><span data-i18n="cr_g_new">CHƯA CÀO</span><b class="dim" id="t-new">—</b></div>
-          <div><span data-i18n="cr_g_look">CẦN NHÌN</span><b class="red" id="t-look">—</b></div>
-        </section>
-        <table class="src-table">
-          <colgroup><col class="c-arm"><col><col class="c-country"><col class="c-plat"><col class="c-media"><col class="c-media"><col class="c-age"><col class="c-status"></colgroup>
-          <thead><tr><th></th><th data-i18n="cr_th_cluster">CỤM</th><th data-i18n="cr_th_country">NƯỚC</th><th data-i18n="cr_th_platform">NỀN</th><th data-i18n="cr_th_image">ẢNH</th><th class="split" data-i18n="cr_th_video">VIDEO</th><th data-i18n="cr_th_crawl">CÀO</th><th data-i18n="cr_th_status">TRẠNG THÁI</th></tr></thead>
-          <tbody id="src-rows"></tbody>
-        </table>
-        <p class="src-empty" id="src-empty" data-i18n="cr_empty" hidden>Không có nguồn phù hợp.</p>
-        <footer class="page-foot"><div></div><div data-i18n="cr_foot">CHỈ ĐỌC · ẢNH + VIDEO</div></footer>
-      </main>
-    </div>
-    <aside class="ws-insp src-detail" id="src-detail" hidden aria-labelledby="d-name">
-      <header><div><p class="d-plat" id="d-plat"></p><h2 id="d-name"></h2><p class="d-sub" id="d-sub"></p></div></header>
-      <div class="d-body" id="d-body"></div>
-    </aside>
+    <aside class="side"></aside>
+    <div class="ws-main src-scroll"></div>
+    <aside class="ws-insp src-detail" id="src-detail" hidden aria-labelledby="d-name"></aside>
   </div>
-  <dialog class="src-shot-view" id="shot-view"><img id="shot-view-img" alt=""></dialog>
-</div><script src="sources.js"></script></body></html>
+  <div id="shot-root"></div>
+</div><script type="module" src="/crawler/sources.js"></script></body></html>

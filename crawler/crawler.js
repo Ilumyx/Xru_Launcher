@@ -1,198 +1,107 @@
-// Mặt chép từ mockup Crawler (js/crawler.js); số thật lấy từ /api/board. Chỉ đọc.
-// Dash Crawler. Sidebar trái = lọc (lọc nhanh, platform) và sắp xếp; nền tảng nằm trên URL, dùng chung với màn Nguồn (sources.js).
-(() => {
-  let backend, board=null, sources=[], shown=[], disconnected=false;
-  const params=new URLSearchParams(location.search), list=(k)=>new Set((params.get(k)||'').split(',').filter(Boolean));
-  const f={ plat:list('plat'), quick:params.get('quick')||'', sort:params.get('sort')||'issue', q:'' };
-  const PLATFORM = { facebook: 'Facebook', dvids: 'DVIDS', waralbum: 'War Album', reddit: 'Reddit', x: 'X', telegram: 'Telegram', youtube: 'YouTube', vk: 'VK', tiktok: 'TikTok', bilibili: 'Bilibili', direct: 'Direct' };
-  const SWATCH = ['var(--accent)', 'var(--m-11)', 'var(--m-8)', 'var(--m-6)', 'var(--m-5)'];
-  const $ = (id) => document.getElementById(id);
-  const t = (key, fill) => { const text = window.XRU_I18N.t(key); return fill ? text.replace(/\{(\w+)\}/g, (_, name) => fill[name]) : text; };
-  const n = (v) => v == null ? '—' : Number(v).toLocaleString('en-US');
-  const platformName = (p) => PLATFORM[p] || (p ? p[0].toUpperCase() + p.slice(1) : '—');
-  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const two = (v) => String(v).padStart(2, '0');
-  const dm = (d) => `${two(d.getDate())}/${two(d.getMonth() + 1)}`;
-  const day = (iso) => (iso ? `${dm(new Date(iso))}/${new Date(iso).getFullYear()}` : '—');
-  const isToday = (iso) => iso && new Date(iso).toDateString() === new Date().toDateString();
+// Dash Crawler trên nền Preact (PO 23/10); số thật lấy từ /api/board, chỉ đọc. Phần đọc bảng và bộ lọc chung ở crawler/board.js.
+// Sidebar trái = tìm + lọc (lọc nhanh, nền tảng); nền tảng nằm trên URL, dùng chung với màn Nguồn. Lọc gì thì số và biểu đồ tính theo đó.
+import { h, render } from 'preact';
+import { useStore } from '/kit/store/store.js';
+import { t, n, two, boardStore, watchBoard, keepFilters, platQuery, FilterRows, SearchBox } from '/crawler/board.js';
 
-  // Một dòng là một cụm; ảnh/video chỉ là số khai sinh theo loại.
-  const toSources = (data) => data.rows.map((row) => ({ ...row, name: row.display_name }));
-  // Cờ lấy từ tag quốc gia trong nhãn nguồn; tag không hiện thành chip.
-  const FLAG = { US: '🇺🇸', UK: '🇬🇧', Germany: '🇩🇪', France: '🇫🇷', Poland: '🇵🇱', Australia: '🇦🇺', Japan: '🇯🇵', Korea: '🇰🇷', Taiwan: '🇹🇼', Thailand: '🇹🇭', China: '🇨🇳', Russia: '🇷🇺', USSR: '☭', Ukraine: '🇺🇦', Israel: '🇮🇱', NATO: '✪' };
-  const flags = (s) => (s.tags || []).filter((t) => FLAG[t]).map((t) => `<i title="${esc(t)}">${FLAG[t]}</i>`).join('');
-  const issue = (s) => s.state === 'broken';
-  const QUICK = { issue: ['cr_q_issue', issue], waiting: ['cr_q_waiting', (s) => s.waiting] };
-  if (!(f.quick in QUICK)) f.quick = '';
-  function match(s, skip) {
-    if (f.q && !`${s.name} ${s.platform}`.toLocaleLowerCase('vi').includes(f.q)) return false;
-    if (skip !== 'plat' && f.plat.size && !f.plat.has(s.platform)) return false;
-    if (skip !== 'quick' && f.quick && !QUICK[f.quick][1](s)) return false;
+const PLATFORM = { facebook: 'Facebook', dvids: 'DVIDS', waralbum: 'War Album', reddit: 'Reddit', x: 'X', telegram: 'Telegram', youtube: 'YouTube', vk: 'VK', tiktok: 'TikTok', bilibili: 'Bilibili', direct: 'Direct' };
+const SWATCH = ['var(--accent)', 'var(--m-11)', 'var(--m-8)', 'var(--m-6)', 'var(--m-5)'];
+const platformName = (p) => PLATFORM[p] || (p ? p[0].toUpperCase() + p.slice(1) : '—');
+const dm = (d) => `${two(d.getDate())}/${two(d.getMonth() + 1)}`;
+const isToday = (iso) => iso && new Date(iso).toDateString() === new Date().toDateString();
+const QUICK = { issue: ['cr_q_issue', (s) => s.state === 'broken'], waiting: ['cr_q_waiting', (s) => s.waiting] };
+const SERIES = [['stock', 'cr_stock'], ['total', 'cr_total'], ['video', null], ['image', 'kind_image']];
+
+const store = boardStore({ series: { stock: true, total: true, video: true, image: true } }, Object.keys(QUICK));
+keepFilters(store, '', '/crawler/dash.html');
+// Một dòng là một cụm; ảnh/video chỉ là số khai sinh theo loại.
+watchBoard(store, (rows) => rows.map((row) => ({ ...row, name: row.display_name })));
+
+function matcher(s) {
+  const q = s.q.trim().toLocaleLowerCase('vi');
+  return (src, skip) => {
+    if (q && !`${src.name} ${src.platform}`.toLocaleLowerCase('vi').includes(q)) return false;
+    if (skip !== 'plat' && s.plat.length && !s.plat.includes(src.platform)) return false;
+    if (skip !== 'quick' && s.quick && !QUICK[s.quick][1](src)) return false;
     return true;
-  }
-  const newest = (s) => s.last_born_at ? +new Date(s.last_born_at) : 0;
-  const SORT = {
-    issue: null,
-    name: (a, b) => a.name.localeCompare(b.name),
-    pending: (a, b) => b.links_pending - a.links_pending,
-    recent: (a, b) => newest(b) - newest(a),
   };
-  for (const kind of ['image', 'video']) {
-    const count = (s) => s[kind === 'image' ? 'images' : 'videos'];
-    SORT[kind] = (a, b) => (count(b) ?? -1) - (count(a) ?? -1);
-    SORT[kind + '_asc'] = (a, b) => (count(a) ?? Infinity) - (count(b) ?? Infinity);
-  }
+}
 
-  // URL giữ bộ lọc để Dash và Nguồn dùng chung. Link rail sửa ở menu XRU_RAILS (rail vẽ lại cả khi đổi ngôn ngữ); link trong trang sửa tại chỗ.
-  function keepFilters() {
-    const url = new URL(location.href), q = new URLSearchParams();
-    if (f.plat.size) q.set('plat', [...f.plat].join(','));
-    if (f.quick) q.set('quick', f.quick);
-    if (f.sort !== 'issue') q.set('sort', f.sort);
-    const qs = q.toString() ? '?' + q : '';
-    history.replaceState(null, '', url.pathname + qs);
-    document.querySelectorAll('[data-keep-scope]').forEach((a) => { a.href = a.getAttribute('href').split('?')[0] + qs; });
-    window.XRU_RAILS.crawler.carry(() => qs);
-    return qs;
-  }
+function Sidebar() {
+  const s = useStore(store);
+  return [
+    h('div', { class: 'side-head' },
+      h('div', { class: 'side-count' }, h('b', { id: 'cr-count' }, s.board ? n(s.sources.length) : '—'), h('span', null, t('cr_sources'))),
+      h(SearchBox, { value: s.q, ph: t('cr_search_ph'), aria: t('cr_search_aria'), onInput: (q) => store.set({ q }) })),
+    h('div', { class: 'side-items', id: 'cr-filters' }, s.board ? h(FilterRows, { s, set: (c) => store.set(c), quick: QUICK, match: matcher(s), platName: platformName, platHead: () => t('cr_f_platform'), warn: 'gap' }) : null),
+  ];
+}
 
-  // Sidebar = lọc vấn đề và nền tảng.
-  function renderFilters() {
-    const row = (attr, key, on, label, count, empty) => `<button type="button" class="f-row${on ? ' on' : ''}${empty ? ' empty' : ''}" ${attr}="${esc(key)}"><span>${esc(label)}</span>${count}</button>`;
-    const num = (v, warn) => `<b class="${warn ? 'gap' : ''}">${v}</b>`;
-    let html = `<div class="f-head"><span>${t('cr_f_quick')}</span></div>`;
-    const qpool = sources.filter((s) => match(s, 'quick'));
-    html += Object.entries(QUICK).map(([k, [label, test]]) => { const c = qpool.filter(test).length; return row('data-quick', k, f.quick === k, t(label), num(c, c > 0), !c); }).join('');
-    const plats = {}; for (const s of sources.filter((s) => match(s, 'plat'))) plats[s.platform] = (plats[s.platform] || 0) + 1;
-    const known = [...new Set([...sources.map((s) => s.platform)])].sort((a, b) => (plats[b] || 0) - (plats[a] || 0));
-    html += `<div class="f-head"><span>${t('cr_f_platform')}</span></div>` + known.map((p) => row('data-plat', p, f.plat.has(p), platformName(p), num(plats[p] || 0), !plats[p])).join('');
-    $('cr-filters').innerHTML = html;
-    $('cr-count').textContent = n(sources.length);
-  }
+// Biểu đồ: khung toạ độ x 48→678, y 330→32. Kho = tổng đã thu tính tới cuối mỗi ngày (PO 22/10: nhìn kho lớn dần).
+function Chart({ days, rows, total, series }) {
+  if (!days.length) return h('svg', { class: 'cr-chart', id: 'cr-chart', viewBox: '0 0 720 380' });
+  const perDay = (kind) => days.map((_, i) => rows.reduce((a, r) => a + r.by_day[kind][i], 0));
+  const img = perDay('image'), vid = perDay('video'), tot = img.map((v, i) => v + vid[i]);
+  const stock = tot.map((_, i) => total - tot.slice(i + 1).reduce((a, v) => a + v, 0));
+  // Tắt Kho thì trục co lại theo đường mỗi ngày.
+  const top = Math.max(...tot, ...(series.stock ? stock : []), 1);
+  const step = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000].find((v) => v * 3 >= top) || 100000;
+  const max = step * 3, X = (i) => 48 + i * (630 / Math.max(days.length - 1, 1)), Y = (v) => 330 - (v / max) * 298;
+  const pts = (a) => a.map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
+  const k = (v) => (v >= 1000 ? `${v / 1000}k` : v);
+  const end = (a) => [h('circle', { cx: X(a.length - 1), cy: Y(a.at(-1)).toFixed(1), r: 3 }),
+    h('text', { class: 'cr-chart-value', x: X(a.length - 1) - 12, y: (Y(a.at(-1)) - 12).toFixed(1), 'text-anchor': 'end' }, n(a.at(-1)))];
+  const line = (key, a, area) => h('g', { id: 'cr-series-' + key, class: 'cr-series ' + key, hidden: !series[key] },
+    area ? h('polygon', { class: 'area', points: `48,330 ${pts(a)} 678,330` }) : null, h('polyline', { class: 'line', points: pts(a) }), end(a));
+  return h('svg', { class: 'cr-chart', id: 'cr-chart', viewBox: '0 0 720 380', role: 'img', 'aria-label': t('cr_chart_aria') },
+    [3, 2, 1, 0].map((g) => [h('path', { class: 'grid', d: `M48 ${Y(g * step).toFixed(1)}H678` }), h('text', { x: 8, y: (Y(g * step) + 4).toFixed(1) }, k(g * step))]),
+    line('stock', stock), line('total', tot, true), line('video', vid), line('image', img),
+    days.map((d, i) => h('text', { x: X(i).toFixed(1), y: 360, 'text-anchor': 'middle' }, `${d.slice(8, 10)}/${d.slice(5, 7)}`)));
+}
 
-  function render() {
-    if (!board) return;
-    shown = sources.filter((s) => match(s));
-    if (SORT[f.sort]) shown = [...shown].sort(SORT[f.sort]);
-    renderFilters();
-    keepFilters();
-    const chips = [...[...f.plat].map(platformName), ...(f.quick ? [t(QUICK[f.quick][0])] : [])];
-    $('cr-active').textContent = chips.length ? t('cr_filtering') + chips.join(' + ') : '';
-    $('cr-clear').hidden = !chips.length;
-    if ($('cr-chart')) renderDash(shown);
-  }
+function Main() {
+  const s = useStore(store), board = s.board, ok = board?.complete;
+  const rows = s.sources.filter((src) => matcher(s)(src));
+  const chips = [...s.plat.map(platformName), ...(s.quick ? [t(QUICK[s.quick][0])] : [])];
+  const last = (kind) => rows.reduce((a, r) => a + r.by_day[kind].at(-1), 0);
+  const total = (kind) => rows.reduce((a, r) => a + r[kind === 'image' ? 'images' : 'videos'], 0);
+  const on = rows.filter((r) => r.enabled).length;
+  const latest = rows.filter((r) => r.last_born_at).sort((a, b) => new Date(b.last_born_at) - new Date(a.last_born_at))[0];
+  const when = latest && new Date(latest.last_born_at);
+  const byPlat = {};
+  for (const r of rows) byPlat[r.platform] = (byPlat[r.platform] || 0) + r.assets;
+  const plats = Object.entries(byPlat).sort((a, b) => b[1] - a[1]), sum = plats.reduce((a, [, v]) => a + v, 0);
+  let at = 0;
+  const stops = plats.map(([, v], i) => { const from = at; at += (sum ? v / sum : 0) * 100; return `${SWATCH[Math.min(i, SWATCH.length - 1)]} ${from}% ${at}%`; });
+  const message = s.fault ? t(s.fault.key) + s.fault.extra : '';
+  const metric = (label, value, sub) => h('div', { class: 'cr-metric' }, h('span', { class: 'cr-label' }, t(label)), value, h('p', null, sub));
+  return h('main', { class: 'cr-stage' },
+    h('header', { class: 'page-head' },
+      h('div', { class: 'page-title' }, h('a', { href: '/?continent=eurasia' }, 'EURASIA'), h('span', null, '/'), h('a', { href: '/crawler/dash.html' + platQuery(s) }, 'CRAWLER'), h('span', null, '/'), h('h1', null, 'DASHBOARD')),
+      h('div', { class: 'cr-active' }, h('span', { id: 'cr-active' }, chips.length ? t('cr_filtering') + chips.join(' + ') : ''),
+        chips.length ? h('button', { type: 'button', id: 'cr-clear', onClick: () => store.set({ plat: [], quick: '' }) }, t('cr_clear')) : null)),
+    h('div', { id: 'cr-error', role: 'alert', hidden: !message }, message),
+    h('section', { class: 'cr-metrics', 'aria-label': t('cr_metrics_aria') },
+      metric('cr_m_today', h('b', null, ok ? n(last('image') + last('video')) : '—'), ok ? t('cr_split', { img: n(last('image')), vid: n(last('video')) }) : ''),
+      metric('cr_m_on', h('b', null, ok ? on : '—', ' ', h('span', { class: 'cr-dim' }, '/ ', ok ? rows.length : '—')), ok ? t('cr_off_n', { n: rows.length - on }) : ''),
+      metric('cr_m_total', h('b', null, ok ? n(total('image') + total('video')) : '—'), ok ? t('cr_split', { img: n(total('image')), vid: n(total('video')) }) : ''),
+      metric('cr_m_latest', h('b', null, ok && when ? (isToday(latest.last_born_at) ? `${two(when.getHours())}:${two(when.getMinutes())}` : dm(when)) : '—'), ok && latest ? latest.name : '')),
+    h('div', { class: 'cr-columns' },
+      h('section', { class: 'cr-section' },
+        h('div', { class: 'cr-section-head' }, h('h3', null, t('cr_rhythm')), h('span', { class: 'cr-label' }, t('cr_last7'))),
+        ok ? h(Chart, { days: board.days, rows, total: total('image') + total('video'), series: s.series }) : h('svg', { class: 'cr-chart', id: 'cr-chart', viewBox: '0 0 720 380' }),
+        h('div', { class: 'cr-legend', 'aria-label': t('cr_legend_aria') }, SERIES.map(([key, label]) => h('button', {
+          key, type: 'button', 'data-chart-series': key, 'aria-pressed': String(s.series[key]), 'aria-controls': 'cr-series-' + key,
+          onClick: () => store.set({ series: { ...s.series, [key]: !s.series[key] } }),
+        }, h('i', { class: key }), label ? h('span', null, t(label)) : 'Video')))),
+      h('aside', { class: 'cr-section' },
+        h('div', { class: 'cr-section-head' }, h('h3', null, t('cr_by_platform')), h('a', { href: '/crawler/sources.html' + platQuery(s) }, t('cr_view_sources'))),
+        h('div', { class: 'cr-platform-chart', id: 'cr-donut', role: 'img', style: { background: ok && sum ? `conic-gradient(${stops.join(', ')})` : 'var(--panel)' } },
+          h('div', { class: 'cr-platform-total' }, h('b', { id: 'cr-donut-total' }, ok ? n(sum) : '—'), h('span', null, t('cr_img_vid')))),
+        h('div', { class: 'cr-platform-legend', id: 'cr-platforms' }, ok ? plats.map(([p, v], i) => h('div', { key: p },
+          h('span', null, h('i', { style: { background: SWATCH[Math.min(i, SWATCH.length - 1)] } }), platformName(p)), h('b', null, n(v)), h('small', null, `${((sum ? v / sum : 0) * 100).toFixed(1)}%`))) : null))),
+    h('footer', { class: 'page-foot' }, h('div', null), h('div', { id: 'cr-foot' }, message || t('cr_foot'))));
+}
 
-  function renderDash(rows) {
-    if(!board.complete) {
-      for(const id of ['m-today','m-on','m-all','m-total','m-latest','cr-donut-total']) $(id).textContent='—';
-      for(const id of ['m-today-split','m-off','m-total-split','m-latest-src']) $(id).textContent='';
-      $('cr-chart').replaceChildren();$('cr-platforms').replaceChildren();$('cr-donut').style.background='var(--panel)';return;
-    }
-    const last = (kind) => rows.reduce((a, r) => a + r.by_day[kind].at(-1), 0);
-    const total = (kind) => rows.reduce((a, r) => a + r[kind === 'image' ? 'images' : 'videos'], 0);
-    const on = rows.filter((r) => r.enabled).length, all = rows.length;
-
-    $('m-today').textContent = n(last('image') + last('video'));
-    $('m-today-split').textContent = t('cr_split', { img: n(last('image')), vid: n(last('video')) });
-    $('m-on').textContent = on; $('m-all').textContent = all;
-    $('m-off').textContent = t('cr_off_n', { n: all - on });
-    $('m-total').textContent = n(total('image') + total('video'));
-    $('m-total-split').textContent = t('cr_split', { img: n(total('image')), vid: n(total('video')) });
-    const latest = rows.filter((r) => r.last_born_at).sort((a, b) => new Date(b.last_born_at) - new Date(a.last_born_at))[0];
-    $('m-latest').textContent='—';$('m-latest-src').textContent='';
-    if (latest) {
-      const t = new Date(latest.last_born_at);
-      $('m-latest').textContent = isToday(latest.last_born_at)
-        ? `${two(t.getHours())}:${two(t.getMinutes())}`
-        : dm(t);
-      $('m-latest-src').textContent = latest.name;
-    }
-
-    // Biểu đồ: cùng khung toạ độ với mockup (x 48→678, y 330→32).
-    const days = board.days;
-    if(days.length) {
-    const perDay = (kind) => days.map((_, i) => rows.reduce((a, r) => a + r.by_day[kind][i], 0));
-    const img = perDay('image'), vid = perDay('video'), tot = img.map((v, i) => v + vid[i]);
-    // Kho: tổng đã thu tính tới cuối mỗi ngày = tổng hiện có trừ phần sinh sau ngày đó (PO 22/10: nhìn kho lớn dần).
-    const now = total('image') + total('video'), stock = tot.map((_, i) => now - tot.slice(i + 1).reduce((a, v) => a + v, 0));
-    const top = Math.max(...tot, ...(hiddenSeries('stock') ? [] : stock), 1);
-    const step = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000].find((v) => v * 3 >= top) || 100000;
-    const max = step * 3, X = (i) => 48 + i * (630 / Math.max(days.length - 1, 1)), Y = (v) => 330 - (v / max) * 298;
-    const pts = (a) => a.map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
-    const k = (v) => (v >= 1000 ? `${v / 1000}k` : v);
-    const end = (a) => `<circle cx="${X(a.length - 1)}" cy="${Y(a.at(-1)).toFixed(1)}" r="3"/><text class="cr-chart-value" x="${X(a.length - 1) - 12}" y="${(Y(a.at(-1)) - 12).toFixed(1)}" text-anchor="end">${n(a.at(-1))}</text>`;
-    let svg = [3, 2, 1, 0].map((g) => `<path class="grid" d="M48 ${Y(g * step).toFixed(1)}H678"/><text x="8" y="${(Y(g * step) + 4).toFixed(1)}">${k(g * step)}</text>`).join('');
-    svg += `<g id="cr-series-stock" class="cr-series stock"${hiddenSeries('stock')}><polyline class="line" points="${pts(stock)}"/>${end(stock)}</g>`;
-    svg += `<g id="cr-series-total" class="cr-series total"${hiddenSeries('total')}><polygon class="area" points="48,330 ${pts(tot)} 678,330"/><polyline class="line" points="${pts(tot)}"/>${end(tot)}</g>`;
-    svg += `<g id="cr-series-video" class="cr-series video"${hiddenSeries('video')}><polyline class="line" points="${pts(vid)}"/>${end(vid)}</g>`;
-    svg += `<g id="cr-series-image" class="cr-series image"${hiddenSeries('image')}><polyline class="line" points="${pts(img)}"/>${end(img)}</g>`;
-    svg += days.map((d, i) => `<text x="${X(i).toFixed(1)}" y="360" text-anchor="middle">${d.slice(8, 10)}/${d.slice(5, 7)}</text>`).join('');
-    $('cr-chart').innerHTML = svg;
-    } else $('cr-chart').replaceChildren();
-
-    // Donut theo nền tảng.
-    const byPlat = {};
-    for (const r of rows) byPlat[r.platform] = (byPlat[r.platform] || 0) + r.assets;
-    const plats = Object.entries(byPlat).sort((a, b) => b[1] - a[1]), total2 = plats.reduce((a, [, v]) => a + v, 0);
-    let at = 0;
-    const stops = plats.map(([, v], i) => { const from = at; at += (total2 ? v / total2 : 0) * 100; return `${SWATCH[Math.min(i, SWATCH.length - 1)]} ${from}% ${at}%`; });
-    $('cr-donut').style.background = total2 ? `conic-gradient(${stops.join(', ')})` : 'var(--panel)';
-    $('cr-donut-total').textContent = n(total2);
-    $('cr-platforms').innerHTML = plats.map(([p, v], i) =>
-      `<div><span><i style="background:${SWATCH[Math.min(i, SWATCH.length - 1)]}"></i>${esc(platformName(p))}</span><b>${n(v)}</b><small>${((total2 ? v / total2 : 0) * 100).toFixed(1)}%</small></div>`).join('');
-  }
-  const hiddenSeries = (key) => document.querySelector(`[data-chart-series="${key}"]`)?.getAttribute('aria-pressed') === 'false' ? ' hidden' : '';
-
-  // Sự kiện gắn một lần.
-  const flip = (set, v) => (set.has(v) ? set.delete(v) : set.add(v));
-  document.addEventListener('click', (e) => {
-    const el = e.target.closest('[data-plat],[data-quick],#cr-clear');
-    if (!el) return;
-    if (el.id === 'cr-clear') { f.plat.clear(); f.quick = ''; }
-    else if (el.dataset.plat) flip(f.plat, el.dataset.plat);
-    else f.quick = f.quick === el.dataset.quick ? '' : el.dataset.quick;
-    render();
-  });
-  $('cr-q').addEventListener('input', () => { f.q = $('cr-q').value.trim().toLocaleLowerCase('vi'); render(); });
-  $('cr-sort').value = f.sort;
-  $('cr-sort').addEventListener('change', () => { f.sort = $('cr-sort').value; render(); });
-
-  for (const button of document.querySelectorAll('[data-chart-series]')) {
-    button.addEventListener('click', () => {
-      const visible = button.getAttribute('aria-pressed') !== 'true';
-      button.setAttribute('aria-pressed', String(visible));
-      $(button.getAttribute('aria-controls'))?.toggleAttribute('hidden', !visible);
-      if (button.dataset.chartSeries === 'stock') render(); // trục co lại theo đường mỗi ngày khi tắt Kho
-    });
-  }
-
-
-  // Câu lỗi lưu dạng khóa chữ + phần Backend trả (không dịch) để vẽ lại được khi đổi ngôn ngữ.
-  let fault = null;
-  function paintError() { const message = fault ? t(fault.key) + fault.extra : ''; $('cr-error').textContent = message; $('cr-error').hidden = !message; $('cr-foot').textContent = message || t('cr_foot'); }
-  function error(key, extra = '') { fault = key ? { key, extra } : null; paintError(); }
-  async function readBoard() {
-    try {
-      const r=await fetch(backend+'/api/board',{cache:'no-store',signal:AbortSignal.timeout(20000)}), data=await r.json();
-      if(!Array.isArray(data.rows)) throw Error(data.error||t('cr_err_nodata'));
-      board=data; sources=toSources(data);
-      render();
-      const failures=Object.values(data.errors);
-      failures.length?error('cr_err_missing',failures.join(' · ')):error();disconnected=!data.complete;
-    } catch(e) { disconnected=true;error('cr_err_down_read',e.message); }
-  }
-  // Hỏi tem sổ (~1ms) 5 giây một lần và khi quay lại cửa sổ; tem đổi (hoặc vừa mất kết nối) mới đọc lại cả bảng.
-  let polling=false, seen=null;
-  async function health() {
-    if(!backend||polling||document.hidden)return;polling=true;
-    try { const r=await fetch(backend+'/api/stamp',{cache:'no-store',signal:AbortSignal.timeout(3000)}),tem=await r.json();if(!r.ok&&!tem.errors)throw Error('HTTP '+r.status);if(disconnected||!tem.stamp||tem.stamp!==seen){seen=tem.stamp;await readBoard();} }
-    catch(e) {disconnected=true;error('cr_err_down');}
-    finally {polling=false;}
-  }
-  window.addEventListener('focus',health);
-  setInterval(health,5000);
-  // Đổi ngôn ngữ: chữ do JS vẽ (lọc, số, câu lỗi) vẽ lại theo; chữ tĩnh trong HTML do kit/i18n lo.
-  window.addEventListener('xru-lang-applied',()=>{paintError();render();});
-  paintError();
-  fetch('/ui-config',{cache:'no-store'}).then(r=>r.json()).then(config=>{backend=config.crawler_backend;health();}).catch(()=>error('cr_err_config'));
-})();
+render(h(Sidebar), document.querySelector('.side'));
+render(h(Main), document.querySelector('.ws-main'));

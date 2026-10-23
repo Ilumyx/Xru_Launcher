@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Mặt chép từ mockup PO đã duyệt: Xru_Launcher 544f36f^:mockups/crawler_dash.html. Số thật từ /api/board. -->
+<!-- Dash Crawler (Preact, crawler/crawler.js). Số thật từ /api/board. -->
 <html lang="vi">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,33 +8,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/kit/page/page.css"><link rel="stylesheet" href="/kit/sidebar/sidebar.css"><link rel="stylesheet" href="/kit/frame/frame.css"><link rel="stylesheet" href="crawler.css">
   <link rel="stylesheet" href="/kit/account/account.css"><script src="/kit/i18n/i18n.js"></script><script src="/kit/account/account.js"></script><script src="/kit/frame/frame.js"></script>
+  <script type="importmap">{"imports":{"preact":"/kit/vendor/preact/preact.module.js","preact/hooks":"/kit/vendor/preact/hooks.module.js"}}</script>
   <script src="/crawler/crawler_text.js"></script><script src="/crawler/rail_menu.js"></script>
 </head>
 <body><div class="shell">
   <nav class="rail" data-rail="crawler" data-panel data-active="dash"></nav><script src="/kit/rail/rail.js"></script>
 <div class="ws">
-  <aside class="side">
-    <div class="side-head">
-      <div class="side-count"><b id="cr-count">—</b><span data-i18n="cr_sources">NGUỒN</span></div>
-      <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" id="cr-q" placeholder="Tên cụm hoặc nền tảng…" aria-label="Tìm nguồn" data-i18n-attr="placeholder:cr_search_ph,aria-label:cr_search_aria"></label>
-      <div class="side-field"><label for="cr-sort" data-i18n="sort_lbl">Sắp xếp</label><select id="cr-sort"><option value="issue" data-i18n="cr_sort_issue">Có vấn đề trước</option><option value="name" data-i18n="sort_alpha">Tên A → Z</option><option value="pending" data-i18n="cr_sort_pending">Chờ tải nhiều nhất</option><option value="recent" data-i18n="cr_sort_recent">Nhận mới gần nhất</option><option value="image" data-i18n="cr_sort_image">Nhiều ảnh nhất</option><option value="image_asc" data-i18n="cr_sort_image_asc">Ít ảnh nhất</option><option value="video" data-i18n="cr_sort_video">Nhiều video nhất</option><option value="video_asc" data-i18n="cr_sort_video_asc">Ít video nhất</option></select></div>
-    </div>
-    <div class="side-items" id="cr-filters"></div>
-  </aside>
-  <div class="ws-main">
-  <main class="cr-stage">
-    <header class="page-head"><div class="page-title"><a href="/?continent=eurasia">EURASIA</a><span>/</span><a href="/crawler/dash.html" data-keep-scope>CRAWLER</a><span>/</span><h1>DASHBOARD</h1></div><div class="cr-active"><span id="cr-active"></span><button type="button" id="cr-clear" data-i18n="cr_clear" hidden>Bỏ lọc</button></div></header><div id="cr-error" role="alert" hidden></div>
-
-    <section class="cr-metrics" aria-label="Thống kê Crawler" data-i18n-attr="aria-label:cr_metrics_aria"><div class="cr-metric"><span class="cr-label" data-i18n="cr_m_today">THU MỚI HÔM NAY</span><b id="m-today">—</b><p id="m-today-split"></p></div><div class="cr-metric"><span class="cr-label" data-i18n="cr_m_on">NGUỒN ĐANG BẬT</span><b><span id="m-on">—</span> <span class="cr-dim">/ <span id="m-all">—</span></span></b><p id="m-off"></p></div><div class="cr-metric"><span class="cr-label" data-i18n="cr_m_total">ĐÃ THU THẬP</span><b id="m-total">—</b><p id="m-total-split"></p></div><div class="cr-metric"><span class="cr-label" data-i18n="cr_m_latest">NHẬN MỚI GẦN NHẤT</span><b id="m-latest">—</b><p id="m-latest-src"></p></div></section><div class="cr-columns"><section class="cr-section"><div class="cr-section-head"><h3 data-i18n="cr_rhythm">Nhịp thu thập</h3><span class="cr-label" data-i18n="cr_last7">7 NGÀY GẦN NHẤT</span></div><svg class="cr-chart" id="cr-chart" viewBox="0 0 720 380" role="img" aria-label="Kho tích luỹ và lượng thu mới mỗi ngày: tổng, video và ảnh." data-i18n-attr="aria-label:cr_chart_aria"></svg>
-<div class="cr-legend" aria-label="Bật tắt đường biểu đồ" data-i18n-attr="aria-label:cr_legend_aria"><button type="button" data-chart-series="stock" aria-pressed="true" aria-controls="cr-series-stock"><i class="stock"></i><span data-i18n="cr_stock">Kho</span></button><button type="button" data-chart-series="total" aria-pressed="true" aria-controls="cr-series-total"><i class="total"></i><span data-i18n="cr_total">Tổng</span></button><button type="button" data-chart-series="video" aria-pressed="true" aria-controls="cr-series-video"><i class="video"></i>Video</button><button type="button" data-chart-series="image" aria-pressed="true" aria-controls="cr-series-image"><i class="image"></i><span data-i18n="kind_image">Ảnh</span></button></div></section><aside class="cr-section">
-  <div class="cr-section-head"><h3 data-i18n="cr_by_platform">Đã thu theo nền tảng</h3><a href="/crawler/sources.html" data-keep-scope data-i18n="cr_view_sources">Xem nguồn ↗</a></div>
-  <div class="cr-platform-chart" id="cr-donut" role="img">
-    <div class="cr-platform-total"><b id="cr-donut-total">—</b><span data-i18n="cr_img_vid">ẢNH + VIDEO</span></div>
-  </div>
-  <div class="cr-platform-legend" id="cr-platforms"></div>
-</aside></div>
-    <footer class="page-foot"><div></div><div id="cr-foot">CHỈ ĐỌC · ẢNH + VIDEO</div></footer>
-  </main>
-  </div>
+  <aside class="side"></aside>
+  <div class="ws-main"></div>
 </div>
-</div><script src="crawler.js"></script></body></html>
+</div><script type="module" src="/crawler/crawler.js"></script></body></html>
