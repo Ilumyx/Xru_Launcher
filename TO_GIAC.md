@@ -8,3 +8,7 @@ Luật DMZ: Sector Admin sửa lõi mà phải sửa kèm `ui_backend_service/` 
 
 1. **`/api/board` còn tăng tuyến tính** (Ca 3 trong `UI_STUDY_CASE.md`). Bảng phải đối chiếu hai sổ nên bê link và món lên Python. Chưa gấp; khi kho tới vài chục nghìn món thì đo lại và tính gom bằng SQL.
 
+
+## Gate
+
+1. **Ảnh bìa chụp lúc nhận hàng, không chụp lúc có người xem (PO 23/10).** Hiện cửa UI (`ui_backend_service/service.py`, route `/thumb`) chạy ffmpeg khi màn xin ảnh lần đầu rồi cất vào `~/.cache/xru/gate_<image|video>_thumbs/`, nên clip mới mở lần đầu còn chậm (Ca 5 và Luật gốc trong `UI_STUDY_CASE.md`). Ý PO: lúc intake kéo hàng về, Gate xin chút CPU chụp sẵn ảnh bìa 240px và 480px (video lấy khung ở 10% thời lượng) và cất vào kho dữ liệu Gate, chỗ do Gate chọn. Cửa UI chỉ đọc file có sẵn. Intake không cần biết UI: ảnh bìa là đồ của món, như sổ. Kho cũ thì cần một lệnh chụp bù. Gate làm xong thì sửa route `/thumb` trong Order của mình cho đọc chỗ mới và xoá đường ffmpeg cùng cache cũ; UI soát lại.
