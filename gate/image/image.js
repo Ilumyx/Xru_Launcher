@@ -5,13 +5,15 @@
   const states = ['WAITING_PO', 'DETAINED', 'ACCEPT_APPROVED', 'PURGE_APPROVED'];
   const view = {
     state: states.includes(params.get('state')) ? params.get('state') : 'WAITING_PO',
-    source: params.get('source') || '', sort: params.get('sort') === 'newest' ? 'newest' : 'oldest',
+    platform: params.get('platform') || '', source: params.get('source') || '', sort: params.get('sort') || 'oldest',
     query: params.get('q') || '', page: Math.max(1, +params.get('page') || 1), selected: params.get('selected'),
   };
   // Trang 250 ảnh (PO 22/10): đủ lướt bắt pattern, máy không gồng. Lõi trả tối đa 250 món một lượt (Gate Order 55): một trang một lượt.
   const SIZE = 250;
   let backend, page, selected, pending = false, reading = false, writing = false, readId = 0, detailId = 0;
   const drafts = new Map();
+  // Sort theo lane: hai sort "PO quyết định" chỉ có nghĩa ở lane đã quyết.
+  const sorts = () => [['oldest','sort_oldest'],['newest','sort_newest'],...(view.state === 'WAITING_PO' ? [] : [['po_newest','sort_po_newest'],['po_oldest','sort_po_oldest']])];
   const search = document.querySelector('.side-search input');
   const rows = document.querySelector('.side-items');
   const actions = [...document.querySelectorAll('[data-act]')];
@@ -23,7 +25,7 @@
   function saveDraft() { if (selected && !$('po_note_input').disabled) drafts.set(selected.xru_id, $('po_note_input').value); }
   function syncUrl() {
     const p = new URLSearchParams({state:view.state});
-    for (const [key, value] of Object.entries({source:view.source, sort:view.sort, q:view.query, page:view.page > 1 ? view.page : '', selected:selected?.xru_id || ''})) if (value) p.set(key, value);
+    for (const [key, value] of Object.entries({platform:view.platform, source:view.source, sort:view.sort, q:view.query, page:view.page > 1 ? view.page : '', selected:selected?.xru_id || ''})) if (value) p.set(key, value);
     history.replaceState(null, '', `/gate/image/?${p}`);
   }
   function controls() {
@@ -37,7 +39,7 @@
     $('po_note_input').hidden = view.state !== 'WAITING_PO';
     $('insp-note').hidden = view.state === 'WAITING_PO';
     $('readonly').hidden = !selected || ['WAITING_PO','DETAINED'].includes(view.state);
-    for (const control of document.querySelectorAll('[data-state], #source_filter, #sort_filter, .side-search input')) control.disabled = writing;
+    for (const control of document.querySelectorAll('[data-state], .side-search input')) control.disabled = writing;
   }
   function clearSelection() {
     saveDraft(); selected = null; ++detailId;
@@ -118,19 +120,24 @@
     wall.render(page.items, page.offset, page.total);
     $('total').textContent = format(page.total); $('lane-label').textContent = view.state;
     for (const button of document.querySelectorAll('[data-state]')) { button.classList.toggle('is-active',button.dataset.state===view.state); button.querySelector('.count').textContent=format(page.counts[button.dataset.state]); }
-    const options = [new Option(`${window.XRU_I18N.t('all_sources')} (${page.counts[view.state]})`,'')];
-    for (const source of page.sources) options.push(new Option(`${sourceName(source)} (${source.total})`,`${source.source_platform}:${source.source_name || ''}`));
-    $('source_filter').replaceChildren(...options); $('source_filter').value = view.source;
-    // Keep a deleted source visible until the operator clears their filter.
-    if (view.source && !$('source_filter').value) { $('source_filter').add(new Option(view.source,view.source)); $('source_filter').value=view.source; }
-    $('sort_filter').value = view.sort;
-    controls();
+    paintFilters(); controls();
   }
-  const query = (offset) => '/api/queue?' + new URLSearchParams({state:view.state, sort:view.sort, source:view.source, q:view.query, limit:SIZE, offset});
+  // Nhóm lọc bấm thẳng (kit/sidebar/filters.js) nằm trên danh sách: nguồn dạng cây nền tảng → kênh, sắp xếp theo lane.
+  const filters = window.XRU_FILTERS($('filters'), change => { if (writing) return; Object.assign(view, change); view.page = 1; load(); });
+  function paintFilters() {
+    if (!page) return; const t = window.XRU_I18N.t;
+    filters.render([
+      {key:'source', title:t('source_lbl'), tree:{all:t('all_sources'), total:page.counts[view.state], sources:page.sources, platform:view.platform, source:view.source}},
+      {key:'sort', title:t('sort_lbl'), rows:sorts().map(([key, label]) => ({pick:{sort:key}, name:t(label), on:view.sort === key}))},
+    ]);
+  }
+  window.addEventListener('xru-lang-applied', paintFilters);
+  const query = (offset) => '/api/queue?' + new URLSearchParams({state:view.state, sort:view.sort, platform:view.platform, source:view.source, q:view.query, limit:SIZE, offset});
   // Đọc một trang. Trang vượt cuối (món vừa rời lane) thì lõi trả trang cuối; số trang theo offset lõi trả.
   // preferred: id muốn chọn; không còn trên trang thì chọn ô số slot (kẹp ở ô cuối).
   async function load(preferred = view.selected, slot = 0) {
     if (writing) return;
+    if (!sorts().some(([key]) => key === view.sort)) view.sort = 'oldest';
     saveDraft(); reading=true; pending=true; const id=++readId; ++detailId; controls();
     if (!backend) return;
     try {
@@ -163,13 +170,11 @@
   $('insp-img').addEventListener('dblclick',openPeek);
   for (const button of actions) button.addEventListener('click',()=>act(button.dataset.act));
   $('po_note_input').addEventListener('input',saveDraft);
-  $('source_filter').addEventListener('change',()=>{view.source=$('source_filter').value; view.page=1; load();});
-  $('sort_filter').addEventListener('change',()=>{view.sort=$('sort_filter').value; view.page=1; load();});
   let searchTimer;
   search.value=view.query;
   search.addEventListener('input',()=>{clearTimeout(searchTimer); view.query=search.value.trim(); view.page=1; ++readId; pending=false; reading=true; controls(); searchTimer=setTimeout(()=>load(),250);});
   search.addEventListener('keydown',event=>event.stopPropagation());
-  for (const button of document.querySelectorAll('[data-state]')) button.addEventListener('click',()=>{view.state=button.dataset.state; view.source=''; view.page=1; view.selected=null; load();});
+  for (const button of document.querySelectorAll('[data-state]')) button.addEventListener('click',()=>{view.state=button.dataset.state; view.platform=''; view.source=''; view.page=1; view.selected=null; load();});
   document.addEventListener('keydown',event=>{
     if (event.ctrlKey || event.metaKey || event.altKey || event.target.closest('input,textarea,select')) return;
     const key=event.key.toLowerCase();

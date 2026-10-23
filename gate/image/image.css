@@ -176,7 +176,6 @@ a.side-item, a.gate-tab-btn { text-decoration: none; color: inherit; }
 /* Real captions can be long: scroll the caption, retain the mockup action position. */
 .insp-caption { min-height: 0; overflow-y: auto; scrollbar-width: thin; }
 .insp-bottom, .insp-meta, .insp-title, .insp-top { flex-shrink: 0; }
-.side-field > span { font-size: 11px; color: var(--fg-dim); }
 /* UI state: unavailable/empty selection cannot submit a decision. */
 .card-act-btn:disabled {opacity:.35; cursor:default;}
 .insp-acts button[hidden] {display:none;}

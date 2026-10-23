@@ -4,14 +4,14 @@
   const lanes = ['WAITING_PO','MACHINE_FLAGGED','DETAINED','ACCEPT_APPROVED','PURGE_APPROVED'];
   const view = {state:lanes.includes(p.get('state'))?p.get('state'):'WAITING_PO',source:p.get('source')||'',platform:p.get('platform')||'',reason:p.get('reason')||'',sort:p.get('sort')||'oldest',q:p.get('q')||'',page:Math.max(1,+p.get('page')||1),mode:p.get('view')==='grid'?'grid':'watch',selected:p.get('selected')};
   let backend, page, selected, reading=true, writing=false, pending=false, readId=0, detailId=0;
-  const drafts=new Map(), filters=$('filters'), opened=new Set(view.platform?[view.platform]:[]), search=document.querySelector('.side-search input');
-  const PLATFORM={dvids:'DVIDS',facebook:'Facebook',reddit:'Reddit',x:'X',rss:'RSS',telegram:'Telegram',waralbum:'War Album'};
+  const drafts=new Map(), list=$('queue-list'), search=document.querySelector('.side-search input');
   // Sort theo lane: hai sort "PO quyết định" chỉ có nghĩa ở lane đã quyết.
   const sorts=()=>[['oldest','sort_oldest'],['newest','sort_newest'],['duration_longest','sort_longest'],['duration_shortest','sort_shortest'],...(['DETAINED','ACCEPT_APPROVED','PURGE_APPROVED'].includes(view.state)?[['po_newest','sort_po_newest'],['po_oldest','sort_po_oldest']]:[])];
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const n=v=>Number(v).toLocaleString('en-US'), time=v=>Number.isFinite(v)?`${Math.floor(v/60)}:${String(Math.floor(v%60)).padStart(2,'0')}`:'';
   const media=id=>backend+'/media/'+encodeURIComponent(id);
   const actions={WAITING_PO:[['ACCEPT','Accept','a'],['DETAIN','Detain','d']],MACHINE_FLAGGED:[['KEEP','YES · KEEP','a'],['DETAIN','NO · DETAIN','d']],DETAINED:[['RESCUE','RESCUE TO WAIT','r'],['PURGE','PURGE','p']],PURGE_APPROVED:[['RESTORE_PURGE','RESTORE TO DETAIN','r']],ACCEPT_APPROVED:[['RESCUE_ACCEPT','RESCUE TO WAIT','r'],['DETAIN_ACCEPT','DETAIN','d']]};
+  const itemLink=id=>'/gate/video/?'+new URLSearchParams({state:view.state,view:view.mode,sort:view.sort,platform:view.platform,source:view.source,reason:view.reason,q:view.q,page:view.page,selected:id});
   function notice(message){$('api-error').textContent=message;$('api-error').hidden=!message;}
   function sync(){const q=new URLSearchParams({state:view.state,view:view.mode,sort:view.sort});for(const[k,v]of Object.entries({platform:view.platform,source:view.source,reason:view.reason,q:view.q,page:view.page>1?view.page:'',selected:selected?.xru_id||''}))if(v)q.set(k,v);history.replaceState(null,'','/gate/video/?'+q);
     // Hai nút rail video mang theo bộ lọc hiện tại; chữa ở menu XRU_RAILS rồi báo rail vẽ lại (rail tự vẽ lại cả khi đổi ngôn ngữ).
@@ -57,7 +57,7 @@
   function paintDetail(item,index){selected=item;view.selected=item.xru_id;
     for(const[id,value]of Object.entries({'insp-title':item.title,'insp-cap':item.description,'insp-xid':item.xru_id,'insp-src':item.source_platform+(item.source_name?' / '+item.source_name:''),'insp-res':item.resolution_readable?`${item.width}×${item.height} (${item.aspect_ratio||''})`:'','insp-lane':item.lane}))$(id).textContent=value||'';
     document.querySelector('.insp-tag').textContent=item.lane;document.querySelector('.insp-tag').title=item.gate_flag_reason||'';$('insp-num').textContent=`${String(page.offset+index+1).padStart(3,'0')} / ${page.total}`;
-    wall.active(item.xru_id);
+    list.querySelectorAll('[data-id]').forEach(e=>{const on=e.dataset.id===item.xru_id;e.classList.toggle('is-active',on);if(on)e.scrollIntoView({block:'nearest'});});wall.active(item.xru_id);
     const editable=item.state==='WAITING_PO';
     $('decision-controls').innerHTML=`<div class="actions-bar">${editable?'<div class="finding-row"><label class="finding-control"><input id="noise-present" type="checkbox"> NOISE<kbd>1</kbd></label><label class="finding-control"><input id="watermark-present" type="checkbox"> WMARK<kbd>2</kbd></label><button class="finding-control" data-note-token="EVENT">EVENT <kbd>3</kbd></button><button class="finding-control" data-note-token="CAUTION">CAUTION <kbd>4</kbd></button></div><textarea id="po-note" class="insp-note" placeholder="Note (optional)..."></textarea>':''}<div class="decision-row">${actions[item.lane].map(([act,label,key])=>`<button class="btn btn-${key==='a'?'accept':key==='d'?'detain':key==='p'?'purge':'rescue'}" data-action="${act}">${act==='ACCEPT'&&view.mode==='grid'?window.XRU_I18N.t('btn_approve'):act==='DETAIN'&&view.state!=='MACHINE_FLAGGED'&&view.mode==='grid'?window.XRU_I18N.t('btn_detain'):label} <kbd>${key.toUpperCase()}</kbd></button>`).join('')}<button class="btn btn-skip" id="skip-review-item">Skip <kbd>S</kbd></button></div></div>`;
     if(editable){const d=drafts.get(item.xru_id)||item;$('po-note').placeholder=window.XRU_I18N.t('note_ph');$('po-note').value=d.po_note||'';$('noise-present').checked=!!d.noise_present;$('watermark-present').checked=!!d.watermark_present;refreshTokens();}
@@ -75,19 +75,15 @@
   const wall=window.XRU_WALL({grid:$('video-gallery'),pager:$('page-range'),next:$('video-next'),size:100,
     thumb:(item,width)=>backend+'/thumb/'+encodeURIComponent(item.xru_id)+'?w='+width,media:item=>media(item.xru_id),end:item=>time(item.duration_seconds),tags:item=>(item.gate_flag_reason||'').split(' + ').filter(Boolean),
     onSelect:index=>select(index),onPage:to=>{if(writing)return;view.page=to;load(null);}});
-  // Cột trái là các nhóm lọc bấm thẳng (wall đã là chỗ chọn clip): trạm flag · nguồn (nền tảng → kênh) · sắp xếp. Số đếm do lõi trả.
-  function paintFilters(){if(!page)return;const t=window.XRU_I18N.t;
-    const row=(data,name,total,cls,on,caret='')=>`<div class="side-item is-filter ${cls}${on?' is-active':''}" ${Object.entries(data).map(([k,v])=>`data-${k}="${esc(v)}"`).join(' ')}><span class="n">${caret}</span><div class="t">${esc(name)}</div><span class="c">${total==null?'':n(total)}</span></div>`;
-    let html='';
-    if(view.state==='MACHINE_FLAGGED'&&page.reasons?.length){html+=`<div class="side-sect">${t('flag_lbl')}</div>`+row({reason:''},t('all_flags'),page.counts[view.state],'is-all',!view.reason)+page.reasons.map(r=>row({reason:r.reason},r.reason,r.total,'',view.reason===r.reason)).join('');}
-    const groups=new Map();for(const s of page.sources){if(!groups.has(s.source_platform))groups.set(s.source_platform,{key:s.source_platform,total:0,sources:[]});const g=groups.get(s.source_platform);g.total+=s.total;g.sources.push(s);}
-    const most=(a,b)=>b.total-a.total||String(a.key??a.source_name).localeCompare(String(b.key??b.source_name));
-    html+=`<div class="side-sect">${t('source_lbl')}</div>`+row({platform:'',source:''},t('all_sources'),page.counts[view.state],'is-all',!view.platform&&!view.source);
-    for(const g of [...groups.values()].sort(most)){const open=opened.has(g.key);html+=row({platform:g.key,source:''},PLATFORM[g.key]||g.key,g.total,'is-group',view.platform===g.key&&!view.source,open?'▾':'▸');
-      if(open)html+=g.sources.sort(most).map(s=>row({platform:g.key,source:g.key+':'+(s.source_name||'')},s.source_name||PLATFORM[g.key]||g.key,s.total,'is-child',view.source===g.key+':'+(s.source_name||''))).join('');}
-    html+=`<div class="side-sect">${t('sort_lbl')}</div>`+sorts().map(([key,label])=>row({sort:key},t(label),null,'',view.sort===key)).join('');
-    filters.innerHTML=html;}
-  function paintPage(){
+  // Sidebar: nhóm lọc bấm thẳng (kit/sidebar/filters.js) ở trên, danh sách clip của trang ở dưới. Số đếm do lõi trả.
+  const filters=window.XRU_FILTERS($('filters'),change=>{if(writing)return;Object.assign(view,change);view.page=1;load();});
+  function paintFilters(){if(!page)return;const t=window.XRU_I18N.t,sections=[];
+    if(view.state==='MACHINE_FLAGGED'&&page.reasons?.length)sections.push({key:'flag',title:t('flag_lbl'),rows:[{pick:{reason:''},name:t('all_flags'),total:page.counts[view.state],on:!view.reason,all:true},...page.reasons.map(r=>({pick:{reason:r.reason},name:r.reason,total:r.total,on:view.reason===r.reason}))]});
+    sections.push({key:'source',title:t('source_lbl'),tree:{all:t('all_sources'),total:page.counts[view.state],sources:page.sources,platform:view.platform,source:view.source}});
+    sections.push({key:'sort',title:t('sort_lbl'),rows:sorts().map(([key,label])=>({pick:{sort:key},name:t(label),on:view.sort===key}))});
+    filters.render(sections);}
+  function paintPage(){list.replaceChildren();
+    page.items.forEach((item,i)=>{const row=document.createElement('a');row.href=itemLink(item.xru_id);row.className='side-item';row.dataset.id=item.xru_id;row.innerHTML=`<span class="n">${String(page.offset+i+1).padStart(2,'0')}</span><div><div class="t">${esc(item.title)}</div><div class="s">${esc(item.source_name||item.source_platform)}${item.duration_seconds!=null?' · '+time(item.duration_seconds):''}</div></div>`;list.append(row);row.addEventListener('click',e=>{if(e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;e.preventDefault();select(i);});});
     wall.render(page.items,page.offset,page.total);
     document.querySelector('.queue-count').textContent=n(page.total);document.querySelector('.side-count span').textContent=view.state;
     document.querySelectorAll('[data-state]').forEach(b=>{b.classList.toggle('is-active',b.dataset.state===view.state);b.querySelector('.count').textContent=n(page.counts[b.dataset.state]);});
@@ -104,9 +100,6 @@
   function step(delta,wrap=false){if(!selected||reading||writing)return;const at=page.items.findIndex(row=>row.xru_id===selected.xru_id);if(wrap&&delta>0&&page.offset+at===page.total-1){view.page=1;load(null);return;}if(delta>0&&at===page.items.length-1&&page.offset+page.items.length<page.total){view.page++;load(null);return;}if(delta<0&&at===0&&page.offset){view.page--;load(null,false,Infinity);return;}select(Math.max(0,Math.min(page.items.length-1,at+delta)));}
   document.addEventListener('input',e=>{if(e.target.closest('#decision-controls'))remember();});
   document.addEventListener('change',e=>{if(e.target.closest('#decision-controls'))remember();});
-  filters.addEventListener('click',e=>{const r=e.target.closest('.side-item');if(!r||writing)return;const d=r.dataset;
-    if(r.classList.contains('is-group')&&e.target.classList.contains('n')){opened.has(d.platform)?opened.delete(d.platform):opened.add(d.platform);paintFilters();return;}
-    if('platform' in d){view.platform=d.platform;view.source=d.source;if(d.platform)opened.add(d.platform);}if('reason' in d)view.reason=d.reason;if('sort' in d)view.sort=d.sort;view.page=1;load();});
   window.addEventListener('xru-lang-applied',paintFilters);
   let timer;search.value=view.q;search.addEventListener('input',()=>{clearTimeout(timer);view.q=search.value.trim();view.page=1;++readId;reading=true;pending=false;controls();timer=setTimeout(()=>load(),180);});
   search.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();search.value='';view.q='';view.page=1;load();search.blur();}e.stopPropagation();});
