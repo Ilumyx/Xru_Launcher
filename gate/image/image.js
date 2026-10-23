@@ -64,7 +64,7 @@ function choose(id) { if (store.s.reading || id === store.s.selectedId) return; 
 async function load(preferred = store.s.selectedId, locate = false) {
   if (!backend) return; if (flushing) await flushing;
   if (!sorts(store.s.view.state).some(([k]) => k === store.s.view.sort)) store.set((s) => ({ view: { ...s.view, sort: 'oldest' } }));
-  const id = ++readId; pending = true; store.set({ reading: true });
+  const id = ++readId; pending = id;
   try {
     const q = query(store.s.view); if (locate && preferred) q.set('selected', preferred);
     const result = await json('/api/queue?' + q); if (id !== readId) return;
@@ -76,7 +76,7 @@ async function load(preferred = store.s.selectedId, locate = false) {
   } catch (e) {
     if (id !== readId) return;
     store.set({ reading: true, notice: 'Backend Gate ảnh đang tắt hoặc đọc lỗi. Số đang hiện, nếu có, chưa được cập nhật. ' + e.message });
-  } finally { if (id === readId) pending = false; }
+  } finally { if (pending === id) pending = false; }
 }
 // Tới thẳng một ảnh theo mã gõ vào ô tìm: hỏi lõi ảnh đang ở trạng thái nào, bỏ bộ lọc, mở đúng trang chứa nó.
 async function jump(id) {
@@ -84,6 +84,8 @@ async function jump(id) {
     const d = await json('/api/assets/' + encodeURIComponent(id));
     store.set((s) => ({ view: { ...s.view, state: d.item.state, platform: '', source: '', q: '', page: 1 } }));
     await load(id, true);
+    // Nhảy tới đúng món đang xem thì nhìn như không có gì xảy ra: luôn đưa ô của nó vào giữa tầm nhìn.
+    requestAnimationFrame(() => document.querySelector('#tiles .is-active')?.scrollIntoView({ block: 'center' }));
   } catch {
     // Mã của một clip thì mở màn Gate video đúng clip đó; không có ở đâu thì trả danh sách về như cũ và báo.
     try {
@@ -144,7 +146,7 @@ function Sidebar() {
   ] : [];
   const typed = (e) => {
     const q = e.currentTarget.value; clearTimeout(searchTimer); ++readId;
-    store.set((st) => ({ view: { ...st.view, q, page: 1 }, reading: true })); searchTimer = setTimeout(() => (isId(q.trim()) ? jump(q.trim()) : load()), 250);
+    store.set((st) => ({ view: { ...st.view, q, page: 1 } })); searchTimer = setTimeout(() => (isId(q.trim()) ? jump(q.trim()) : load()), 250);
   };
   return [
     h('div', { class: 'side-head' },

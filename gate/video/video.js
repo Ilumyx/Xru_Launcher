@@ -67,7 +67,7 @@ function choose(id) { if (store.s.reading || id === store.s.selectedId) return; 
 async function load(preferred = store.s.selectedId, { locate = false, slot = 0 } = {}) {
   if (!backend) return; if (flushing) await flushing;
   if (!sorts(store.s.view.state).some(([k]) => k === store.s.view.sort)) store.set((s) => ({ view: { ...s.view, sort: 'oldest' } }));
-  const id = ++readId; pending = true; store.set({ reading: true });
+  const id = ++readId; pending = id;
   const q = query(store.s.view); if (locate && preferred) q.set('selected', preferred);
   try {
     const result = await json('/api/queue?' + q); if (id !== readId) return;
@@ -79,7 +79,7 @@ async function load(preferred = store.s.selectedId, { locate = false, slot = 0 }
   } catch (e) {
     if (id !== readId) return;
     store.set({ reading: true, notice: 'Backend Gate video đang tắt hoặc đọc lỗi. Số đang hiện chưa được cập nhật. ' + e.message });
-  } finally { if (id === readId) pending = false; }
+  } finally { if (pending === id) pending = false; }
 }
 // Đổi bộ lọc / lane / trang rồi đọc lại.
 function go(change, preferred = store.s.selectedId, slot = 0) { store.set((s) => ({ view: { ...s.view, ...change } })); load(preferred, { slot }); }
@@ -127,6 +127,8 @@ async function jump(id) {
     const d = await json('/api/assets/' + encodeURIComponent(id));
     store.set((s) => ({ view: { ...s.view, state: d.item.lane, platform: '', source: '', reason: '', q: '', page: 1 } }));
     await load(id, { locate: true });
+    // Nhảy tới đúng món đang xem thì nhìn như không có gì xảy ra: luôn đưa ô của nó vào giữa tầm nhìn.
+    requestAnimationFrame(() => document.querySelector('#video-gallery .is-active')?.scrollIntoView({ block: 'center' }));
   } catch {
     // Mã của một ảnh thì mở màn Gate ảnh đúng ảnh đó; không có ở đâu thì trả danh sách về như cũ và báo.
     try {
@@ -219,7 +221,7 @@ function Sidebar() {
   }
   const typed = (e) => {
     const q = e.currentTarget.value; clearTimeout(searchTimer); ++readId;
-    store.set((st) => ({ view: { ...st.view, q, page: 1 }, reading: true })); searchTimer = setTimeout(() => (isId(q.trim()) ? jump(q.trim()) : load()), 180);
+    store.set((st) => ({ view: { ...st.view, q, page: 1 } })); searchTimer = setTimeout(() => (isId(q.trim()) ? jump(q.trim()) : load()), 180);
   };
   const keys = (e) => { e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); e.currentTarget.blur(); go({ q: '', page: 1 }); } };
   return [
