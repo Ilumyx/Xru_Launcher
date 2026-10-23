@@ -7,28 +7,34 @@
 window.XRU_WALL = (o) => {
   const t = (key) => (window.XRU_I18N ? window.XRU_I18N.t(key) : key);
   const n = (v) => Number(v).toLocaleString('en-US');
-  let offset = 0, total = 0, timer = 0, sizes = '120px', drawn = false;
+  let offset = 0, total = 0, timer = 0, sizes = '120px', drawn = false, nodes = new Map();
   const preview = document.createElement('video');
   Object.assign(preview, { muted: true, loop: true, playsInline: true });
   preview.setAttribute('aria-hidden', 'true');
 
   function badge(tile, kind, text) { const b = document.createElement('span'); b.className = 'wall-badge ' + kind; b.textContent = text; tile.append(b); }
-  function tile(item, index) {
+  // Ô dựng một lần theo id; trang đọc lại (vừa quyết một món) thì giữ ô cũ, chỉ dời chỗ và ghi lại nhãn — ảnh không nạp lại.
+  function tile(item) {
     const a = document.createElement('a');
     a.className = 'wall-tile'; a.href = '#'; a.dataset.id = item.xru_id;
     const img = new Image(); img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
     img.sizes = sizes; img.srcset = `${o.thumb(item, 240)} 240w, ${o.thumb(item, 480)} 480w`; img.src = o.thumb(item, 240);
     a.append(img);
-    badge(a, 'is-num', String(offset + index + 1).padStart(3, '0'));
-    const end = o.end && o.end(item); if (end) badge(a, 'is-end', end);
-    const tags = o.tags ? o.tags(item) : [];
-    if (tags.length) { const box = document.createElement('span'); box.className = 'wall-tags'; tags.forEach((text) => badge(box, 'is-tag', text)); a.append(box); }
-    a.addEventListener('click', (e) => { if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return; e.preventDefault(); o.onSelect(index, e.detail === 2); });
+    a.addEventListener('click', (e) => { if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return; e.preventDefault(); o.onSelect(+a.dataset.index, e.detail === 2); });
     if (o.media) {
       // Một video xem trước cho cả tường: rê chuột ở yên 300ms mới tải, rời chuột thì trả bộ giải mã.
       a.addEventListener('pointerenter', () => { clearTimeout(timer); timer = setTimeout(() => { preview.src = o.media(item); a.append(preview); preview.play().catch(() => {}); }, 300); });
       a.addEventListener('pointerleave', () => { clearTimeout(timer); if (preview.parentNode === a) stop(); });
     }
+    return a;
+  }
+  function dress(a, item, index) {
+    a.dataset.index = index;
+    a.querySelectorAll(':scope > .wall-badge, :scope > .wall-tags').forEach((node) => node.remove());
+    badge(a, 'is-num', String(offset + index + 1).padStart(3, '0'));
+    const end = o.end && o.end(item); if (end) badge(a, 'is-end', end);
+    const tags = o.tags ? o.tags(item) : [];
+    if (tags.length) { const box = document.createElement('span'); box.className = 'wall-tags'; tags.forEach((text) => badge(box, 'is-tag', text)); a.append(box); }
     return a;
   }
   function stop() { preview.pause(); preview.removeAttribute('src'); preview.load(); preview.remove(); }
@@ -54,7 +60,9 @@ window.XRU_WALL = (o) => {
       // Ô rộng gần bằng cỡ tối thiểu màn khai (--wall-min); sizes cho trình duyệt chọn 240 hay 480.
       sizes = (parseFloat(getComputedStyle(o.grid).getPropertyValue('--wall-min')) || 120) + 'px';
       clearTimeout(timer); stop();
-      o.grid.replaceChildren(...items.map(tile));
+      const kept = new Map();
+      o.grid.replaceChildren(...items.map((item, index) => { const a = dress(nodes.get(item.xru_id) || tile(item), item, index); kept.set(item.xru_id, a); return a; }));
+      nodes = kept;
       paintPager();
       if (turned) o.grid.closest('.ws-main')?.scrollTo({ top: 0 });
     },
