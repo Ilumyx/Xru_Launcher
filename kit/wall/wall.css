@@ -19,6 +19,7 @@
 .wall-badge.is-end { right: 6px; bottom: 6px; }
 .wall-tags { position: absolute; z-index: 1; top: 26px; left: 6px; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
 .wall-tags .wall-badge { position: static; color: var(--warn); }
+.wall-empty { grid-column: 1 / -1; margin: 0; padding: 48px 0; font: 12px var(--font-mono); color: var(--fg-dim); text-align: center; }
 
 /* Lật trang: một ô ở chân sidebar (luôn thấy) + nút "Trang sau" ở cuối tường (cuộn hết là thấy). */
 .wall-pager { display: flex; align-items: center; justify-content: space-between; gap: 8px; }

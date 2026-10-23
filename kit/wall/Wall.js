@@ -1,6 +1,7 @@
 // Tường ô nhỏ chung (kit/wall/wall.css), bản Preact: màn đưa danh sách món, tường vẽ ô theo id.
 // Món nào còn thì ô đó giữ nguyên (ảnh không nạp lại), chỉ dời chỗ và đánh số lại.
-//   h(Wall, { id, style, hidden, items, offset, activeId, sizes, thumb(item, width), media?(item), end?(item), tags?(item), onSelect(item, double) })
+//   h(Wall, { id, style, hidden, items, offset, activeId, sizes, empty, thumb(item, width), media?(item), end?(item), tags?(item), onSelect(item, double) })
+//   empty: câu hiện giữa tường khi trang không còn món (lane trống / lọc không ra). Trống không phải lỗi, nên không đi qua ô báo lỗi.
 //   h(WallPager, { offset, total, size, onPage(page) })  — ô lật trang ở chân sidebar
 //   h(WallNext, { offset, total, size, onPage(page) })   — nút "Trang sau" ở cuối tường
 import { h } from 'preact';
@@ -33,7 +34,7 @@ function Tile({ item, number, active, sizes, thumb, end, tags, preview, onSelect
   preview ? h(Preview, { src: preview }) : null);
 }
 
-export function Wall({ id, style, hidden, items, offset, activeId, sizes = '120px', thumb, media, end, tags, onSelect }) {
+export function Wall({ id, style, hidden, items, offset, activeId, sizes = '120px', empty = '', thumb, media, end, tags, onSelect }) {
   const grid = useRef(), timer = useRef(0), [hover, setHover] = useState(null);
   // Lật trang thì về đầu tường; đổi ô đang chọn thì kéo ô vào tầm nhìn.
   useEffect(() => { grid.current.closest('.ws-main')?.scrollTo({ top: 0 }); }, [offset]);
@@ -44,10 +45,10 @@ export function Wall({ id, style, hidden, items, offset, activeId, sizes = '120p
     if (!item || !media) { setHover(null); return; }
     timer.current = setTimeout(() => setHover(item.xru_id), 300);
   };
-  return h('div', { id, class: 'wall', style, hidden, ref: grid }, items.map((item, index) => h(Tile, {
+  return h('div', { id, class: 'wall', style, hidden, ref: grid }, items.length ? items.map((item, index) => h(Tile, {
     key: item.xru_id, item, number: offset + index + 1, active: item.xru_id === activeId, sizes, thumb, end, tags,
     preview: hover === item.xru_id ? media(item) : null, onSelect, onHover,
-  })));
+  })) : h('p', { class: 'wall-empty' }, empty));
 }
 
 const pages = (total, size) => Math.max(1, Math.ceil(total / size));

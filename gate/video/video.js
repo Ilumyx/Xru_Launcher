@@ -52,6 +52,8 @@ async function json(path, options = {}) {
   const d = await r.json(); if (!r.ok) throw Error(d.error || 'Backend chưa sẵn sàng.'); return d;
 }
 const query = (v) => new URLSearchParams({ state: v.state, platform: v.platform, source: v.source, reason: v.reason, q: v.q.trim(), sort: v.sort, limit: SIZE, offset: (v.page - 1) * SIZE });
+// Trang trống: lane trống thật hay bộ lọc không ra món nào. Không phải lỗi, nên hiện giữa tường chứ không ở ô báo.
+const emptyText = (v) => (v.platform || v.source || v.reason || v.q.trim() ? 'Không có clip khớp bộ lọc.' : 'Lane này trống.');
 
 async function readDetail(id) {
   const my = ++detailId; if (!id) return;
@@ -74,7 +76,7 @@ async function load(preferred = store.s.selectedId, { locate = false, slot = 0 }
     const items = result.items, at = items.findIndex((r) => r.xru_id === preferred);
     const pick = items.length ? items[at >= 0 ? at : Math.min(slot, items.length - 1)].xru_id : null;
     store.set((s) => ({ page: result, view: { ...s.view, page: Math.floor(result.offset / result.limit) + 1 }, reading: false,
-      notice: items.length ? '' : 'Không có clip khớp bộ lọc.', selectedId: pick, detail: null }));
+      notice: '', selectedId: pick, detail: null }));
     readDetail(pick);
   } catch (e) {
     if (id !== readId) return;
@@ -117,7 +119,7 @@ async function refresh() {
     const result = await json('/api/queue?' + query(store.s.view)); if (id !== readId || outbox.length) return;
     const keep = result.items.some((r) => r.xru_id === store.s.selectedId), pick = keep ? store.s.selectedId : result.items[0]?.xru_id ?? null;
     store.set((s) => ({ page: result, view: { ...s.view, page: Math.floor(result.offset / result.limit) + 1 }, selectedId: pick,
-      ...(keep ? {} : { detail: null }), notice: result.items.length ? s.notice : 'Không có clip khớp bộ lọc.' }));
+      ...(keep ? {} : { detail: null }) }));
     if (!keep) readDetail(pick);
   } catch { /* lượt đọc thường sau sẽ báo lỗi */ }
 }
@@ -256,13 +258,13 @@ function Main() {
         key: state, type: 'button', class: `gate-tab-btn tab-link state-${state.toLowerCase()}${state === v.state ? ' is-active' : ''}`,
         onClick: () => go({ state, platform: '', source: '', reason: '', page: 1 }, null),
       }, h('strong', { class: 'count ' + tone }, page ? n(page.counts[state]) : '—'), h('span', null, label))))),
+    h('div', { class: 'flash-banner flash-error', id: 'api-error', role: 'status', hidden: !s.notice }, s.notice),
     h('div', { id: 'watch-area', hidden: grid }, !grid && item ? h(Player, { key: item.xru_id + ':watch', item, mode: 'watch', canStep: valid(s, item) }) : null),
-    page ? h(Wall, { id: 'video-gallery', style: '--wall-min:160px; --wall-ratio:4 / 3; --wall-fit:contain', hidden: !grid, items: page.items, offset: page.offset, activeId: s.selectedId, sizes: '160px',
+    page ? h(Wall, { id: 'video-gallery', style: '--wall-min:160px; --wall-ratio:4 / 3; --wall-fit:contain', hidden: !grid && page.items.length > 0, items: page.items, offset: page.offset, activeId: s.selectedId, sizes: '160px', empty: emptyText(v),
       thumb: (it, w) => backend + '/thumb/' + encodeURIComponent(it.xru_id) + '?w=' + w, media: (it) => media(it.xru_id), end: (it) => time(it.duration_seconds),
       tags: (it) => (it.gate_flag_reason || '').split(' + ').filter(Boolean), onSelect: (it) => choose(it.xru_id) }) : null,
     page ? h(WallNext, { id: 'video-next', hidden: !grid, offset: page.offset, total: page.total, size: SIZE, onPage: (to) => go({ page: to }, null) }) : null,
     h('footer', { class: 'page-foot' }, h(Hints, { s, item }), h('div', null, 'XRU GATE // 2026')),
-    h('div', { class: 'flash-banner flash-error', id: 'api-error', role: 'status', hidden: !s.notice }, s.notice),
   ];
 }
 

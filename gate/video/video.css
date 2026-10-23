@@ -305,7 +305,8 @@ body[data-mode="watch"] .page-foot { margin-top: 16px; }
 .btn.disabled { opacity: .4; cursor: default; }
 .related-videos, .po-note-display { font: 11px var(--font-mono); overflow-wrap: anywhere; }
 .dupe-link { color: var(--fg-dim); }
-.flash-banner { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 30; padding: 12px; background: var(--surface); border: 1px solid var(--hairline-hi); color: var(--fg); }
+/* Ô báo nằm trong dòng dưới tab, không nổi đè lên tab (PO 23/10: báo che mất tab WAITING). */
+.flash-banner { padding: 10px 12px; margin-bottom: 12px; background: var(--surface); border: 1px solid var(--hairline-hi); color: var(--fg); }
 .flash-error { color: var(--warn); }
 [hidden] { display: none !important; }
 

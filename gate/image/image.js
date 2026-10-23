@@ -48,6 +48,8 @@ async function json(path, options = {}) {
   const d = await r.json(); if (!r.ok) throw new Error(d.error || 'Backend Gate ảnh chưa sẵn sàng.'); return d;
 }
 const query = (v) => new URLSearchParams({ state: v.state, sort: v.sort, platform: v.platform, source: v.source, q: v.q.trim(), limit: SIZE, offset: (v.page - 1) * SIZE });
+// Trang trống: lane trống thật hay bộ lọc không ra món nào. Không phải lỗi, nên hiện giữa tường chứ không ở ô báo.
+const emptyText = (v) => (v.platform || v.source || v.q.trim() ? 'Không có ảnh khớp bộ lọc.' : 'Lane này trống.');
 
 async function readDetail(id) {
   const my = ++detailId; if (!id) return;
@@ -71,7 +73,7 @@ async function load(preferred = store.s.selectedId, locate = false) {
     const items = result.items, at = items.findIndex((r) => r.xru_id === preferred);
     const pick = items.length ? items[Math.max(0, at)].xru_id : null;
     store.set((s) => ({ page: result, view: { ...s.view, page: Math.floor(result.offset / SIZE) + 1 }, reading: false,
-      notice: items.length ? '' : 'Không có ảnh khớp bộ lọc.', selectedId: pick, detail: null }));
+      notice: '', selectedId: pick, detail: null }));
     readDetail(pick);
   } catch (e) {
     if (id !== readId) return;
@@ -127,7 +129,7 @@ async function refresh() {
     const result = await json('/api/queue?' + query(store.s.view)); if (id !== readId || outbox.length) return;
     const keep = result.items.some((r) => r.xru_id === store.s.selectedId), pick = keep ? store.s.selectedId : result.items[0]?.xru_id ?? null;
     store.set((s) => ({ page: result, view: { ...s.view, page: Math.floor(result.offset / SIZE) + 1 }, selectedId: pick,
-      ...(keep ? {} : { detail: null }), notice: result.items.length ? s.notice : 'Không có ảnh khớp bộ lọc.' }));
+      ...(keep ? {} : { detail: null }) }));
     if (!keep) readDetail(pick);
   } catch { /* lượt đọc thường sau sẽ báo lỗi */ }
 }
@@ -172,7 +174,7 @@ function Main() {
           h('span', { class: 'count ' + tone }, page ? n(page.counts[state]) : '—'), h('span', null, label))
         : h('button', { key: label, class: 'gate-tab-btn', disabled: true, title: 'Nghi trùng hiện trong hồ sơ ảnh; không có lane FLAG riêng' }, h('span', { class: 'count' }), h('span', null, label))))),
     h('div', { class: 'ig-flash', id: 'err', role: 'status', hidden: !s.notice }, s.notice),
-    page ? h(Wall, { id: 'tiles', style: '--wall-min:120px; --wall-ratio:1 / 1', items: page.items, offset: page.offset, activeId: s.selectedId, sizes: '120px',
+    page ? h(Wall, { id: 'tiles', style: '--wall-min:120px; --wall-ratio:1 / 1', items: page.items, offset: page.offset, activeId: s.selectedId, sizes: '120px', empty: emptyText(v),
       thumb: (it, w) => thumb(it.xru_id, w), onSelect: (it, double) => { choose(it.xru_id); if (double) store.set({ peek: true }); } }) : null,
     page ? h(WallNext, { id: 'tiles-end', offset: page.offset, total: page.total, size: SIZE, onPage: (to) => go({ page: to }, null) }) : null,
     h('footer', { class: 'page-foot' },
