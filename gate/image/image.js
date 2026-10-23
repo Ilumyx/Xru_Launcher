@@ -39,7 +39,7 @@ function current(s) {
 const valid = (s, item = current(s)) => !!item && !s.reading && item.state === s.view.state;
 
 // ---------- Nói chuyện với Backend ----------
-let backend = null, readId = 0, detailId = 0, pending = false, flushing = null;
+let backend = null, videoBackend = null, readId = 0, detailId = 0, pending = false, flushing = null;
 const outbox = [];
 const media = (id) => backend + '/media/' + encodeURIComponent(id);
 const thumb = (id, w) => backend + '/thumb/' + encodeURIComponent(id) + (w ? '?w=' + w : '');
@@ -84,7 +84,14 @@ async function jump(id) {
     const d = await json('/api/assets/' + encodeURIComponent(id));
     store.set((s) => ({ view: { ...s.view, state: d.item.state, platform: '', source: '', q: '', page: 1 } }));
     await load(id, true);
-  } catch (e) { store.set({ reading: false, notice: 'Không tìm thấy ảnh ' + id + '. ' + e.message }); }
+  } catch {
+    // Mã của một clip thì mở màn Gate video đúng clip đó; không có ở đâu thì trả danh sách về như cũ và báo.
+    try {
+      const r = await fetch(videoBackend + '/api/assets/' + encodeURIComponent(id), { cache: 'no-store' });
+      if (r.ok) { const d = await r.json(); location.href = '/gate/video/?' + new URLSearchParams({ state: d.item.lane, view: 'grid', selected: id }); return; }
+    } catch { /* Backend video tắt: coi như không thấy */ }
+    store.set((s) => ({ view: { ...s.view, q: '' } })); await load(); store.set({ notice: 'Không tìm thấy món ' + id + ' trong Gate.' });
+  }
 }
 const isId = (text) => /^xru-[0-9a-f-]{36}$/i.test(text);
 function go(change, preferred = store.s.selectedId) { store.set((s) => ({ view: { ...s.view, ...change } })); load(preferred); }
@@ -191,7 +198,7 @@ function Inspector() {
   return [
     h('div', { class: 'insp-top' }, h('span', { class: 'insp-tag', id: 'insp-state' }, item?.state || ''),
       h('span', { class: 'insp-num', id: 'insp-num' }, index >= 0 ? `${String(page.offset + index + 1).padStart(3, '0')} / ${page.total}` : '')),
-    h('div', { class: 'insp-img' }, item ? h('img', { id: 'insp-img', src: media(item.xru_id), alt: item.title || '', onDblClick: () => store.set({ peek: true }) }) : null),
+    item ? h('div', { class: 'insp-img' }, h('img', { id: 'insp-img', src: media(item.xru_id), alt: item.title || '', onDblClick: () => store.set({ peek: true }) })) : null,
     h('div', { class: 'insp-title', id: 'insp-title' }, item?.title || ''),
     h('div', { class: 'insp-caption' }, h('div', { class: 'insp-label' }, t('caption_lbl')), h('p', { class: 'insp-cap', id: 'insp-cap' }, item?.description || '')),
     detail ? h(Duplicates, { detail }) : null,
@@ -247,5 +254,5 @@ render(h(Sidebar), document.querySelector('.side'));
 render(h(Main), document.querySelector('.ws-main'));
 render(h(Inspector), document.querySelector('.ws-insp'));
 render(h(Peek), document.getElementById('peek-root'));
-fetch('/ui-config', { cache: 'no-store' }).then((r) => r.json()).then((c) => { backend = c.image_backend; load(); })
+fetch('/ui-config', { cache: 'no-store' }).then((r) => r.json()).then((c) => { backend = c.image_backend; videoBackend = c.video_backend; load(store.s.selectedId, !!store.s.selectedId && !p.has('page')); })
   .catch(() => store.set({ notice: 'Không đọc được cấu hình UI. Hãy tải lại trang.' }));

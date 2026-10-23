@@ -44,7 +44,7 @@ function current(s) {
 const valid = (s, item = current(s)) => !!item && !s.reading && item.lane === s.view.state;
 
 // ---------- Nói chuyện với Backend ----------
-let backend = null, readId = 0, detailId = 0, pending = false, flushing = null;
+let backend = null, imageBackend = null, readId = 0, detailId = 0, pending = false, flushing = null;
 const outbox = [];
 const media = (id) => backend + '/media/' + encodeURIComponent(id);
 async function json(path, options = {}) {
@@ -127,7 +127,14 @@ async function jump(id) {
     const d = await json('/api/assets/' + encodeURIComponent(id));
     store.set((s) => ({ view: { ...s.view, state: d.item.lane, platform: '', source: '', reason: '', q: '', page: 1 } }));
     await load(id, { locate: true });
-  } catch (e) { store.set({ reading: false, notice: 'Không tìm thấy clip ' + id + '. ' + e.message }); }
+  } catch {
+    // Mã của một ảnh thì mở màn Gate ảnh đúng ảnh đó; không có ở đâu thì trả danh sách về như cũ và báo.
+    try {
+      const r = await fetch(imageBackend + '/api/assets/' + encodeURIComponent(id), { cache: 'no-store' });
+      if (r.ok) { const d = await r.json(); location.href = '/gate/image/?' + new URLSearchParams({ state: d.item.state, selected: id }); return; }
+    } catch { /* Backend ảnh tắt: coi như không thấy */ }
+    store.set((s) => ({ view: { ...s.view, q: '' } })); await load(); store.set({ notice: 'Không tìm thấy món ' + id + ' trong Gate.' });
+  }
 }
 const isId = (text) => /^xru-[0-9a-f-]{36}$/i.test(text);
 function step(delta, wrap = false) {
@@ -357,5 +364,5 @@ render(h(Sidebar), document.querySelector('.side'));
 render(h(Main), document.querySelector('.ws-main'));
 render(h(Inspector), document.querySelector('.ws-insp'));
 sync();
-fetch('/ui-config', { cache: 'no-store' }).then((r) => r.json()).then((c) => { backend = c.video_backend; load(store.s.selectedId, { locate: !!store.s.selectedId && !p.has('page') }); })
+fetch('/ui-config', { cache: 'no-store' }).then((r) => r.json()).then((c) => { backend = c.video_backend; imageBackend = c.image_backend; load(store.s.selectedId, { locate: !!store.s.selectedId && !p.has('page') }); })
   .catch(() => store.set({ notice: 'Không đọc được cấu hình UI.' }));
