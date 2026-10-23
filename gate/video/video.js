@@ -5,6 +5,7 @@ import { h, render } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { Wall, WallPager, WallNext } from '/kit/wall/Wall.js';
 import { Filters } from '/kit/sidebar/Filters.js';
+import { createStore, useStore as useSheet } from '/kit/store/store.js';
 
 const t = (key) => window.XRU_I18N.t(key);
 const n = (v) => Number(v).toLocaleString('en-US');
@@ -27,22 +28,12 @@ const sorts = (state) => [['oldest', 'sort_oldest'], ['newest', 'sort_newest'], 
 
 // ---------- Sổ tay của màn ----------
 const p = new URLSearchParams(location.search);
-const store = {
-  s: {
-    view: { state: LANES.includes(p.get('state')) ? p.get('state') : 'WAITING_PO', platform: p.get('platform') || '', source: p.get('source') || '',
-      reason: p.get('reason') || '', sort: p.get('sort') || 'oldest', q: p.get('q') || '', page: Math.max(1, +p.get('page') || 1), mode: p.get('view') === 'grid' ? 'grid' : 'watch' },
-    page: null, selectedId: p.get('selected'), detail: null, drafts: {}, notice: '', reading: true,
-  },
-  subs: new Set(),
-  set(patch) { this.s = { ...this.s, ...(typeof patch === 'function' ? patch(this.s) : patch) }; this.subs.forEach((f) => f()); },
-};
-// Đăng ký ngay lúc vẽ lần đầu (không chờ effect): dữ liệu về trước khi effect chạy thì vẫn không lỡ.
-function useStore() {
-  const [, tick] = useState(0), sub = useRef(null);
-  if (!sub.current) { sub.current = () => tick((x) => x + 1); store.subs.add(sub.current); }
-  useEffect(() => () => store.subs.delete(sub.current), []);
-  return store.s;
-}
+const store = createStore({
+  view: { state: LANES.includes(p.get('state')) ? p.get('state') : 'WAITING_PO', platform: p.get('platform') || '', source: p.get('source') || '',
+    reason: p.get('reason') || '', sort: p.get('sort') || 'oldest', q: p.get('q') || '', page: Math.max(1, +p.get('page') || 1), mode: p.get('view') === 'grid' ? 'grid' : 'watch' },
+  page: null, selectedId: p.get('selected'), detail: null, drafts: {}, notice: '', reading: true,
+});
+const useStore = () => useSheet(store);
 // Clip đang xem: bản chi tiết nếu đã đọc xong, không thì bản trong trang (lane là lane đang xem).
 function current(s) {
   if (!s.selectedId || !s.page) return null;

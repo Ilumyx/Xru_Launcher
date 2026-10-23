@@ -1,7 +1,7 @@
 /* ==========================================================================
    XRU SIDEBAR LỌC — cột trái của mọi màn duyệt (Gate ảnh, Gate video, sau này Label…)
    Từ trên xuống: số đếm · tìm nhanh · lọc nguồn · sắp xếp · danh sách · phân trang.
-   Màn có tường (Gate ảnh, Gate video): nguồn và sắp xếp là nhóm lọc bấm thẳng (.side-filters, kit/sidebar/filters.js) nằm trên danh sách.
+   Màn có tường (Gate ảnh, Gate video): nguồn và sắp xếp là nhóm lọc bấm thẳng (.side-filters, kit/sidebar/Filters.js) nằm trên danh sách.
    Mỗi dòng danh sách: số thứ tự · tiêu đề · "nguồn · một thông tin phụ".
    Khung, bề ngang, tay kéo, đóng/mở: kit/frame.
    ========================================================================== */

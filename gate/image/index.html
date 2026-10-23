@@ -4,22 +4,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/kit/tokens.css"><link rel="stylesheet" href="/kit/rail/rail.css"><link rel="stylesheet" href="/kit/page/page.css"><link rel="stylesheet" href="/kit/sidebar/sidebar.css"><link rel="stylesheet" href="/kit/frame/frame.css"><link rel="stylesheet" href="/kit/wall/wall.css"><link rel="stylesheet" href="/kit/account/account.css"><link rel="stylesheet" href="/gate/image/image.css">
 <script src="/kit/i18n/i18n.js"></script><script src="/kit/account/account.js"></script><script src="/kit/frame/frame.js"></script>
+<script type="importmap">{"imports":{"preact":"/kit/vendor/preact/preact.module.js","preact/hooks":"/kit/vendor/preact/hooks.module.js"}}</script>
 </head><body><div class="shell">
 <script src="/gate/rail_menu.js"></script>
 <nav class="rail" data-rail="gate" data-active="image" data-panel></nav><script src="/kit/rail/rail.js"></script>
-<div class="ws"><aside class="side"><div class="side-head">
-<div class="side-count"><b id="total">—</b><span id="lane-label">WAITING_PO</span></div>
-<label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" aria-label="Tìm trong hàng chờ" placeholder="Tìm tiêu đề, nguồn…" data-i18n-attr="placeholder:search_title_src"></label>
-</div><div class="side-filters" id="filters"></div><div class="side-items"></div><div class="side-pager wall-pager" id="page-count"></div></aside>
-<main class="ws-main"><header class="page-head ws-head"><div class="page-title"><a href="/?continent=eurasia">EURASIA</a><span>/</span><a href="/gate/dash/">GATE</a><span>/</span><h1>IMAGE</h1></div>
-<div class="gate-tabs"><button class="gate-tab-btn" data-state="WAITING_PO"><span class="count alert">—</span><span>WAIT</span></button><button class="gate-tab-btn" disabled title="Nghi trùng hiện trong hồ sơ ảnh; không có lane FLAG riêng"><span class="count"></span><span>MACHINE FLAG</span></button><button class="gate-tab-btn" data-state="DETAINED"><span class="count warn">—</span><span>DETAIN</span></button><button class="gate-tab-btn" data-state="ACCEPT_APPROVED"><span class="count accept">—</span><span>ACCEPT</span></button><button class="gate-tab-btn" data-state="PURGE_APPROVED"><span class="count">—</span><span>PURGE</span></button></div></header>
-<div class="ig-flash" id="err" role="status" hidden></div><div class="wall" id="tiles" style="--wall-min:120px; --wall-ratio:1 / 1"></div><div class="wall-next" id="tiles-end"></div>
-<footer class="page-foot"><div class="key-hints"><span><span class="key">A</span> <span data-i18n="btn_approve">Nhận</span></span><span><span class="key">D</span> <span data-i18n="btn_detain">Giữ</span></span></div><div>XRU GATE // 2026</div></footer></main>
-<aside class="ws-insp"><div class="insp-top"><span class="insp-tag" id="insp-state"></span><span class="insp-num" id="insp-num"></span></div>
-<div class="insp-img"><img id="insp-img" alt="" hidden></div><div class="insp-title" id="insp-title"></div><div class="insp-caption"><div class="insp-label" data-i18n="caption_lbl">Chú thích</div><p class="insp-cap" id="insp-cap"></p></div>
-<dl class="insp-meta"><dt data-i18n="res_lbl">Khổ</dt><dd id="insp-res"></dd><dt data-i18n="source_lbl">Nguồn</dt><dd id="insp-src"></dd><dt>Lane</dt><dd id="insp-lane"></dd></dl>
-<div class="insp-bottom"><textarea class="insp-note" id="po_note_input" placeholder="Ghi chú…" aria-label="Ghi chú" data-i18n-attr="placeholder:note_ph" disabled></textarea><p class="insp-cap" id="insp-note"></p><div class="insp-acts">
-<button type="button" class="card-act-btn approve" data-act="ACCEPT" disabled><span data-i18n="btn_approve">Nhận</span><kbd>A</kbd></button><button type="button" class="card-act-btn detain" data-act="DETAIN" disabled><span data-i18n="btn_detain">Giữ</span><kbd>D</kbd></button><button type="button" class="card-act-btn approve" data-act="RESCUE" disabled>Rescue → Waiting</button><button type="button" class="card-act-btn purge" data-act="PURGE" disabled><span data-i18n="btn_purge">Hủy</span></button>
-</div><span id="readonly" hidden>Terminal state · Read-only mode</span></div></aside></div></div>
-<div class="gr-peek" id="peek" role="dialog" aria-label="Xem ảnh lớn"><img id="peek-img" alt=""><button id="peek-close" class="card-act-btn">Đóng · Esc</button></div>
-<script src="/kit/wall/wall.js"></script><script src="/kit/sidebar/filters.js"></script><script src="/gate/image/image.js"></script></body></html>
+<div class="ws"><aside class="side"></aside><main class="ws-main"></main><aside class="ws-insp"></aside></div></div>
+<div id="peek-root"></div>
+<script type="module" src="/gate/image/image.js"></script></body></html>
