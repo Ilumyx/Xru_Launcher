@@ -1,7 +1,7 @@
 /* ==========================================================================
    XRU WALL — tường ô nhỏ chung cho màn duyệt (Gate ảnh, Gate video…). PO 22/10.
    Lướt bắt pattern: ô cắt đầy, khe 4px, không chữ trên ô (chữ ở cột phải), chia trang có trần.
-   Màn khai cỡ ô tối thiểu và tỉ lệ: <div class="wall" style="--wall-min:120px; --wall-ratio:1 / 1">
+   Màn khai cỡ ô tối thiểu, tỉ lệ và cách lấp ô: <div class="wall" style="--wall-min:120px; --wall-ratio:1 / 1; --wall-fit:cover">
    Tường chỉ vẽ ô của trang đang xem; ô ngoài màn không vẽ (content-visibility), ảnh tải lười.
    ========================================================================== */
 .wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--wall-min, 120px), 1fr)); gap: 4px; }
@@ -11,7 +11,8 @@
   color: inherit; text-decoration: none; cursor: pointer;
   content-visibility: auto; contain-intrinsic-size: auto 150px;
 }
-.wall-tile img, .wall-tile video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+/* --wall-fit: cover = phủ kín ô (ảnh, lướt kiểu FB); contain = hiện trọn khung (video: viền/template ở mép là bằng chứng QA, không được cắt). */
+.wall-tile img, .wall-tile video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: var(--wall-fit, cover); display: block; }
 .wall-tile.is-active { outline: 2px solid var(--accent); outline-offset: -2px; }
 .wall-badge { position: absolute; z-index: 1; padding: 1px 5px; background: rgba(0, 0, 0, .72); border-radius: 2px; font: 10px var(--font-mono); color: var(--fg); }
 .wall-badge.is-num { top: 6px; left: 6px; }
