@@ -1,4 +1,4 @@
-// Màn Nguồn Crawler theo bản vẽ PO (design/ORDER_crawler_sources.md). Chỉ đọc /api/board; mọi thao tác cập nhật tại chỗ.
+// Màn Nguồn Crawler. Chỉ đọc /api/board; mọi thao tác cập nhật tại chỗ.
 // Một nguồn một dòng, chia nhóm theo trạng thái; bấm dòng mở sidebar phải chi tiết (được phép đè lên bảng).
 (() => {
   let backend, board = null, sources = [], shown = [], picked = null, disconnected = false, readAt = '', fault = null;
