@@ -1,145 +1,362 @@
-// Video UI owns interaction; the lane Backend owns every fact and decision.
-(() => {
-  const $ = id => document.getElementById(id), p = new URLSearchParams(location.search);
-  const lanes = ['WAITING_PO','MACHINE_FLAGGED','DETAINED','ACCEPT_APPROVED','PURGE_APPROVED'];
-  const view = {state:lanes.includes(p.get('state'))?p.get('state'):'WAITING_PO',source:p.get('source')||'',platform:p.get('platform')||'',reason:p.get('reason')||'',sort:p.get('sort')||'oldest',q:p.get('q')||'',page:Math.max(1,+p.get('page')||1),mode:p.get('view')==='grid'?'grid':'watch',selected:p.get('selected')};
-  let backend, page, selected, reading=true, pending=false, flushing=null, readId=0, detailId=0;
-  const drafts=new Map(), list=$('queue-list'), search=document.querySelector('.side-search input');
-  // Sort theo lane: hai sort "PO quyết định" chỉ có nghĩa ở lane đã quyết.
-  const sorts=()=>[['oldest','sort_oldest'],['newest','sort_newest'],['duration_longest','sort_longest'],['duration_shortest','sort_shortest'],...(['DETAINED','ACCEPT_APPROVED','PURGE_APPROVED'].includes(view.state)?[['po_newest','sort_po_newest'],['po_oldest','sort_po_oldest']]:[])];
-  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const n=v=>Number(v).toLocaleString('en-US'), time=v=>Number.isFinite(v)?`${Math.floor(v/60)}:${String(Math.floor(v%60)).padStart(2,'0')}`:'';
-  const media=id=>backend+'/media/'+encodeURIComponent(id);
-  const actions={WAITING_PO:[['ACCEPT','Accept','a'],['DETAIN','Detain','d']],MACHINE_FLAGGED:[['KEEP','YES · KEEP','a'],['DETAIN','NO · DETAIN','d']],DETAINED:[['RESCUE','RESCUE TO WAIT','r'],['PURGE','PURGE','p']],PURGE_APPROVED:[['RESTORE_PURGE','RESTORE TO DETAIN','r']],ACCEPT_APPROVED:[['RESCUE_ACCEPT','RESCUE TO WAIT','r'],['DETAIN_ACCEPT','DETAIN','d']]};
-  const itemLink=id=>'/gate/video/?'+new URLSearchParams({state:view.state,view:view.mode,sort:view.sort,platform:view.platform,source:view.source,reason:view.reason,q:view.q,page:view.page,selected:id});
-  function notice(message){$('api-error').textContent=message;$('api-error').hidden=!message;}
-  function sync(){const q=new URLSearchParams({state:view.state,view:view.mode,sort:view.sort});for(const[k,v]of Object.entries({platform:view.platform,source:view.source,reason:view.reason,q:view.q,page:view.page>1?view.page:'',selected:selected?.xru_id||''}))if(v)q.set(k,v);history.replaceState(null,'','/gate/video/?'+q);
-    // Hai nút rail video mang theo bộ lọc hiện tại; chữa ở menu XRU_RAILS rồi báo rail vẽ lại (rail tự vẽ lại cả khi đổi ngôn ngữ).
-    let changed=false;for(const entry of window.XRU_RAILS.gate.groups[0])if(['video','watch'].includes(entry.key)){const target=new URLSearchParams(q);target.set('view',entry.key==='video'?'grid':'watch');const href='/gate/video/?'+target;if(entry.href!==href){entry.href=href;changed=true;}}
-    if(changed)window.dispatchEvent(new Event('xru-rail-changed'));}
-  function controls(){const valid=selected&&!reading&&selected.lane===view.state;
-    document.querySelectorAll('#decision-controls button,#decision-controls input,#decision-controls textarea').forEach(e=>e.disabled=!valid);
-    const skip=$('skip-review-item');if(skip)skip.disabled=!valid||page.total<2;
-    document.querySelectorAll('[data-step]').forEach(e=>e.disabled=!valid);
-  }
-  async function json(path,options={}){const r=await fetch(backend+path,{...options,cache:'no-store',signal:AbortSignal.timeout(20000)});const d=await r.json();if(!r.ok)throw Error(d.error||'Backend chưa sẵn sàng.');return d;}
-  function remember(){if(!selected||!$('po-note'))return;drafts.set(selected.xru_id,{po_note:$('po-note').value,noise_present:$('noise-present').checked,watermark_present:$('watermark-present').checked});refreshTokens();}
-  function refreshTokens(){const note=$('po-note');if(!note)return;document.querySelectorAll('[data-note-token]').forEach(b=>{const on=note.value.split('\n').some(line=>line.trim()===b.dataset.noteToken);b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});}
-  function token(word){if(!$('po-note')||$('po-note').disabled)return;const note=$('po-note'),lines=note.value.split('\n'),at=lines.findIndex(x=>x.trim()===word);if(at>=0){lines.splice(at,1);note.value=lines.join('\n').replace(/^\n+|\n+$/g,'');}else note.value=note.value.trimEnd()+(note.value.trimEnd()?'\n':'')+word;remember();}
-  function stopPlayer(){const video=$('review-video-player');if(video){video.pause();video.removeAttribute('src');video.load();}$('watch-area').replaceChildren();$('inspector-player').replaceChildren();}
-  function renderPlayer(item){const old=$('review-video-player');if(old?.dataset.id===item.xru_id&&old.dataset.mode===view.mode){if(old.error)old.load();return;}
-    const same=old?.dataset.id===item.xru_id,position=same?old.currentTime:0,playing=same&&!old.paused;
-    if(!same)stopPlayer();
-    const video=`<video id="review-video-player" preload="metadata" src="${esc(media(item.xru_id))}" data-id="${esc(item.xru_id)}" data-mode="${view.mode}"></video>`;
-    const track='<span data-player="seek" role="slider" aria-label="Vị trí video" tabindex="0"><span data-progress></span></span>';
-    if(view.mode==='watch'){
-      $('watch-area').innerHTML=`<section class="watch"><div class="watch-stage"><div class="video-container"><div class="watch-frame ${item.orientation==='portrait'?'is-portrait':''}" id="watch-frame">${video}<span class="g-play" data-player="play"></span><div class="watch-stamp"></div></div></div><button class="watch-nav prev" data-step="-1" aria-label="Clip trước">‹</button><button class="watch-nav next" data-step="1" aria-label="Clip sau">›</button></div><div class="watch-ctrl"><button class="watch-btn" data-player="play" aria-label="Phát / dừng"></button><span class="watch-time"><span data-time>0:00</span> / <span id="insp-dur">${time(item.duration_seconds)}</span></span>${track.replace('<span data-player','<span class="watch-track" data-player')}<button class="watch-ic" data-player="rate">1×</button><button class="watch-ic" data-player="mute" aria-label="Âm thanh">🔊</button><button class="watch-ic" data-player="fullscreen" aria-label="Toàn màn hình">⛶</button></div></section>`;
-      $('inspector-player').replaceChildren();
-    }else{
-      $('inspector-player').innerHTML=`<div class="insp-img is-video"><div class="video-container">${video}</div><span class="g-play" data-player="play"></span></div><div class="insp-bar"><span data-time>0:00</span>${track.replace('<span data-player','<span class="track" data-player')}<span id="insp-dur">${time(item.duration_seconds)}</span></div>`;
-      $('watch-area').replaceChildren();
+// Gate video trên nền Preact (PO 23/10). Màn hình là hàm của một sổ tay (store): sổ đổi chỗ nào, Preact chỉ sửa đúng chỗ đó.
+// Lõi giữ mọi sự thật và quyết định. Màn giữ trang đang xem trong tay: quyết là đi tiếp ngay, lệnh ghi xếp hàng gửi ngầm,
+// gửi hết mới đọc lại lặng lẽ để đối số (Ca 6, UI_STUDY_CASE.md).
+import { h, render } from 'preact';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import { Wall, WallPager, WallNext } from '/kit/wall/Wall.js';
+import { Filters } from '/kit/sidebar/Filters.js';
+
+const t = (key) => window.XRU_I18N.t(key);
+const n = (v) => Number(v).toLocaleString('en-US');
+const time = (v) => Number.isFinite(v) ? `${Math.floor(v / 60)}:${String(Math.floor(v % 60)).padStart(2, '0')}` : '';
+const SIZE = 100;
+const LANES = ['WAITING_PO', 'MACHINE_FLAGGED', 'DETAINED', 'ACCEPT_APPROVED', 'PURGE_APPROVED'];
+const TABS = [['WAITING_PO', 'WAIT', 'alert'], ['MACHINE_FLAGGED', 'MACHINE FLAG', 'alert'], ['DETAINED', 'DETAIN', 'warn'], ['ACCEPT_APPROVED', 'ACCEPT', 'accept'], ['PURGE_APPROVED', 'PURGE', '']];
+// [lệnh, nhãn, phím]
+const ACTIONS = {
+  WAITING_PO: [['ACCEPT', 'Accept', 'a'], ['DETAIN', 'Detain', 'd']],
+  MACHINE_FLAGGED: [['KEEP', 'YES · KEEP', 'a'], ['DETAIN', 'NO · DETAIN', 'd']],
+  DETAINED: [['RESCUE', 'RESCUE TO WAIT', 'r'], ['PURGE', 'PURGE', 'p']],
+  PURGE_APPROVED: [['RESTORE_PURGE', 'RESTORE TO DETAIN', 'r']],
+  ACCEPT_APPROVED: [['RESCUE_ACCEPT', 'RESCUE TO WAIT', 'r'], ['DETAIN_ACCEPT', 'DETAIN', 'd']],
+};
+const BTN = { a: 'accept', d: 'detain', p: 'purge', r: 'rescue' };
+// Sort theo lane: hai sort "PO quyết định" chỉ có nghĩa ở lane đã quyết.
+const sorts = (state) => [['oldest', 'sort_oldest'], ['newest', 'sort_newest'], ['duration_longest', 'sort_longest'], ['duration_shortest', 'sort_shortest'],
+  ...(['DETAINED', 'ACCEPT_APPROVED', 'PURGE_APPROVED'].includes(state) ? [['po_newest', 'sort_po_newest'], ['po_oldest', 'sort_po_oldest']] : [])];
+
+// ---------- Sổ tay của màn ----------
+const p = new URLSearchParams(location.search);
+const store = {
+  s: {
+    view: { state: LANES.includes(p.get('state')) ? p.get('state') : 'WAITING_PO', platform: p.get('platform') || '', source: p.get('source') || '',
+      reason: p.get('reason') || '', sort: p.get('sort') || 'oldest', q: p.get('q') || '', page: Math.max(1, +p.get('page') || 1), mode: p.get('view') === 'grid' ? 'grid' : 'watch' },
+    page: null, selectedId: p.get('selected'), detail: null, drafts: {}, notice: '', reading: true,
+  },
+  subs: new Set(),
+  set(patch) { this.s = { ...this.s, ...(typeof patch === 'function' ? patch(this.s) : patch) }; this.subs.forEach((f) => f()); },
+};
+// Đăng ký ngay lúc vẽ lần đầu (không chờ effect): dữ liệu về trước khi effect chạy thì vẫn không lỡ.
+function useStore() {
+  const [, tick] = useState(0), sub = useRef(null);
+  if (!sub.current) { sub.current = () => tick((x) => x + 1); store.subs.add(sub.current); }
+  useEffect(() => () => store.subs.delete(sub.current), []);
+  return store.s;
+}
+// Clip đang xem: bản chi tiết nếu đã đọc xong, không thì bản trong trang (lane là lane đang xem).
+function current(s) {
+  if (!s.selectedId || !s.page) return null;
+  if (s.detail?.item.xru_id === s.selectedId) return s.detail.item;
+  const row = s.page.items.find((r) => r.xru_id === s.selectedId);
+  return row ? { ...row, lane: s.view.state } : null;
+}
+const valid = (s, item = current(s)) => !!item && !s.reading && item.lane === s.view.state;
+
+// ---------- Nói chuyện với Backend ----------
+let backend = null, readId = 0, detailId = 0, pending = false, flushing = null;
+const outbox = [];
+const media = (id) => backend + '/media/' + encodeURIComponent(id);
+async function json(path, options = {}) {
+  const r = await fetch(backend + path, { ...options, cache: 'no-store', signal: AbortSignal.timeout(20000) });
+  const d = await r.json(); if (!r.ok) throw Error(d.error || 'Backend chưa sẵn sàng.'); return d;
+}
+const query = (v) => new URLSearchParams({ state: v.state, platform: v.platform, source: v.source, reason: v.reason, q: v.q.trim(), sort: v.sort, limit: SIZE, offset: (v.page - 1) * SIZE });
+
+async function readDetail(id) {
+  const my = ++detailId; if (!id) return;
+  try {
+    const d = await json('/api/assets/' + encodeURIComponent(id)); if (my !== detailId) return;
+    if (d.item.lane !== store.s.view.state) { store.set({ notice: 'Clip đã chuyển lane. Đang đọc lại…' }); await load(); return; }
+    store.set({ detail: d });
+  } catch (e) { if (my !== detailId) return; store.set({ reading: true, notice: 'Backend Gate video đang tắt hoặc đọc lỗi. ' + e.message }); }
+}
+function choose(id) { if (store.s.reading || id === store.s.selectedId) return; store.set({ selectedId: id, detail: null }); readDetail(id); }
+
+// Đọc một trang. preferred: id muốn chọn; không còn trên trang thì chọn ô số slot (kẹp ở ô cuối). locate: nhờ lõi tìm trang chứa preferred.
+async function load(preferred = store.s.selectedId, { locate = false, slot = 0 } = {}) {
+  if (!backend) return; if (flushing) await flushing;
+  if (!sorts(store.s.view.state).some(([k]) => k === store.s.view.sort)) store.set((s) => ({ view: { ...s.view, sort: 'oldest' } }));
+  const id = ++readId; pending = true; store.set({ reading: true });
+  const q = query(store.s.view); if (locate && preferred) q.set('selected', preferred);
+  try {
+    const result = await json('/api/queue?' + q); if (id !== readId) return;
+    const items = result.items, at = items.findIndex((r) => r.xru_id === preferred);
+    const pick = items.length ? items[at >= 0 ? at : Math.min(slot, items.length - 1)].xru_id : null;
+    store.set((s) => ({ page: result, view: { ...s.view, page: Math.floor(result.offset / result.limit) + 1 }, reading: false,
+      notice: items.length ? '' : 'Không có clip khớp bộ lọc.', selectedId: pick, detail: null }));
+    readDetail(pick);
+  } catch (e) {
+    if (id !== readId) return;
+    store.set({ reading: true, notice: 'Backend Gate video đang tắt hoặc đọc lỗi. Số đang hiện chưa được cập nhật. ' + e.message });
+  } finally { if (id === readId) pending = false; }
+}
+// Đổi bộ lọc / lane / trang rồi đọc lại.
+function go(change, preferred = store.s.selectedId, slot = 0) { store.set((s) => ({ view: { ...s.view, ...change } })); load(preferred, { slot }); }
+
+// Quyết là đi tiếp ngay: clip rời trang tại chỗ, lệnh ghi xếp hàng gửi ngầm từng lệnh một; gửi hết mới đọc lại lõi một lượt
+// cho khớp số và lấp chỗ trống cuối trang. Ghi lỗi thì bỏ các lệnh sau, đọc lại về đúng clip đó, nháp vẫn giữ.
+function act(action) {
+  const s = store.s, item = current(s); if (!valid(s, item)) return;
+  const at = s.page.items.findIndex((r) => r.xru_id === item.xru_id); if (at < 0) return;
+  const d = s.drafts[item.xru_id] || item;
+  outbox.push({ id: item.xru_id, body: { action, expected_lane: item.lane, po_note: d.po_note || null, noise_present: !!d.noise_present, watermark_present: !!d.watermark_present } });
+  ++readId;
+  const rest = s.page.items.filter((r) => r.xru_id !== item.xru_id), next = rest.length ? rest[Math.min(at, rest.length - 1)].xru_id : null;
+  store.set({ page: { ...s.page, items: rest, total: s.page.total - 1, counts: { ...s.page.counts, [s.view.state]: s.page.counts[s.view.state] - 1 } }, selectedId: next, detail: null, notice: '' });
+  readDetail(next);
+  if (!flushing) flushing = flush();
+}
+async function flush() {
+  while (outbox.length) {
+    const job = outbox[0];
+    try {
+      await json('/api/assets/' + encodeURIComponent(job.id) + '/decisions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(job.body) });
+      outbox.shift(); store.set((s) => { const drafts = { ...s.drafts }; delete drafts[job.id]; return { drafts }; });
+    } catch (e) {
+      outbox.length = 0; flushing = null;
+      await load(job.id, { locate: true }); store.set({ notice: 'Chưa xác nhận lưu. Ghi chú và dấu chọn được giữ. ' + e.message }); return;
     }
-    let current=$('review-video-player');
-    if(same){current.replaceWith(old);current=old;current.dataset.mode=view.mode;try{current.currentTime=position;}catch{}if(playing)current.play().catch(()=>{});}
-    if(!current.dataset.bound){current.dataset.bound='1';current.addEventListener('click',play);['play','pause','timeupdate','loadedmetadata','ended'].forEach(e=>current.addEventListener(e,updatePlayer));}
-    updatePlayer();
   }
-  function updatePlayer(){const v=$('review-video-player');if(!v)return;document.querySelector('.watch')?.classList.toggle('is-playing',!v.paused&&!v.ended);document.querySelector('.insp-img')?.classList.toggle('is-playing',!v.paused&&!v.ended);document.querySelector('[data-time]').textContent=time(v.currentTime);const ratio=Number.isFinite(v.duration)&&v.duration>0?v.currentTime/v.duration:0;document.querySelector('[data-progress]').style.width=(ratio*100)+'%';const track=document.querySelector('[data-player="seek"]');track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax',Number.isFinite(v.duration)?v.duration:0);track.setAttribute('aria-valuenow',v.currentTime);if(Number.isFinite(v.duration))$('insp-dur').textContent=time(v.duration);}
-  function play(){const v=$('review-video-player');if(!v)return;if(v.paused||v.ended)v.play().catch(()=>notice('Chưa phát được video.'));else v.pause();}
-  // Chân trang ghi đúng phím đang dùng được: 1–4 khi clip còn chấm được; A/D/S/P/R theo nút của lane; mũi tên tua ở màn xem to.
-  function paintHints(){const key=(...k)=>k.map(x=>`<span class="key">${x}</span>`).join(''),word=k=>`<span data-i18n="${k}">${window.XRU_I18N.t(k)}</span>`;
-    const marks=selected?.state==='WAITING_PO'?[['1','Noise'],['2','Watermark'],['3','EVENT'],['4','CAUTION']].map(([k,w])=>`<span>${key(k)} ${w}</span>`).join(''):'';
-    const seek=view.mode==='watch'?`<span>${key('←','→')} <span>±5s · Shift: ±15%</span></span>`:'';
-    const decide=[...new Set([...actions[view.state].map(a=>a[2].toUpperCase()),'S'])];
-    document.querySelector('.key-hints').innerHTML=marks+seek+`<span>${key(...decide)} ${word('w_auto_next')}</span><span>${key('Space')} ${word('w_play_pause')}</span>`;}
-  function mode(){paintHints();document.body.dataset.mode=view.mode;$('video-gallery').hidden=$('video-next').hidden=view.mode!=='grid';$('watch-area').hidden=view.mode!=='watch';const nav=document.querySelector('.rail');nav.dataset.active=view.mode==='grid'?'video':'watch';window.XRU_I18N.apply();if(selected){renderPlayer(selected);for(const[act,label]of actions[selected.lane]){const b=document.querySelector('[data-action="'+act+'"]');if(b?.firstChild)b.firstChild.textContent=(act==='ACCEPT'&&view.mode==='grid'?window.XRU_I18N.t('btn_approve'):act==='DETAIN'&&view.state!=='MACHINE_FLAGGED'&&view.mode==='grid'?window.XRU_I18N.t('btn_detain'):label)+' ';}}controls();sync();}
-  function paintDetail(item,index){selected=item;view.selected=item.xru_id;
-    for(const[id,value]of Object.entries({'insp-title':item.title,'insp-cap':item.description,'insp-xid':item.xru_id,'insp-src':item.source_platform+(item.source_name?' / '+item.source_name:''),'insp-res':item.resolution_readable?`${item.width}×${item.height} (${item.aspect_ratio||''})`:'','insp-lane':item.lane}))$(id).textContent=value||'';
-    document.querySelector('.insp-tag').textContent=item.lane;document.querySelector('.insp-tag').title=item.gate_flag_reason||'';$('insp-num').textContent=`${String(page.offset+index+1).padStart(3,'0')} / ${page.total}`;
-    list.querySelectorAll('[data-id]').forEach(e=>{const on=e.dataset.id===item.xru_id;e.classList.toggle('is-active',on);if(on)e.scrollIntoView({block:'nearest'});});wall.active(item.xru_id);
-    const editable=item.state==='WAITING_PO';
-    $('decision-controls').innerHTML=`<div class="actions-bar">${editable?'<div class="finding-row"><label class="finding-control"><input id="noise-present" type="checkbox"> NOISE<kbd>1</kbd></label><label class="finding-control"><input id="watermark-present" type="checkbox"> WMARK<kbd>2</kbd></label><button class="finding-control" data-note-token="EVENT">EVENT <kbd>3</kbd></button><button class="finding-control" data-note-token="CAUTION">CAUTION <kbd>4</kbd></button></div><textarea id="po-note" class="insp-note" placeholder="Note (optional)..."></textarea>':''}<div class="decision-row">${actions[item.lane].map(([act,label,key])=>`<button class="btn btn-${key==='a'?'accept':key==='d'?'detain':key==='p'?'purge':'rescue'}" data-action="${act}">${act==='ACCEPT'&&view.mode==='grid'?window.XRU_I18N.t('btn_approve'):act==='DETAIN'&&view.state!=='MACHINE_FLAGGED'&&view.mode==='grid'?window.XRU_I18N.t('btn_detain'):label} <kbd>${key.toUpperCase()}</kbd></button>`).join('')}<button class="btn btn-skip" id="skip-review-item">Skip <kbd>S</kbd></button></div></div>`;
-    if(editable){const d=drafts.get(item.xru_id)||item;$('po-note').placeholder=window.XRU_I18N.t('note_ph');$('po-note').value=d.po_note||'';$('noise-present').checked=!!d.noise_present;$('watermark-present').checked=!!d.watermark_present;refreshTokens();}
-    document.querySelectorAll('.related-videos,.po-note-display').forEach(e=>e.remove());
-    if(!editable){const note=document.createElement('p');note.className='po-note-display';note.textContent=item.po_note||'';document.querySelector('.evidence-grid').append(note);}
-    renderPlayer(item);paintHints();controls();sync();
+  flushing = null; await refresh();
+}
+// Đọc lại lặng lẽ: không khoá nút, không chọn lại nếu clip đang xem còn trên trang; bấm quyết trong lúc đọc thì bỏ kết quả này.
+async function refresh() {
+  const id = ++readId;
+  try {
+    const result = await json('/api/queue?' + query(store.s.view)); if (id !== readId || outbox.length) return;
+    const keep = result.items.some((r) => r.xru_id === store.s.selectedId), pick = keep ? store.s.selectedId : result.items[0]?.xru_id ?? null;
+    store.set((s) => ({ page: result, view: { ...s.view, page: Math.floor(result.offset / result.limit) + 1 }, selectedId: pick,
+      ...(keep ? {} : { detail: null }), notice: result.items.length ? s.notice : 'Không có clip khớp bộ lọc.' }));
+    if (!keep) readDetail(pick);
+  } catch { /* lượt đọc thường sau sẽ báo lỗi */ }
+}
+function step(delta, wrap = false) {
+  const s = store.s; if (!s.page || s.reading) return;
+  const items = s.page.items, at = items.findIndex((r) => r.xru_id === s.selectedId); if (at < 0) return;
+  if (wrap && delta > 0 && s.page.offset + at === s.page.total - 1) return go({ page: 1 }, null);
+  if (delta > 0 && at === items.length - 1 && s.page.offset + items.length < s.page.total) return go({ page: s.view.page + 1 }, null);
+  if (delta < 0 && at === 0 && s.page.offset) return go({ page: s.view.page - 1 }, null, Infinity);
+  choose(items[Math.max(0, Math.min(items.length - 1, at + delta))].xru_id);
+}
+
+// ---------- Nháp: ghi chú và dấu Noise / Watermark / EVENT / CAUTION, giữ theo clip tới khi lệnh ghi được lõi nhận ----------
+function draftOf(s, item) { return s.drafts[item.xru_id] || { po_note: item.po_note || '', noise_present: !!item.noise_present, watermark_present: !!item.watermark_present }; }
+function edit(change) {
+  const s = store.s, item = current(s); if (!valid(s, item) || item.state !== 'WAITING_PO') return;
+  store.set({ drafts: { ...s.drafts, [item.xru_id]: { ...draftOf(s, item), ...change } } });
+}
+const hasToken = (note, word) => note.split('\n').some((line) => line.trim() === word);
+function token(word) {
+  const s = store.s, item = current(s); if (!item) return;
+  const note = draftOf(s, item).po_note, lines = note.split('\n'), at = lines.findIndex((x) => x.trim() === word);
+  if (at >= 0) { lines.splice(at, 1); edit({ po_note: lines.join('\n').replace(/^\n+|\n+$/g, '') }); }
+  else edit({ po_note: note.trimEnd() + (note.trimEnd() ? '\n' : '') + word });
+}
+
+// ---------- Trình phát ----------
+// Đổi lưới ↔ xem to thì trình phát dựng lại ở cột khác: nhớ vị trí và đang phát hay không để nối tiếp đúng clip.
+const resume = { id: null, at: 0, playing: false };
+let videoEl = null;
+const toggle = (v) => { if (v.paused || v.ended) v.play().catch(() => store.set({ notice: 'Chưa phát được video.' })); else v.pause(); };
+function Player({ item, mode, canStep }) {
+  const ref = useRef(), [, tick] = useState(0), [rate, setRate] = useState(1), [muted, setMuted] = useState(false);
+  useEffect(() => {
+    const v = ref.current; videoEl = v;
+    const on = () => tick((x) => x + 1), events = ['play', 'pause', 'timeupdate', 'loadedmetadata', 'ended'];
+    events.forEach((e) => v.addEventListener(e, on));
+    const pickUp = () => { if (resume.id !== item.xru_id) return; try { v.currentTime = resume.at; } catch { /* clip chưa tua được */ } if (resume.playing) v.play().catch(() => {}); };
+    if (v.readyState >= 1) pickUp(); else v.addEventListener('loadedmetadata', pickUp, { once: true });
+    return () => {
+      events.forEach((e) => v.removeEventListener(e, on));
+      resume.id = item.xru_id; resume.at = v.currentTime; resume.playing = !v.paused && !v.ended;
+      v.pause(); v.removeAttribute('src'); v.load(); if (videoEl === v) videoEl = null;
+    };
+  }, []);
+  const v = ref.current, dur = v && Number.isFinite(v.duration) ? v.duration : item.duration_seconds, at = v ? v.currentTime : 0;
+  const playing = !!v && !v.paused && !v.ended, ratio = dur > 0 ? at / dur : 0, play = () => v && toggle(v);
+  const seek = (e) => { if (!v || !Number.isFinite(v.duration)) return; const r = e.currentTarget.getBoundingClientRect(); v.currentTime = Math.max(0, Math.min(v.duration, v.duration * (e.clientX - r.left) / r.width)); };
+  const video = h('video', { id: 'review-video-player', ref, preload: 'metadata', src: media(item.xru_id), onClick: play });
+  const track = (cls) => h('span', { class: cls, role: 'slider', tabindex: 0, 'aria-label': 'Vị trí video', 'aria-valuemin': 0, 'aria-valuemax': dur || 0, 'aria-valuenow': at, onClick: seek },
+    h('span', { style: { width: ratio * 100 + '%' } }));
+  if (mode === 'watch') return h('section', { class: 'watch' + (playing ? ' is-playing' : '') },
+    h('div', { class: 'watch-stage' },
+      h('div', { class: 'video-container' }, h('div', { class: 'watch-frame' + (item.orientation === 'portrait' ? ' is-portrait' : ''), id: 'watch-frame' },
+        video, h('span', { class: 'g-play', onClick: play }), h('div', { class: 'watch-stamp' }))),
+      h('button', { class: 'watch-nav prev', 'aria-label': 'Clip trước', disabled: !canStep, onClick: () => step(-1) }, '‹'),
+      h('button', { class: 'watch-nav next', 'aria-label': 'Clip sau', disabled: !canStep, onClick: () => step(1) }, '›')),
+    h('div', { class: 'watch-ctrl' },
+      h('button', { class: 'watch-btn', 'aria-label': 'Phát / dừng', onClick: play }),
+      h('span', { class: 'watch-time' }, time(at), ' / ', time(dur)),
+      track('watch-track'),
+      h('button', { class: 'watch-ic', onClick: () => { const r = rate >= 2 ? 0.5 : rate + 0.5; setRate(r); if (v) v.playbackRate = r; } }, rate + '×'),
+      h('button', { class: 'watch-ic', 'aria-label': 'Âm thanh', onClick: () => { setMuted(!muted); if (v) v.muted = !muted; } }, muted ? '🔇' : '🔊'),
+      h('button', { class: 'watch-ic', 'aria-label': 'Toàn màn hình', onClick: () => v?.requestFullscreen().catch(() => {}) }, '⛶')));
+  return [
+    h('div', { class: 'insp-img is-video' + (playing ? ' is-playing' : '') }, h('div', { class: 'video-container' }, video), h('span', { class: 'g-play', onClick: play })),
+    h('div', { class: 'insp-bar' }, h('span', null, time(at)), track('track'), h('span', null, time(dur))),
+  ];
+}
+
+// ---------- Cột trái: số đếm, tìm, nhóm lọc, danh sách clip của trang, lật trang ----------
+let searchTimer = 0;
+function Sidebar() {
+  const s = useStore(), v = s.view, page = s.page, list = useRef();
+  useEffect(() => { list.current?.querySelector('.is-active')?.scrollIntoView({ block: 'nearest' }); }, [s.selectedId]);
+  const sections = [];
+  if (page) {
+    if (v.state === 'MACHINE_FLAGGED' && page.reasons?.length) sections.push({ key: 'flag', title: t('flag_lbl'), rows: [
+      { pick: { reason: '' }, name: t('all_flags'), total: page.counts[v.state], on: !v.reason, all: true },
+      ...page.reasons.map((r) => ({ pick: { reason: r.reason }, name: r.reason, total: r.total, on: v.reason === r.reason }))] });
+    sections.push({ key: 'source', title: t('source_lbl'), tree: { all: t('all_sources'), total: page.counts[v.state], sources: page.sources, platform: v.platform, source: v.source } });
+    sections.push({ key: 'sort', title: t('sort_lbl'), rows: sorts(v.state).map(([key, label]) => ({ pick: { sort: key }, name: t(label), on: v.sort === key })) });
   }
-  function clear(){selected=null;++detailId;stopPlayer();paintHints();$('decision-controls').replaceChildren();document.querySelectorAll('.related-videos,.po-note-display').forEach(e=>e.remove());document.querySelector('.insp-tag').textContent='';['insp-title','insp-cap','insp-xid','insp-src','insp-res','insp-lane','insp-num'].forEach(id=>$(id).textContent='');controls();}
-  async function select(index){if(reading||!page?.items[index])return;const id=++detailId;const item=page.items[index];paintDetail({...item,lane:view.state},index);
-    try{const detail=await json('/api/assets/'+encodeURIComponent(item.xru_id));if(id!==detailId)return;if(detail.item.lane!==view.state){notice('Clip đã chuyển lane. Đang đọc lại…');await load();return;}paintDetail(detail.item,index);
-      if(view.state==='MACHINE_FLAGGED'&&detail.related.length){const related=document.createElement('div');related.className='related-videos';related.innerHTML='<div class="insp-label">RELATED VIDEOS</div>'+detail.related.map(row=>`<a href="#" class="dupe-link" data-related="${esc(row.xru_id)}" data-lane="${row.lane}">${esc(row.xru_id)}</a> <span class="state-chip">${row.lane}</span>`).join('');document.querySelector('.evidence-grid').append(related);}
-    }catch(e){if(id!==detailId)return;reading=true;notice('Backend Gate video đang tắt hoặc đọc lỗi. '+e.message);controls();}
+  const typed = (e) => {
+    const q = e.currentTarget.value; clearTimeout(searchTimer); ++readId;
+    store.set((st) => ({ view: { ...st.view, q, page: 1 }, reading: true })); searchTimer = setTimeout(() => load(), 180);
+  };
+  const keys = (e) => { e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); e.currentTarget.blur(); go({ q: '', page: 1 }); } };
+  return [
+    h('div', { class: 'side-head' },
+      h('div', { class: 'side-count' }, h('b', { class: 'queue-count' }, page ? n(page.total) : '—'), h('span', null, v.state)),
+      h('label', { class: 'side-search' },
+        h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor' }, h('circle', { cx: 11, cy: 11, r: 7 }), h('path', { d: 'M21 21l-4.35-4.35' })),
+        h('input', { type: 'search', value: v.q, placeholder: t('search_title_src'), 'aria-label': t('search_in_list'), onInput: typed, onKeyDown: keys }))),
+    h(Filters, { id: 'filters', sections, onPick: (change) => go({ ...change, page: 1 }) }),
+    h('div', { class: 'side-items', id: 'queue-list', ref: list }, page ? page.items.map((item, i) => h('a', {
+      key: item.xru_id, href: link(item.xru_id), class: 'side-item' + (item.xru_id === s.selectedId ? ' is-active' : ''),
+      onClick: (e) => { if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return; e.preventDefault(); choose(item.xru_id); },
+    }, h('span', { class: 'n' }, String(page.offset + i + 1).padStart(2, '0')),
+    h('div', null, h('div', { class: 't' }, item.title), h('div', { class: 's' }, (item.source_name || item.source_platform) + (item.duration_seconds != null ? ' · ' + time(item.duration_seconds) : ''))))) : null),
+    page ? h(WallPager, { id: 'page-range', offset: page.offset, total: page.total, size: SIZE, onPage: (to) => go({ page: to }, null) }) : h('div', { class: 'side-pager wall-pager', id: 'page-range' }),
+  ];
+}
+
+// ---------- Cột giữa: đầu trang + lane, xem to hoặc tường, chân trang ghi phím ----------
+function Hints({ s, item }) {
+  const key = (...k) => k.map((x) => h('span', { key: x, class: 'key' }, x));
+  const decide = [...new Set([...ACTIONS[s.view.state].map((a) => a[2].toUpperCase()), 'S'])];
+  return h('div', { class: 'key-hints' },
+    item?.state === 'WAITING_PO' ? [['1', 'Noise'], ['2', 'Watermark'], ['3', 'EVENT'], ['4', 'CAUTION']].map(([k, w]) => h('span', { key: k }, key(k), ' ', w)) : null,
+    s.view.mode === 'watch' ? h('span', null, key('←', '→'), ' ', h('span', null, '±5s · Shift: ±15%')) : null,
+    h('span', null, key(...decide), ' ', t('w_auto_next')),
+    h('span', null, key('Space'), ' ', t('w_play_pause')));
+}
+function Main() {
+  const s = useStore(), v = s.view, page = s.page, item = current(s), grid = v.mode === 'grid';
+  return [
+    h('header', { class: 'page-head ws-head' },
+      h('div', { class: 'page-title' }, h('a', { href: '/?continent=eurasia' }, 'EURASIA'), h('span', null, '/'), h('a', { href: '/gate/dash/' }, 'GATE'), h('span', null, '/'), h('h1', null, 'VIDEO')),
+      h('nav', { class: 'gate-tabs tabs-nav', 'aria-label': 'Review states' }, TABS.map(([state, label, tone]) => h('button', {
+        key: state, type: 'button', class: `gate-tab-btn tab-link state-${state.toLowerCase()}${state === v.state ? ' is-active' : ''}`,
+        onClick: () => go({ state, platform: '', source: '', reason: '', page: 1 }, null),
+      }, h('strong', { class: 'count ' + tone }, page ? n(page.counts[state]) : '—'), h('span', null, label))))),
+    h('div', { id: 'watch-area', hidden: grid }, !grid && item ? h(Player, { key: item.xru_id + ':watch', item, mode: 'watch', canStep: valid(s, item) }) : null),
+    page ? h(Wall, { id: 'video-gallery', style: '--wall-min:160px; --wall-ratio:4 / 3; --wall-fit:contain', hidden: !grid, items: page.items, offset: page.offset, activeId: s.selectedId, sizes: '160px',
+      thumb: (it, w) => backend + '/thumb/' + encodeURIComponent(it.xru_id) + '?w=' + w, media: (it) => media(it.xru_id), end: (it) => time(it.duration_seconds),
+      tags: (it) => (it.gate_flag_reason || '').split(' + ').filter(Boolean), onSelect: (it) => choose(it.xru_id) }) : null,
+    page ? h(WallNext, { id: 'video-next', hidden: !grid, offset: page.offset, total: page.total, size: SIZE, onPage: (to) => go({ page: to }, null) }) : null,
+    h('footer', { class: 'page-foot' }, h(Hints, { s, item }), h('div', null, 'XRU GATE // 2026')),
+    h('div', { class: 'flash-banner flash-error', id: 'api-error', role: 'status', hidden: !s.notice }, s.notice),
+  ];
+}
+
+// ---------- Cột phải: lane, trình phát (lưới), nút quyết, hồ sơ clip ----------
+function Decisions({ s, item }) {
+  const ok = valid(s, item), editable = item.state === 'WAITING_PO', d = draftOf(s, item), grid = s.view.mode === 'grid';
+  const label = (cmd, text) => cmd === 'ACCEPT' && grid ? t('btn_approve') : cmd === 'DETAIN' && s.view.state !== 'MACHINE_FLAGGED' && grid ? t('btn_detain') : text;
+  return h('div', { class: 'actions-bar' },
+    editable ? [
+      h('div', { key: 'f', class: 'finding-row' },
+        h('label', { class: 'finding-control' }, h('input', { id: 'noise-present', type: 'checkbox', disabled: !ok, checked: d.noise_present, onChange: (e) => edit({ noise_present: e.currentTarget.checked }) }), ' NOISE', h('kbd', null, '1')),
+        h('label', { class: 'finding-control' }, h('input', { id: 'watermark-present', type: 'checkbox', disabled: !ok, checked: d.watermark_present, onChange: (e) => edit({ watermark_present: e.currentTarget.checked }) }), ' WMARK', h('kbd', null, '2')),
+        ['EVENT', 'CAUTION'].map((word, i) => { const on = hasToken(d.po_note, word); return h('button', { key: word, class: 'finding-control' + (on ? ' active' : ''), 'aria-pressed': on, disabled: !ok, onClick: () => token(word) }, word + ' ', h('kbd', null, String(i + 3))); })),
+      h('textarea', { key: 'n', id: 'po-note', class: 'insp-note', placeholder: t('note_ph'), disabled: !ok, value: d.po_note, onInput: (e) => edit({ po_note: e.currentTarget.value }) }),
+    ] : null,
+    h('div', { class: 'decision-row' },
+      ACTIONS[item.lane].map(([cmd, text, key]) => h('button', { key: cmd, class: `btn btn-${BTN[key]}`, 'data-action': cmd, disabled: !ok, onClick: () => act(cmd) }, label(cmd, text) + ' ', h('kbd', null, key.toUpperCase()))),
+      h('button', { class: 'btn btn-skip', id: 'skip-review-item', disabled: !ok || s.page.total < 2, onClick: () => step(1, true) }, 'Skip ', h('kbd', null, 'S'))));
+}
+function Inspector() {
+  const s = useStore(), item = current(s), page = s.page;
+  const index = item && page ? page.items.findIndex((r) => r.xru_id === item.xru_id) : -1;
+  const detail = s.detail?.item.xru_id === s.selectedId ? s.detail : null;
+  const jump = (row) => (e) => { e.preventDefault(); store.set((st) => ({ view: { ...st.view, state: row.lane, platform: '', source: '', reason: '', q: '', page: 1 } })); load(row.xru_id, { locate: true }); };
+  return [
+    h('div', { class: 'insp-top' }, h('span', { class: 'insp-tag', title: item?.gate_flag_reason || '' }, item ? item.lane : ''),
+      h('span', { class: 'insp-num', id: 'insp-num' }, index >= 0 ? `${String(page.offset + index + 1).padStart(3, '0')} / ${page.total}` : '')),
+    h('div', { id: 'inspector-player' }, item && s.view.mode === 'grid' ? h(Player, { key: item.xru_id + ':grid', item, mode: 'grid' }) : null),
+    h('div', { id: 'decision-controls' }, item ? h(Decisions, { s, item }) : null),
+    h('section', { class: 'evidence-grid' },
+      h('div', { class: 'insp-title', id: 'insp-title' }, item?.title || ''),
+      h('div', { class: 'insp-caption' }, h('div', { class: 'insp-label' }, t('desc_lbl')), h('p', { class: 'insp-cap', id: 'insp-cap' }, item?.description || '')),
+      h('div', { class: 'technical-manifest' }, h('div', { class: 'insp-label' }, 'Technical manifest'),
+        h('dl', { class: 'insp-meta' },
+          h('dt', null, 'XRU ID'), h('dd', { id: 'insp-xid', style: 'color:var(--accent)' }, item?.xru_id || ''),
+          h('dt', null, t('source_lbl')), h('dd', { id: 'insp-src' }, item ? item.source_platform + (item.source_name ? ' / ' + item.source_name : '') : ''),
+          h('dt', null, t('res_lbl')), h('dd', { id: 'insp-res' }, item?.resolution_readable ? `${item.width}×${item.height} (${item.aspect_ratio || ''})` : ''),
+          h('dt', { 'aria-label': 'Current Lane' }, 'Lane'), h('dd', { id: 'insp-lane' }, item?.lane || ''))),
+      item && item.state !== 'WAITING_PO' ? h('p', { class: 'po-note-display' }, item.po_note || '') : null,
+      s.view.state === 'MACHINE_FLAGGED' && detail?.related.length ? h('div', { class: 'related-videos' }, h('div', { class: 'insp-label' }, 'RELATED VIDEOS'),
+        detail.related.map((row) => h('span', { key: row.xru_id }, h('a', { href: '#', class: 'dupe-link', onClick: jump(row) }, row.xru_id), ' ', h('span', { class: 'state-chip' }, row.lane), ' '))) : null),
+  ];
+}
+
+// ---------- Địa chỉ trang và hai nút rail mang theo bộ lọc ----------
+function link(id) {
+  const v = store.s.view;
+  return '/gate/video/?' + new URLSearchParams({ state: v.state, view: v.mode, sort: v.sort, platform: v.platform, source: v.source, reason: v.reason, q: v.q, page: v.page, selected: id });
+}
+function sync() {
+  const s = store.s, v = s.view, q = new URLSearchParams({ state: v.state, view: v.mode, sort: v.sort });
+  for (const [k, val] of Object.entries({ platform: v.platform, source: v.source, reason: v.reason, q: v.q, page: v.page > 1 ? v.page : '', selected: s.selectedId || '' })) if (val) q.set(k, val);
+  const url = '/gate/video/?' + q; if (location.pathname + location.search !== url) history.replaceState(null, '', url);
+  document.body.dataset.mode = v.mode; document.querySelector('.rail').dataset.active = v.mode === 'grid' ? 'video' : 'watch';
+  let changed = false;
+  for (const entry of window.XRU_RAILS.gate.groups[0]) if (['video', 'watch'].includes(entry.key)) {
+    const target = new URLSearchParams(q); target.set('view', entry.key === 'video' ? 'grid' : 'watch');
+    const href = '/gate/video/?' + target; if (entry.href !== href) { entry.href = href; changed = true; }
   }
-  // Tường 100 clip một trang (kit/wall): ô là ảnh nhỏ 240px, rê chuột chờ một nhịp mới phát không tiếng.
-  const wall=window.XRU_WALL({grid:$('video-gallery'),pager:$('page-range'),next:$('video-next'),size:100,
-    thumb:(item,width)=>backend+'/thumb/'+encodeURIComponent(item.xru_id)+'?w='+width,media:item=>media(item.xru_id),end:item=>time(item.duration_seconds),tags:item=>(item.gate_flag_reason||'').split(' + ').filter(Boolean),
-    onSelect:index=>select(index),onPage:to=>{view.page=to;load(null);}});
-  // Sidebar: nhóm lọc bấm thẳng (kit/sidebar/filters.js) ở trên, danh sách clip của trang ở dưới. Số đếm do lõi trả.
-  const filters=window.XRU_FILTERS($('filters'),change=>{Object.assign(view,change);view.page=1;load();});
-  function paintFilters(){if(!page)return;const t=window.XRU_I18N.t,sections=[];
-    if(view.state==='MACHINE_FLAGGED'&&page.reasons?.length)sections.push({key:'flag',title:t('flag_lbl'),rows:[{pick:{reason:''},name:t('all_flags'),total:page.counts[view.state],on:!view.reason,all:true},...page.reasons.map(r=>({pick:{reason:r.reason},name:r.reason,total:r.total,on:view.reason===r.reason}))]});
-    sections.push({key:'source',title:t('source_lbl'),tree:{all:t('all_sources'),total:page.counts[view.state],sources:page.sources,platform:view.platform,source:view.source}});
-    sections.push({key:'sort',title:t('sort_lbl'),rows:sorts().map(([key,label])=>({pick:{sort:key},name:t(label),on:view.sort===key}))});
-    filters.render(sections);}
-  function paintPage(){list.replaceChildren();
-    page.items.forEach((item,i)=>{const row=document.createElement('a');row.href=itemLink(item.xru_id);row.className='side-item';row.dataset.id=item.xru_id;row.innerHTML=`<span class="n">${String(page.offset+i+1).padStart(2,'0')}</span><div><div class="t">${esc(item.title)}</div><div class="s">${esc(item.source_name||item.source_platform)}${item.duration_seconds!=null?' · '+time(item.duration_seconds):''}</div></div>`;list.append(row);row.addEventListener('click',e=>{if(e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;e.preventDefault();select(i);});});
-    wall.render(page.items,page.offset,page.total);
-    document.querySelector('.queue-count').textContent=n(page.total);document.querySelector('.side-count span').textContent=view.state;
-    document.querySelectorAll('[data-state]').forEach(b=>{b.classList.toggle('is-active',b.dataset.state===view.state);b.querySelector('.count').textContent=n(page.counts[b.dataset.state]);});
-    paintFilters();controls();
+  if (changed) window.dispatchEvent(new Event('xru-rail-changed'));
+}
+store.subs.add(sync);
+
+// ---------- Phím: chỉ phím làm việc (PO 22/10) ----------
+document.addEventListener('keydown', (e) => {
+  if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+  const v = videoEl, key = e.key.toLowerCase(), typing = e.target.closest?.('textarea,select,input:not([type="checkbox"]),[contenteditable="true"]');
+  if (key === ' ' && v && !typing && !e.shiftKey) { e.preventDefault(); toggle(v); return; }
+  if (typing) return;
+  if ((key === 'arrowleft' || key === 'arrowright') && v) {
+    e.preventDefault(); const delta = e.shiftKey && Number.isFinite(v.duration) ? v.duration * 0.15 : 5;
+    v.currentTime = Math.max(0, Math.min(Number.isFinite(v.duration) ? v.duration : Infinity, v.currentTime + (key === 'arrowleft' ? -delta : delta))); return;
   }
-  async function load(preferred=view.selected,locate=false,slot=0){if(!backend)return;if(flushing)await flushing;reading=true;pending=true;const id=++readId;++detailId;controls();if(!sorts().some(([key])=>key===view.sort))view.sort='oldest';const q=new URLSearchParams({state:view.state,platform:view.platform,source:view.source,reason:view.reason,q:view.q,sort:view.sort,limit:100,offset:(view.page-1)*100});if(locate&&preferred)q.set('selected',preferred);
-    try{const result=await json('/api/queue?'+q);if(id!==readId)return;page=result;view.page=Math.floor(result.offset/result.limit)+1;reading=false;paintPage();notice('');if(page.items.length){const at=page.items.findIndex(row=>row.xru_id===preferred);await select(at>=0?at:Math.min(slot,page.items.length-1));}else{clear();notice('Không có clip khớp bộ lọc.');sync();}}
-    catch(e){if(id!==readId)return;reading=true;notice('Backend Gate video đang tắt hoặc đọc lỗi. Số đang hiện chưa được cập nhật. '+e.message);controls();}finally{if(id===readId)pending=false;}
-  }
-  // Quyết là đi tiếp ngay (PO 23/10): clip rời trang tại chỗ, lệnh ghi xếp hàng gửi ngầm từng lệnh một; gửi hết mới đọc lại lõi một lượt
-  // cho khớp số và lấp chỗ trống cuối trang. Ghi lỗi thì bỏ các lệnh sau, đọc lại về đúng clip đó, nháp vẫn giữ.
-  const outbox=[];
-  function act(action){if(!selected||reading)return;const item=selected,at=page.items.findIndex(x=>x.xru_id===item.xru_id);if(at<0)return;
-    const d=drafts.get(item.xru_id)||item;outbox.push({item,body:{action,expected_lane:item.lane,po_note:d.po_note||null,noise_present:!!d.noise_present,watermark_present:!!d.watermark_present}});
-    ++readId;page.items.splice(at,1);page.total--;page.counts[view.state]--;paintPage();
-    if(page.items.length)select(Math.min(at,page.items.length-1));else clear();
-    if(!flushing)flushing=flush();
-  }
-  async function flush(){
-    while(outbox.length){const job=outbox[0];
-      try{await json('/api/assets/'+encodeURIComponent(job.item.xru_id)+'/decisions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(job.body)});drafts.delete(job.item.xru_id);outbox.shift();}
-      catch(e){outbox.length=0;flushing=null;await load(job.item.xru_id,true);notice('Chưa xác nhận lưu. Ghi chú và dấu chọn được giữ. '+e.message);return;}}
-    flushing=null;await refresh();
-  }
-  // Đọc lại lặng lẽ: không khoá nút, không chọn lại nếu clip đang xem còn trên trang; bấm quyết trong lúc đọc thì bỏ kết quả này.
-  async function refresh(){const id=++readId;const q=new URLSearchParams({state:view.state,platform:view.platform,source:view.source,reason:view.reason,q:view.q,sort:view.sort,limit:100,offset:(view.page-1)*100});
-    try{const result=await json('/api/queue?'+q);if(id!==readId||outbox.length)return;page=result;view.page=Math.floor(result.offset/result.limit)+1;paintPage();
-      const at=selected?page.items.findIndex(row=>row.xru_id===selected.xru_id):-1;
-      if(at>=0){wall.active(selected.xru_id);list.querySelectorAll('[data-id]').forEach(e=>e.classList.toggle('is-active',e.dataset.id===selected.xru_id));$('insp-num').textContent=`${String(page.offset+at+1).padStart(3,'0')} / ${page.total}`;}
-      else if(page.items.length)await select(0);else{clear();notice('Không có clip khớp bộ lọc.');}}
-    catch{/* lượt đọc thường sau sẽ báo lỗi */}
-  }
-  function step(delta,wrap=false){if(!selected||reading)return;const at=page.items.findIndex(row=>row.xru_id===selected.xru_id);if(wrap&&delta>0&&page.offset+at===page.total-1){view.page=1;load(null);return;}if(delta>0&&at===page.items.length-1&&page.offset+page.items.length<page.total){view.page++;load(null);return;}if(delta<0&&at===0&&page.offset){view.page--;load(null,false,Infinity);return;}select(Math.max(0,Math.min(page.items.length-1,at+delta)));}
-  document.addEventListener('input',e=>{if(e.target.closest('#decision-controls'))remember();});
-  document.addEventListener('change',e=>{if(e.target.closest('#decision-controls'))remember();});
-  window.addEventListener('xru-lang-applied',paintFilters);
-  let timer;search.value=view.q;search.addEventListener('input',()=>{clearTimeout(timer);view.q=search.value.trim();view.page=1;++readId;reading=true;pending=false;controls();timer=setTimeout(()=>load(),180);});
-  search.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();search.value='';view.q='';view.page=1;load();search.blur();}e.stopPropagation();});
-  document.addEventListener('click',e=>{const t=e.target.closest('[data-state],[data-action],[data-step],[data-player],[data-related],[data-note-token],#skip-review-item,.rail a');if(!t)return;
-    if(t.matches('.rail a')&&new URL(t.href).pathname==='/gate/video/'){if(e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;e.preventDefault();view.mode=new URL(t.href).searchParams.get('view')==='grid'?'grid':'watch';mode();return;}
-    if(t.dataset.state){view.state=t.dataset.state;view.source=view.platform=view.reason='';view.page=1;view.selected=null;load();}
-    if(t.dataset.action)act(t.dataset.action);
-    if(t.dataset.step)step(+t.dataset.step);
-    if(t.id==='skip-review-item')step(1,true);
-    if(t.dataset.noteToken)token(t.dataset.noteToken);
-    if(t.dataset.related){e.preventDefault();view.state=t.dataset.lane;view.source=view.platform=view.reason='';view.q='';search.value='';view.page=1;load(t.dataset.related,true);}
-    const v=$('review-video-player');if(!v)return;
-    if(t.dataset.player==='play')play();if(t.dataset.player==='mute'){v.muted=!v.muted;t.textContent=v.muted?'🔇':'🔊';}if(t.dataset.player==='rate'){v.playbackRate=v.playbackRate>=2?.5:v.playbackRate+.5;t.textContent=v.playbackRate+'×';}if(t.dataset.player==='fullscreen')v.requestFullscreen().catch(()=>{});
-    if(t.dataset.player==='seek'&&Number.isFinite(v.duration)){const r=t.getBoundingClientRect();v.currentTime=Math.max(0,Math.min(v.duration,v.duration*(e.clientX-r.left)/r.width));}
-  });
-  document.addEventListener('keydown',e=>{if(e.repeat||e.ctrlKey||e.metaKey||e.altKey)return;const v=$('review-video-player'),key=e.key.toLowerCase(),typing=e.target.closest('textarea,select,input:not([type="checkbox"]),[contenteditable="true"]');if(key===' '&&v&&!typing&&!e.shiftKey){e.preventDefault();play();return;}if(typing)return;
-    if((key==='arrowleft'||key==='arrowright')&&v){e.preventDefault();const delta=e.shiftKey&&Number.isFinite(v.duration)?v.duration*.15:5;v.currentTime=Math.max(0,Math.min(Number.isFinite(v.duration)?v.duration:Infinity,v.currentTime+(key==='arrowleft'?-delta:delta)));return;}if(e.shiftKey)return;
-    if(['1','2'].includes(key)){const cb=$(key==='1'?'noise-present':'watermark-present');if(cb){e.preventDefault();cb.click();}return;}if(['3','4'].includes(key)){e.preventDefault();token(key==='3'?'EVENT':'CAUTION');return;}if(key==='e'&&$('po-note')){e.preventDefault();$('po-note').focus();return;}
-    const button=key==='s'?$('skip-review-item'):document.querySelector('.btn-'+({a:'accept',d:'detain',p:'purge',r:'rescue'}[key]||'missing'));if(button){e.preventDefault();button.click();}
-  });
-  window.addEventListener('focus',()=>{if(reading&&backend&&!pending)load();});
-  setInterval(()=>{if(reading&&!pending&&!document.hidden&&backend)load();},5000);
-  setInterval(async()=>{if(!backend||pending||document.hidden)return;try{await json('/api/health');}catch(e){reading=true;controls();notice('Backend Gate video đang tắt. Số đang hiện chưa được cập nhật.');}},5000);
-  mode();controls();fetch('/ui-config',{cache:'no-store'}).then(r=>r.json()).then(c=>{backend=c.video_backend;load(view.selected,!!view.selected&&!p.has('page'));}).catch(()=>notice('Không đọc được cấu hình UI.'));
-})();
+  if (e.shiftKey) return;
+  const s = store.s, item = current(s); if (!item) return;
+  if (key === '1' || key === '2') { if (item.state === 'WAITING_PO' && valid(s, item)) { e.preventDefault(); const f = key === '1' ? 'noise_present' : 'watermark_present'; edit({ [f]: !draftOf(s, item)[f] }); } return; }
+  if (key === '3' || key === '4') { if (item.state === 'WAITING_PO' && valid(s, item)) { e.preventDefault(); token(key === '3' ? 'EVENT' : 'CAUTION'); } return; }
+  if (key === 'e' && document.getElementById('po-note')) { e.preventDefault(); document.getElementById('po-note').focus(); return; }
+  if (key === 's') { if (valid(s, item) && s.page.total >= 2) { e.preventDefault(); step(1, true); } return; }
+  const action = ACTIONS[item.lane]?.find((a) => a[2] === key);
+  if (action && valid(s, item)) { e.preventDefault(); act(action[0]); }
+});
+// Rail "Video" / "Xem" là cùng màn: đổi chế độ tại chỗ.
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('.rail a'); if (!a || new URL(a.href).pathname !== '/gate/video/') return;
+  if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+  e.preventDefault(); store.set((s) => ({ view: { ...s.view, mode: new URL(a.href).searchParams.get('view') === 'grid' ? 'grid' : 'watch' } }));
+});
+window.addEventListener('xru-lang-applied', () => store.set({}));
+// Backend từng mất thì thử đọc lại; còn sống thì không vẽ lại gì khi quay lại cửa sổ.
+window.addEventListener('focus', () => { if (store.s.reading && backend && !pending) load(); });
+setInterval(() => { if (store.s.reading && !pending && !document.hidden && backend) load(); }, 5000);
+setInterval(async () => {
+  if (!backend || pending || document.hidden) return;
+  try { await json('/api/health'); } catch { store.set({ reading: true, notice: 'Backend Gate video đang tắt. Số đang hiện chưa được cập nhật.' }); }
+}, 5000);
+
+render(h(Sidebar), document.querySelector('.side'));
+render(h(Main), document.querySelector('.ws-main'));
+render(h(Inspector), document.querySelector('.ws-insp'));
+sync();
+fetch('/ui-config', { cache: 'no-store' }).then((r) => r.json()).then((c) => { backend = c.video_backend; load(store.s.selectedId, { locate: !!store.s.selectedId && !p.has('page') }); })
+  .catch(() => store.set({ notice: 'Không đọc được cấu hình UI.' }));

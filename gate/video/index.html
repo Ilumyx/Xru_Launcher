@@ -16,6 +16,7 @@
   <script src="/kit/i18n/i18n.js"></script>
   <script src="/kit/account/account.js"></script>
   <script src="/kit/frame/frame.js"></script>
+  <script type="importmap">{"imports":{"preact":"/kit/vendor/preact/preact.module.js","preact/hooks":"/kit/vendor/preact/hooks.module.js"}}</script>
 
   <link rel="stylesheet" href="/gate/video/video.css">
 
@@ -27,73 +28,10 @@
   <nav class="rail" data-rail="gate" data-active="video" data-panel></nav>
   <script src="/kit/rail/rail.js"></script>
     <div class="ws workstation">
-    <aside class="side queue-panel">
-      <div class="side-head">
-        <div class="side-count"><b class="queue-count">—</b><span>WAITING_PO</span></div>
-        <label class="side-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="search" placeholder="Tìm tiêu đề, nguồn…" aria-label="Tìm trong danh sách" data-i18n-attr="placeholder:search_title_src,aria-label:search_in_list"></label>
-      </div>
-      <div class="side-filters" id="filters"></div>
-      <div class="side-items" id="queue-list"></div>
-      <div class="side-pager wall-pager" id="page-range"></div>
-    </aside>
-
-
-  <main class="ws-main detail-panel">
-    <header class="page-head ws-head">
-  <div class="page-title"><a href="/?continent=eurasia">EURASIA</a><span>/</span><a href="/gate/dash/">GATE</a><span>/</span><h1>VIDEO</h1></div>
-  <nav class="gate-tabs tabs-nav" aria-label="Review states">
-
-    <button type="button" data-state="WAITING_PO" class="gate-tab-btn tab-link state-waiting_po is-active">
-      <strong class="count alert">—</strong><span>WAIT</span>
-    </button>
-
-    <button type="button" data-state="MACHINE_FLAGGED" class="gate-tab-btn tab-link state-machine_flagged ">
-      <strong class="count alert">—</strong><span>MACHINE FLAG</span>
-    </button>
-
-    <button type="button" data-state="DETAINED" class="gate-tab-btn tab-link state-detained ">
-      <strong class="count warn">—</strong><span>DETAIN</span>
-    </button>
-
-    <button type="button" data-state="ACCEPT_APPROVED" class="gate-tab-btn tab-link state-accept_approved ">
-      <strong class="count accept">—</strong><span>ACCEPT</span>
-    </button>
-
-    <button type="button" data-state="PURGE_APPROVED" class="gate-tab-btn tab-link state-purge_approved ">
-      <strong class="count ">—</strong><span>PURGE</span>
-    </button>
-
-  </nav>
-</header>
-    <div id="watch-area" hidden></div><div class="wall" id="video-gallery" style="--wall-min:160px; --wall-ratio:4 / 3; --wall-fit:contain"></div><div class="wall-next" id="video-next"></div>
-    <footer class="page-foot">
-  <div class="key-hints"></div><div>XRU GATE // 2026</div>
-</footer>
-  </main>
-  <aside class="ws-insp" id="manifest-panel">
-    <div class="insp-top"><span class="insp-tag">WAITING_PO</span><span class="insp-num" id="insp-num"></span></div>
-
-
-    <div id="inspector-player"></div><div id="decision-controls"></div><section class="evidence-grid">
-      <div class="insp-title" id="insp-title"></div>
-      <div class="insp-caption"><div class="insp-label" data-i18n="desc_lbl">Mô tả</div><p class="insp-cap" id="insp-cap"></p></div>
-      <div class="technical-manifest"><div class="insp-label">Technical manifest</div>
-        <dl class="insp-meta">
-          <dt>XRU ID</dt><dd id="insp-xid" style="color:var(--accent)"></dd>
-          <dt data-i18n="source_lbl">Nguồn</dt><dd id="insp-src"></dd>
-          <dt data-i18n="res_lbl">Khổ</dt><dd id="insp-res" ></dd>
-          <dt aria-label="Current Lane">Lane</dt><dd id="insp-lane"></dd>
-        </dl>
-      </div>
-
-
-    </section>
-  </aside>
+    <aside class="side queue-panel"></aside>
+    <main class="ws-main detail-panel"></main>
+    <aside class="ws-insp" id="manifest-panel"></aside>
   </div>
 </div>
-
-
-
-
-<div class="flash-banner flash-error" id="api-error" role="status" hidden></div><script src="/kit/wall/wall.js"></script><script src="/kit/sidebar/filters.js"></script><script src="/gate/video/video.js"></script></body>
+<script type="module" src="/gate/video/video.js"></script></body>
 </html>
